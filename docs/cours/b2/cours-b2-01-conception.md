@@ -569,7 +569,7 @@ L’axe réglable A2-02 n’a plus de renvoi : il part déjà de l’« Axe de S
     | evoluer    | Acte 3 · Calculer les évolutions | Quelle base, quel coefficient ?       | Écart, taux, coefficient, indice.                | Des évolutions justes, y compris successives et réciproques.           |
     | outiller   | Acte 4 · Outiller au tableur     | La feuille se contrôle-t-elle seule ? | Formules, références, contrôles, graphique.      | Un classeur contrôlable qu’un tiers peut reproduire.                   |
     | defendre   | Acte 5 · Défendre au comité      | Quel mécanisme explique l’écart ?     | Poids, répartition, preuve, limite.              | Une recommandation fondée sur les poids, les scénarios et les limites. |
-    | transferer | Acte 6 · Transférer              | Saurez-vous le refaire seul·e ?       | Situation nouvelle, rappel.                      | Une fiche mémo pour le CCF.                                            |
+    | transferer | Acte 6 · Transférer              | Saurez-vous le refaire seul·e ?       | Situation nouvelle, rappel.                      | Une fiche mémo à garder.                                               |
 
 - **Notes** : aucune (bloc masqué au pupitre).
 
@@ -1999,8 +1999,8 @@ changent pas, puisqu’ils servent de clés en base.
   avec son contrôle. Placée après les questions pour ne rien révéler.
 - **Contenu (public)** :
   - Titre public : « Fiche mémo : quelle méthode pour quelle question ? »
-  - `title` « Fiche mémo : quelle méthode pour quelle question ? » ; `subtitle` « À garder pour le CCF :
-    chaque carte part d’une question et donne la méthode et son contrôle. »
+  - `title` « Fiche mémo : quelle méthode pour quelle question ? » ; `subtitle` « Chaque carte part
+    d’une question et donne la méthode et son contrôle. »
   - `items` (recto `description`, verso `back`) :
     - Proportion · « Quelle part du total ? » · « Partie ÷ total. Nommez la population de référence
       (commandes ou CA ?). »
@@ -2065,11 +2065,10 @@ changent pas, puisqu’ils servent de clés en base.
       lien Insee, série 011814630
     - « Cadre d’usage de l’IA en éducation » · « Ministère de l’Éducation nationale, juin 2025. » ·
       lien education.gouv.fr
-    - « Référentiel du BTS CG » · « Le programme de mathématiques et l’épreuve E3. » · lien DGESIP
 - **Modifications** : WCAG retiré (ressource de développeur) ; série Insee arrêtée 001765618
-  remplacée par la série 011814630 ; liens Microsoft en français ; LibreOffice et référentiel
-  rétablis ; les apports de S67 à S69 (données propres, TCD, fonctions de recherche et de contrôle)
-  deviennent des cartes. Retours QA : titre « Pour aller plus loin : outils et sources », sous-titre
+  remplacée par la série 011814630 ; liens Microsoft en français ; LibreOffice rétabli ; carte du
+  référentiel retirée le 2026-11-19 (lien mort, décision de Tim) ; les apports de S67 à S69
+  (données propres, TCD, fonctions de recherche et de contrôle) deviennent des cartes. Retours QA : titre « Pour aller plus loin : outils et sources », sous-titre
   et carte UNESCO retirés (l’écran ne promet plus de ressources bachelor ou M1).
 - **Notes** :
   - Montrer les cartes « Une ligne = une observation » et « SIERREUR ».
@@ -3376,7 +3375,7 @@ document). Premières apparitions publiques des réponses numériques, toutes **
 | Sujet                                                                                                                                                                                                 | Source                                                                      | URL                                                                                                                                                                                                                              |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Arrêté du 8 juillet 2024 (BTS CG, épreuve E3, situations d’évaluation, tableur)                                                                                                                       | Légifrance, JORF n° 0163 du 10 juillet 2024, NOR ESRS2414606A               | https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049926350                                                                                                                                                                      |
-| Référentiel du BTS CG (programme de mathématiques de l’arrêté du 4 juin 2013, NOR ESRS1312230A ; module « Traitement de l’information chiffrée » ; processus P1 et P5), avec l’arrêté de 2024 en tête | DGESIP                                                                      | https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf                                                                                                                                                  |
+| Référentiel du BTS CG (programme de mathématiques de l’arrêté du 4 juin 2013, NOR ESRS1312230A ; module « Traitement de l’information chiffrée » ; processus P1 et P5), avec l’arrêté de 2024 en tête | DGESIP                                                                      | https://certifpro.francecompetences.fr/api/fiches/refActivity/21103/213975                                                                                                                                                       |
 | Inflation 2019–2025 (moyennes annuelles, IPC), paru le 23 mars 2026 ; IPC en base 2025 depuis janvier 2026                                                                                            | Insee, « L’essentiel sur… l’inflation »                                     | https://www.insee.fr/fr/statistiques/4268033                                                                                                                                                                                     |
 | IPC base 2025, France, ensemble des ménages (ressource A6-07, indice officiel rebasé, glissement annuel)                                                                                              | Insee, série 011814630                                                      | https://www.insee.fr/fr/statistiques/serie/011814630 ; données : https://bdm.insee.fr/series/sdmx/data/SERIES_BDM/011814630                                                                                                      |
 | Série arrêtée, retirée du cours                                                                                                                                                                       | Insee, série 001765618                                                      | https://www.insee.fr/fr/statistiques/serie/001765618                                                                                                                                                                             |

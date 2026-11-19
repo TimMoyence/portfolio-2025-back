@@ -3,6 +3,18 @@ import { CLASSEURS_B3_01, HISTOIRES_B3_01 } from './b3-01.donnees';
 import { questionChiffree } from './b3-01.questions';
 import * as moteur from '../../briques';
 
+export const SOCLE_DU_VOTE_DES_TRENTE_SECONDES: Omit<
+  Parameters<typeof moteur.voteQuiOuvre>[0],
+  'screenId'
+> = {
+  titre: 'Vote : trente secondes',
+  dureeMinutes: 2,
+  concepts: ['tableau-de-bord'],
+  notes: moteur.puces(
+    'Faire dire ce que Nadia fera de chaque option devant le comité.',
+  ),
+};
+
 export function voteDesTrenteSecondes(id: string, enonce: string) {
   return moteur.vote(
     id,
@@ -42,7 +54,6 @@ export const ACTE_3: moteur.Acte = [
       concepts: ['choix-du-graphique'],
       notes: moteur.puces(
         'Ouvrir d’abord le classeur de reprise de l’acte 3, tous, y compris ceux qui ont tout réussi.',
-        'Temps « réfléchir » du niveau 5 : vote non noté, 1 min de vote et 1 min de révélation.',
         'Révélation : redessiner au tableau les deux barres depuis zéro.',
       ),
     },
@@ -122,7 +133,6 @@ export const ACTE_3: moteur.Acte = [
       dureeMinutes: 10,
       concepts: ['choix-du-graphique', 'tableau-de-bord'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 9),
         'Réflexion : faire dire où vit l’objectif : dans une autre table que les ventes, d’où SOMME.SI.ENS et pas un TCD seul.',
         'Pièges : comparer neuf mois de ventes à l’objectif de toute la table ; oublier la période des deux côtés.',
       ),
@@ -171,14 +181,8 @@ export const ACTE_3: moteur.Acte = [
   ),
   moteur.voteQuiOuvre(
     {
+      ...SOCLE_DU_VOTE_DES_TRENTE_SECONDES,
       screenId: 'B3-01-A3-06-VOTE-TRENTE-SECONDES',
-      titre: 'Vote : trente secondes',
-      dureeMinutes: 2,
-      concepts: ['tableau-de-bord'],
-      notes: moteur.puces(
-        'Temps « réfléchir » du niveau 6 : vote non noté, 1 min de vote et 1 min de révélation.',
-        'Faire dire ce que Nadia fera de chaque option devant le comité.',
-      ),
     },
     [
       voteDesTrenteSecondes(
@@ -296,7 +300,6 @@ export const ACTE_3: moteur.Acte = [
       dureeMinutes: 13,
       concepts: ['tableau-de-bord', 'indicateur-statistique'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 12),
         'Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.',
         'Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.',
         'Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; ligne d’en-tête comptée parmi les lignes.',
@@ -380,7 +383,6 @@ export const ACTE_3: moteur.Acte = [
       dureeMinutes: 7,
       concepts: ['tableau-de-bord'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 6),
         'Réflexion : faire relire la synthèse de l’exercice 8 et le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.',
         'Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.',
       ),

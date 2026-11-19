@@ -13,7 +13,6 @@ import {
   buildReflexionV3,
   corrigeSurPlaceV3,
   IDS_V3,
-  notesDExercice,
 } from '../../../../../../../test/factories/formations/cours/gabarit-v3.factory';
 import { buildCoursConforme } from '../../../../../../../test/factories/formations/cours/structure.factory';
 import type { Cours } from '../../../contrats/cours';
@@ -158,34 +157,21 @@ describe('verifierStructure — gabarit v3', () => {
     });
   });
 
-  describe('trois temps de chaque exercice', () => {
-    it('refuse un exercice sans temps de réflexion et de travail annoncés', () => {
+  describe('la correction de chaque exercice', () => {
+    it('RET-09 · accepte un exercice sans aucune note du formateur', () => {
       const muet = remplacer(IDS_V3.exercice, (exercice) => ({
         ...exercice,
-        notes: '• Relancer les binômes bloqués.',
+        notes: '',
       }));
 
-      expect(violationsDuGabarit(muet)).toEqual([
-        { regle: 'gabarit-temps-exercice', ecran: IDS_V3.exercice },
-      ]);
-    });
-
-    it('refuse des temps annoncés qui ne font pas la durée de l écran', () => {
-      const faux = remplacer(IDS_V3.exercice, (exercice) => ({
-        ...exercice,
-        notes: notesDExercice(3, 6),
-      }));
-
-      expect(violationsDuGabarit(faux)).toEqual([
-        { regle: 'gabarit-temps-exercice', ecran: IDS_V3.exercice },
-      ]);
+      expect(violationsDuGabarit(muet)).toEqual([]);
     });
 
     it('refuse un exercice sans écran de correction', () => {
       const ecrans = remplacer(IDS_V3.correction, () => null);
       const sansCorrection = ecrans.map((ecran) =>
         ecran.screenId === IDS_V3.exercice
-          ? { ...ecran, dureeMinutes: 12, notes: notesDExercice(2, 10) }
+          ? { ...ecran, dureeMinutes: 12 }
           : ecran,
       );
 
@@ -201,7 +187,7 @@ describe('verifierStructure — gabarit v3', () => {
           : ecran,
       );
 
-    it('accepte un exercice corrigé sur place, dont les notes annoncent le temps de correction', () => {
+    it('accepte un exercice corrigé sur place', () => {
       expect(verifierStructure(buildCoursV3(corrigeSurPlace()))).toEqual([]);
     });
 
@@ -216,7 +202,7 @@ describe('verifierStructure — gabarit v3', () => {
     });
   });
 
-  describe('mini-situation CCF', () => {
+  describe('mini-situation', () => {
     it('M6 · accepte un cours v3 sans mini-situation', () => {
       expect(violationsDuGabarit(buildEcransV3Conformes())).toEqual([]);
       expect(violationsDuGabarit(buildEcransSansMiniSituation())).toEqual([]);
@@ -251,7 +237,7 @@ describe('verifierStructure — gabarit b3', () => {
     remplacant: (ecran: EcranDeCoursBrut) => EcranDeCoursBrut | null,
   ) => remplacer(id, remplacant, buildEcransSansMiniSituation());
 
-  it('accepte un cours b3 sans mini-situation CCF', () => {
+  it('accepte un cours b3 sans mini-situation', () => {
     expect(verifierStructure(buildCoursB3())).toEqual([]);
   });
 
@@ -290,15 +276,13 @@ describe('verifierStructure — gabarit b3', () => {
     ]);
   });
 
-  it('refuse un exercice sans temps de réflexion et de travail annoncés', () => {
+  it('RET-09 · accepte un exercice sans aucune note du formateur', () => {
     const muet = remplacerEnB3(IDS_V3.exercice, (exercice) => ({
       ...exercice,
-      notes: '• Relancer les binômes bloqués.',
+      notes: '',
     }));
 
-    expect(violationsDuGabarit(muet, buildCoursB3)).toEqual([
-      { regle: 'gabarit-temps-exercice', ecran: IDS_V3.exercice },
-    ]);
+    expect(violationsDuGabarit(muet, buildCoursB3)).toEqual([]);
   });
 
   it('refuse à la lecture un gabarit inconnu', () => {

@@ -1,4 +1,7 @@
-import { PRESENTATIONS_VISUELLES_VALIDES } from '../../../../../../test/factories/formations/cours/presentation-visuelle.factory';
+import {
+  FIGURE_DE_COURBE_VALIDE,
+  PRESENTATIONS_VISUELLES_VALIDES,
+} from '../../../../../../test/factories/formations/cours/presentation-visuelle.factory';
 import { parseVisualPresentation } from './VisualPresentation';
 
 describe('contrat visuel du catalogue', () => {
@@ -12,8 +15,102 @@ describe('contrat visuel du catalogue', () => {
     },
   );
 
-  it('L4 · couvre chacun des seize rendus du deck, correction de tri et prompt compris', () => {
-    expect(Object.keys(PRESENTATIONS_VISUELLES_VALIDES)).toHaveLength(16);
+  it('L4 · couvre chacun des dix-sept rendus du deck, correction de tri, prompt et courbe compris', () => {
+    expect(Object.keys(PRESENTATIONS_VISUELLES_VALIDES)).toHaveLength(17);
+  });
+
+  describe('courbe pas à pas et figure de la trace écrite (B2-07)', () => {
+    const courbe = PRESENTATIONS_VISUELLES_VALIDES.courbe;
+    const [, etape] = courbe.steps as Record<string, unknown>[];
+    const avecFigure = (alteration: Record<string, unknown>) => ({
+      renderer: 'courbe',
+      props: {
+        ...courbe,
+        figure: { ...FIGURE_DE_COURBE_VALIDE, ...alteration },
+      },
+    });
+    const lecon = PRESENTATIONS_VISUELLES_VALIDES.lesson;
+
+    it.each([
+      [
+        'un point hors de l axe des abscisses',
+        avecFigure({
+          points: [
+            { x: 0, y: 0 },
+            { x: 7, y: 1 },
+          ],
+        }),
+      ],
+      [
+        'un point hors de l axe des ordonnées',
+        avecFigure({
+          points: [
+            { x: 0, y: 0 },
+            { x: 1, y: 11 },
+          ],
+        }),
+      ],
+      ['un tracé d un seul point', avecFigure({ points: [{ x: 0, y: 0 }] })],
+      [
+        'un tracé qui revient en arrière',
+        avecFigure({
+          points: [
+            { x: 2, y: 8 },
+            { x: 1, y: 5 },
+          ],
+        }),
+      ],
+      [
+        'une tangente hors des axes',
+        avecFigure({ tangents: [{ x: 1, y: 12, slope: 4 }] }),
+      ],
+      [
+        'une zone hors de l axe',
+        avecFigure({ zone: { from: 4, to: 9, label: 'x ≥ 4' } }),
+      ],
+      [
+        'une étape dont la tangente sort des axes',
+        {
+          renderer: 'courbe',
+          props: {
+            ...courbe,
+            steps: [{ ...etape, tangent: { x: 8, y: 1, slope: 0 } }],
+          },
+        },
+      ],
+      [
+        'une courbe sans étape',
+        { renderer: 'courbe', props: { ...courbe, steps: [] } },
+      ],
+      [
+        'une trace écrite dont la figure sort des axes',
+        {
+          renderer: 'lesson',
+          props: {
+            ...lecon,
+            figure: { ...FIGURE_DE_COURBE_VALIDE, yRange: [0, 5] },
+          },
+        },
+      ],
+    ])('refuse %s', (_cas, presentation) => {
+      expect(() => parseVisualPresentation(presentation)).toThrow();
+    });
+
+    it('RET-04 · sert la figure d une trace écrite, tangente et zone comprises', () => {
+      const illustree = {
+        renderer: 'lesson',
+        props: {
+          ...lecon,
+          figure: {
+            ...FIGURE_DE_COURBE_VALIDE,
+            tangents: [{ x: 3, y: 9, slope: 0, label: 'sommet' }],
+            zone: { from: 2, to: 6, label: 'x ≥ 2' },
+          },
+        },
+      };
+
+      expect(parseVisualPresentation(illustree)).toEqual(illustree);
+    });
   });
 
   describe('prompt (B3-02, écran de l’IA analyste)', () => {

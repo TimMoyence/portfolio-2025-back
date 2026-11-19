@@ -162,7 +162,6 @@ export const ACTE_4: moteur.Acte = [
         description: 'À partir de quand ?',
         back: 'Résoudre ax + b > seuil, puis retenir le premier rang entier qui convient.',
       },
-      moteur.REFERENTIEL_DU_BTS_CG,
     ],
   ),
 ];

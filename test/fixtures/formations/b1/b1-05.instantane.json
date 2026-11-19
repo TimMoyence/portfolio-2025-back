@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "40266927e7463a364b3879a82c8ebca80c0382cc84d167ae1c3d42622ce006f2",
+  "empreinte": "b6e9f1f0fc69efdfc32a12fe2a8bce68702a85fc877738014adb492c919060b2",
   "sujet": {
     "id": "b1-05-logique-conditions",
     "titre": "Logique : conditions et contrôles",
@@ -231,14 +231,14 @@
                 "image": "/assets/cours/b1-05/v1/serrures-portes.webp",
                 "imageAlt": "Dessin : à gauche, une porte fermée par un cadenas rouge et un cadenas bleu, un enfant tient une clé de chaque couleur ; à droite, une salle de jeux à deux portes ouvertes, une rouge et une bleue, trois enfants y entrent.",
                 "paragraphs": [
-                  "À gauche, une porte fermée par deux cadenas : il faut les deux clés pour entrer. À droite, une salle à deux portes ouvertes : on entre par l’une, par l’autre, ou en passant la tête par les deux.",
-                  "En maths, on écrit : les connecteurs « et », « ou » et « non » relient des conditions. « P et Q » est vraie si les deux le sont ; « P ou Q » si au moins une l’est, les deux comprises ; « non P » est le contraire de P. La table de vérité donne toutes les combinaisons."
+                  "À gauche, une porte fermée par deux cadenas : il faut les deux clés pour entrer. À droite, une salle à deux portes ouvertes : on entre par l’une, par l’autre, ou en passant la tête par les deux."
                 ],
                 "items": [
                   "Les deux cadenas → « P et Q » : les deux conditions sont exigées",
                   "Les deux portes ouvertes → « P ou Q » : une seule suffit",
                   "Celui qui passe par les deux portes → « ou » reste vrai quand les deux sont vraies"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : les connecteurs « et », « ou » et « non » relient des conditions. « P et Q » est vraie si les deux le sont ; « P ou Q » si au moins une l’est, les deux comprises ; « non P » est le contraire de P. La table de vérité donne toutes les combinaisons."
               }
             },
             "metadonnees": {
@@ -324,15 +324,15 @@
                 "image": "/assets/cours/b1-05/v1/pluie-arrosoir.webp",
                 "imageAlt": "Dessin : à gauche, il pleut sur un jardin, le chemin est mouillé, un enfant sous un parapluie ; à droite, grand soleil sur le même jardin, le chemin est mouillé aussi, un enfant l’arrose avec un tuyau.",
                 "paragraphs": [
-                  "Quand il pleut, le chemin est mouillé. Mais un chemin mouillé sous le soleil peut venir d’un tuyau d’arrosage : la pluie n’est pas la seule raison.",
-                  "En maths, on écrit : l’implication « si P alors Q », P ⇒ Q, n’est fausse que si P est vraie et Q fausse. L’équivalence P ⇔ Q, « P si et seulement si Q », est vraie quand P et Q ont la même valeur : elle affirme aussi la réciproque."
+                  "Quand il pleut, le chemin est mouillé. Mais un chemin mouillé sous le soleil peut venir d’un tuyau d’arrosage : la pluie n’est pas la seule raison."
                 ],
                 "items": [
                   "La pluie → la condition P",
                   "Le chemin mouillé → la conséquence Q",
                   "Le chemin mouillé au soleil → P fausse, Q vraie : l’implication reste vraie",
                   "Le tuyau d’arrosage → la réciproque Q ⇒ P n’est pas affirmée"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : l’implication « si P alors Q », P ⇒ Q, n’est fausse que si P est vraie et Q fausse. L’équivalence P ⇔ Q, « P si et seulement si Q », est vraie quand P et Q ont la même valeur : elle affirme aussi la réciproque."
               }
             },
             "metadonnees": {
@@ -712,14 +712,14 @@
                 "image": "/assets/cours/b1-05/v1/portillon-casque.webp",
                 "imageAlt": "Dessin : l’entrée d’un karting pour enfants fermée par un portillon ; un enfant avec billet et casque entre ; trois enfants refusés attendent : un avec billet sans casque, un avec casque sans billet, un sans rien.",
                 "paragraphs": [
-                  "Au karting, on entre avec un billet et un casque. Restent dehors celui qui n’a pas de billet, celui qui n’a pas de casque, et celui qui n’a ni l’un ni l’autre.",
-                  "En maths, on écrit : les lois de Morgan nient deux conditions. Le contraire de « P et Q » est « non P ou non Q » ; le contraire de « P ou Q » est « non P et non Q ». On nie chaque condition et on échange le connecteur."
+                  "Au karting, on entre avec un billet et un casque. Restent dehors celui qui n’a pas de billet, celui qui n’a pas de casque, et celui qui n’a ni l’un ni l’autre."
                 ],
                 "items": [
                   "Entrer → « billet et casque »",
                   "Rester dehors → « pas de billet ou pas de casque »",
                   "Les trois refusés → les trois cas du « ou », dont celui des deux manques"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : les lois de Morgan nient deux conditions. Le contraire de « P et Q » est « non P ou non Q » ; le contraire de « P ou Q » est « non P et non Q ». On nie chaque condition et on échange le connecteur."
               }
             },
             "metadonnees": {
@@ -805,15 +805,15 @@
                 "image": "/assets/cours/b1-05/v1/toise-manege.webp",
                 "imageAlt": "Dessin : l’entrée d’un manège avec une toise en forme de girafe et une barre horizontale ; un enfant dépasse la barre, un autre la touche pile du haut de la tête, un troisième est trop petit et regarde le manège.",
                 "paragraphs": [
-                  "À l’entrée du manège, une girafe en bois porte une barre : on passe si on la touche ou si on la dépasse. Celui qui la touche tout juste du haut de la tête entre aussi ; seul le plus petit reste dehors.",
-                  "En maths, on écrit : un prédicat P(x), comme « x ≥ 120 », devient vrai ou faux quand on remplace x par une valeur. Sa négation non P(x) est « x < 120 » : la valeur de la borne change de camp."
+                  "À l’entrée du manège, une girafe en bois porte une barre : on passe si on la touche ou si on la dépasse. Celui qui la touche tout juste du haut de la tête entre aussi ; seul le plus petit reste dehors."
                 ],
                 "items": [
                   "La barre → la borne 120 cm",
                   "Toucher ou dépasser la barre → le prédicat « x ≥ 120 »",
                   "Celui qui touche pile la barre → x = 120 vérifie P(x)",
                   "Le plus petit → la négation « x < 120 »"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : un prédicat P(x), comme « x ≥ 120 », devient vrai ou faux quand on remplace x par une valeur. Sa négation non P(x) est « x < 120 » : la valeur de la borne change de camp."
               }
             },
             "metadonnees": {
@@ -1275,14 +1275,14 @@
                 "image": "/assets/cours/b1-05/v1/panier-pommes.webp",
                 "imageAlt": "Dessin : un grand panier d’osier plein de pommes rouges sur une table de marché ; au milieu, une seule pomme brune avec un petit ver ; un enfant la montre du doigt, un autre tient une belle pomme.",
                 "paragraphs": [
-                  "Pour dire que les pommes du panier ne sont pas toutes belles, il suffit de montrer la pomme abîmée. Inutile qu’elles soient toutes gâtées.",
-                  "En maths, on écrit : « pour tout x, P(x) » se nie en « il existe x tel que non P(x) » : un seul contre-exemple suffit. « Il existe x tel que P(x) » se nie en « pour tout x, non P(x) »."
+                  "Pour dire que les pommes du panier ne sont pas toutes belles, il suffit de montrer la pomme abîmée. Inutile qu’elles soient toutes gâtées."
                 ],
                 "items": [
                   "« Toutes les pommes sont belles » → pour tout x, P(x)",
                   "La pomme abîmée → un contre-exemple",
                   "Une pomme suffit → il existe x tel que non P(x)"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : « pour tout x, P(x) » se nie en « il existe x tel que non P(x) » : un seul contre-exemple suffit. « Il existe x tel que P(x) » se nie en « pour tout x, non P(x) »."
               }
             },
             "metadonnees": {
@@ -1368,14 +1368,14 @@
                 "image": "/assets/cours/b1-05/v1/cles-cadenas.webp",
                 "imageAlt": "Dessin : à gauche, quatre casiers colorés, devant chacun un enfant avec une clé de la même couleur ; à droite, les mêmes casiers ouverts et un seul enfant qui tient une grosse clé dorée.",
                 "paragraphs": [
-                  "À gauche, devant quatre casiers, quatre amis tiennent chacun leur clé, toutes différentes. À droite, devant les mêmes casiers, un seul tient une clé dorée qui les ouvre tous.",
-                  "En maths, on écrit : l’ordre des quantificateurs compte. « Pour tout casier, il existe une clé qui l’ouvre » permet une clé par casier ; « il existe une clé qui ouvre tous les casiers » exige un passe-partout."
+                  "À gauche, devant quatre casiers, quatre amis tiennent chacun leur clé, toutes différentes. À droite, devant les mêmes casiers, un seul tient une clé dorée qui les ouvre tous."
                 ],
                 "items": [
                   "Une clé par casier → pour tout casier, il existe une clé",
                   "La clé dorée → il existe une clé pour tous les casiers",
                   "Les deux scènes → les mêmes mots, dans un autre ordre"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : l’ordre des quantificateurs compte. « Pour tout casier, il existe une clé qui l’ouvre » permet une clé par casier ; « il existe une clé qui ouvre tous les casiers » exige un passe-partout."
               }
             },
             "metadonnees": {
@@ -1761,7 +1761,7 @@
               "renderer": "grid",
               "props": {
                 "title": "Fiche mémo : conditions et contrôles",
-                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "subtitle": "Chaque carte part d’une question et donne la méthode et son piège.",
                 "items": [
                   {
                     "title": "Et, ou, non",
@@ -1807,12 +1807,6 @@
                     "title": "Au tableur",
                     "description": "Une règle en formule ?",
                     "back": "=SI(ET(B2=\"oui\";C2>=50);\"remise\";\"sans remise\"). Textes entre guillemets, NON(OU(A;B)) = ET(NON(A);NON(B))."
-                  },
-                  {
-                    "title": "Référentiel du BTS CG",
-                    "description": "Le programme de mathématiques et l’épreuve E3.",
-                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
-                    "external": true
                   }
                 ],
                 "imprimable": true
@@ -1987,7 +1981,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de la notion 1 : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2180,14 +2174,14 @@
                 "image": "/assets/cours/b1-05/v1/serrures-portes.webp",
                 "imageAlt": "Dessin : à gauche, une porte fermée par un cadenas rouge et un cadenas bleu, un enfant tient une clé de chaque couleur ; à droite, une salle de jeux à deux portes ouvertes, une rouge et une bleue, trois enfants y entrent.",
                 "paragraphs": [
-                  "À gauche, une porte fermée par deux cadenas : il faut les deux clés pour entrer. À droite, une salle à deux portes ouvertes : on entre par l’une, par l’autre, ou en passant la tête par les deux.",
-                  "En maths, on écrit : les connecteurs « et », « ou » et « non » relient des conditions. « P et Q » est vraie si les deux le sont ; « P ou Q » si au moins une l’est, les deux comprises ; « non P » est le contraire de P. La table de vérité donne toutes les combinaisons."
+                  "À gauche, une porte fermée par deux cadenas : il faut les deux clés pour entrer. À droite, une salle à deux portes ouvertes : on entre par l’une, par l’autre, ou en passant la tête par les deux."
                 ],
                 "items": [
                   "Les deux cadenas → « P et Q » : les deux conditions sont exigées",
                   "Les deux portes ouvertes → « P ou Q » : une seule suffit",
                   "Celui qui passe par les deux portes → « ou » reste vrai quand les deux sont vraies"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : les connecteurs « et », « ou » et « non » relient des conditions. « P et Q » est vraie si les deux le sont ; « P ou Q » si au moins une l’est, les deux comprises ; « non P » est le contraire de P. La table de vérité donne toutes les combinaisons."
               }
             },
             "metadonnees": {
@@ -2199,7 +2193,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Celui qui passe la tête par les deux portes est-il entré ? » Oui : le « ou » de la logique l’accepte.",
+        "notes": "• Question : « Celui qui passe la tête par les deux portes est-il entré ? » Oui : le « ou » de la logique l’accepte.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2261,7 +2255,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Faire répéter le moyen mnémotechnique : « ou » accepte les deux.",
+        "notes": "• Faire répéter le moyen mnémotechnique : « ou » accepte les deux.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2287,15 +2281,15 @@
                 "image": "/assets/cours/b1-05/v1/pluie-arrosoir.webp",
                 "imageAlt": "Dessin : à gauche, il pleut sur un jardin, le chemin est mouillé, un enfant sous un parapluie ; à droite, grand soleil sur le même jardin, le chemin est mouillé aussi, un enfant l’arrose avec un tuyau.",
                 "paragraphs": [
-                  "Quand il pleut, le chemin est mouillé. Mais un chemin mouillé sous le soleil peut venir d’un tuyau d’arrosage : la pluie n’est pas la seule raison.",
-                  "En maths, on écrit : l’implication « si P alors Q », P ⇒ Q, n’est fausse que si P est vraie et Q fausse. L’équivalence P ⇔ Q, « P si et seulement si Q », est vraie quand P et Q ont la même valeur : elle affirme aussi la réciproque."
+                  "Quand il pleut, le chemin est mouillé. Mais un chemin mouillé sous le soleil peut venir d’un tuyau d’arrosage : la pluie n’est pas la seule raison."
                 ],
                 "items": [
                   "La pluie → la condition P",
                   "Le chemin mouillé → la conséquence Q",
                   "Le chemin mouillé au soleil → P fausse, Q vraie : l’implication reste vraie",
                   "Le tuyau d’arrosage → la réciproque Q ⇒ P n’est pas affirmée"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : l’implication « si P alors Q », P ⇒ Q, n’est fausse que si P est vraie et Q fausse. L’équivalence P ⇔ Q, « P si et seulement si Q », est vraie quand P et Q ont la même valeur : elle affirme aussi la réciproque."
               }
             },
             "metadonnees": {
@@ -2307,7 +2301,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Le chemin est mouillé : a-t-il plu ? » Pas forcément : le tuyau.",
+        "notes": "• Question : « Le chemin est mouillé : a-t-il plu ? » Pas forcément : le tuyau.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2369,7 +2363,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.\n• Faire répéter le moyen mnémotechnique : un seul cas faux.",
+        "notes": "• Faire répéter le moyen mnémotechnique : un seul cas faux.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2429,7 +2423,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur le contrôle (étape 4) et la réciproque (étape 5).\n• Transition : « Les tables de vérité des cinq connecteurs, puis l’exercice 1. »",
+        "notes": "• S’arrêter sur le contrôle (étape 4) et la réciproque (étape 5).\n• Transition : « Les tables de vérité des cinq connecteurs, puis l’exercice 1. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -2631,7 +2625,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 2 min · travail 9 min · correction 3 min\n• Réflexion : écrire chaque règle avec ses lettres P et Q.\n• Pièges : borne stricte ; « ou » exclusif ; implication jugée fausse quand sa condition l’est ; réciproque.\n• Papier : exercice 1 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Faire montrer la ligne de la table de vérité qui tranche chaque question.\n• Transition : jalon 1, puis pause de 15 minutes.",
+        "notes": "• Réflexion : écrire chaque règle avec ses lettres P et Q.\n• Pièges : borne stricte ; « ou » exclusif ; implication jugée fausse quand sa condition l’est ; réciproque.\n• Papier : exercice 1 du livret.\n• Faire montrer la ligne de la table de vérité qui tranche chaque question.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2778,7 +2772,7 @@
             }
           }
         },
-        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre la ligne fausse de l’implication après la pause.\n• Pause de 15 minutes, hors durée programmée.",
+        "notes": "• Si plus de 30 % « Perdu » : reprendre la ligne fausse de l’implication après la pause.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -2818,7 +2812,7 @@
             }
           }
         },
-        "notes": "• Temps « réfléchir » de la notion 2 : 3 min d’écriture individuelle, puis lire trois réponses au pupitre.\n• Ne rien trancher : la trace écrite suivante répond.\n• Relance : « Un abonné à 30 € paie-t-il avec la règle de Théo ? »\n• Papier : cadre de réponse du livret.",
+        "notes": "• Ne rien trancher : la trace écrite suivante répond.\n• Relance : « Un abonné à 30 € paie-t-il avec la règle de Théo ? »\n• Papier : cadre de réponse du livret.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -2851,14 +2845,14 @@
                 "image": "/assets/cours/b1-05/v1/portillon-casque.webp",
                 "imageAlt": "Dessin : l’entrée d’un karting pour enfants fermée par un portillon ; un enfant avec billet et casque entre ; trois enfants refusés attendent : un avec billet sans casque, un avec casque sans billet, un sans rien.",
                 "paragraphs": [
-                  "Au karting, on entre avec un billet et un casque. Restent dehors celui qui n’a pas de billet, celui qui n’a pas de casque, et celui qui n’a ni l’un ni l’autre.",
-                  "En maths, on écrit : les lois de Morgan nient deux conditions. Le contraire de « P et Q » est « non P ou non Q » ; le contraire de « P ou Q » est « non P et non Q ». On nie chaque condition et on échange le connecteur."
+                  "Au karting, on entre avec un billet et un casque. Restent dehors celui qui n’a pas de billet, celui qui n’a pas de casque, et celui qui n’a ni l’un ni l’autre."
                 ],
                 "items": [
                   "Entrer → « billet et casque »",
                   "Rester dehors → « pas de billet ou pas de casque »",
                   "Les trois refusés → les trois cas du « ou », dont celui des deux manques"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : les lois de Morgan nient deux conditions. Le contraire de « P et Q » est « non P ou non Q » ; le contraire de « P ou Q » est « non P et non Q ». On nie chaque condition et on échange le connecteur."
               }
             },
             "metadonnees": {
@@ -2870,7 +2864,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Faut-il n’avoir ni billet ni casque pour rester dehors ? » Non : un seul manque suffit.",
+        "notes": "• Question : « Faut-il n’avoir ni billet ni casque pour rester dehors ? » Non : un seul manque suffit.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2932,7 +2926,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Faire répéter le moyen mnémotechnique : nier, puis échanger.",
+        "notes": "• Faire répéter le moyen mnémotechnique : nier, puis échanger.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2958,15 +2952,15 @@
                 "image": "/assets/cours/b1-05/v1/toise-manege.webp",
                 "imageAlt": "Dessin : l’entrée d’un manège avec une toise en forme de girafe et une barre horizontale ; un enfant dépasse la barre, un autre la touche pile du haut de la tête, un troisième est trop petit et regarde le manège.",
                 "paragraphs": [
-                  "À l’entrée du manège, une girafe en bois porte une barre : on passe si on la touche ou si on la dépasse. Celui qui la touche tout juste du haut de la tête entre aussi ; seul le plus petit reste dehors.",
-                  "En maths, on écrit : un prédicat P(x), comme « x ≥ 120 », devient vrai ou faux quand on remplace x par une valeur. Sa négation non P(x) est « x < 120 » : la valeur de la borne change de camp."
+                  "À l’entrée du manège, une girafe en bois porte une barre : on passe si on la touche ou si on la dépasse. Celui qui la touche tout juste du haut de la tête entre aussi ; seul le plus petit reste dehors."
                 ],
                 "items": [
                   "La barre → la borne 120 cm",
                   "Toucher ou dépasser la barre → le prédicat « x ≥ 120 »",
                   "Celui qui touche pile la barre → x = 120 vérifie P(x)",
                   "Le plus petit → la négation « x < 120 »"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : un prédicat P(x), comme « x ≥ 120 », devient vrai ou faux quand on remplace x par une valeur. Sa négation non P(x) est « x < 120 » : la valeur de la borne change de camp."
               }
             },
             "metadonnees": {
@@ -2978,7 +2972,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Celui qui touche pile la barre est-il du côté des refusés ? » Non : la négation de « ≥ » est « < ».",
+        "notes": "• Question : « Celui qui touche pile la barre est-il du côté des refusés ? » Non : la négation de « ≥ » est « < ».",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3040,7 +3034,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.\n• Faire répéter le moyen mnémotechnique : la borne change de camp.",
+        "notes": "• Faire répéter le moyen mnémotechnique : la borne change de camp.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3100,7 +3094,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur l’échange du connecteur (étape 3).\n• Transition : « Nier les règles de Partie Libre : exercice 2. »",
+        "notes": "• S’arrêter sur l’échange du connecteur (étape 3).\n• Transition : « Nier les règles de Partie Libre : exercice 2. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3202,7 +3196,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 2 min · travail 4 min · correction 2 min\n• Réflexion : écrire chaque règle avec P et Q avant de la nier.\n• Pièges : connecteur gardé ; borne gardée du même côté.\n• Papier : exercice 2 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Ces règles au tableur : exercice 3. »",
+        "notes": "• Réflexion : écrire chaque règle avec P et Q avant de la nier.\n• Pièges : connecteur gardé ; borne gardée du même côté.\n• Papier : exercice 2 du livret.\n• Transition : « Ces règles au tableur : exercice 3. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3508,7 +3502,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire sur papier la règle de F2 avec Morgan avant de la taper.\n• Erreurs à chercher : OU à la place de ET ; > à la place de >= ; contraire sans Morgan ; textes sans guillemets.\n• Papier : formules écrites sur la copie avec la grille des cellules.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : jalon 2.",
+        "notes": "• Réflexion : écrire sur papier la règle de F2 avec Morgan avant de la taper.\n• Erreurs à chercher : OU à la place de ET ; > à la place de >= ; contraire sans Morgan ; textes sans guillemets.\n• Papier : formules écrites sur la copie avec la grille des cellules.\n• Transition : jalon 2.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [],
@@ -3707,7 +3701,7 @@
             }
           }
         },
-        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre la trace écrite A2-02 sur Morgan.",
+        "notes": "• Si plus de 30 % « Perdu » : reprendre la trace écrite A2-02 sur Morgan.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3751,7 +3745,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de la notion 3 : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3829,14 +3823,14 @@
                 "image": "/assets/cours/b1-05/v1/panier-pommes.webp",
                 "imageAlt": "Dessin : un grand panier d’osier plein de pommes rouges sur une table de marché ; au milieu, une seule pomme brune avec un petit ver ; un enfant la montre du doigt, un autre tient une belle pomme.",
                 "paragraphs": [
-                  "Pour dire que les pommes du panier ne sont pas toutes belles, il suffit de montrer la pomme abîmée. Inutile qu’elles soient toutes gâtées.",
-                  "En maths, on écrit : « pour tout x, P(x) » se nie en « il existe x tel que non P(x) » : un seul contre-exemple suffit. « Il existe x tel que P(x) » se nie en « pour tout x, non P(x) »."
+                  "Pour dire que les pommes du panier ne sont pas toutes belles, il suffit de montrer la pomme abîmée. Inutile qu’elles soient toutes gâtées."
                 ],
                 "items": [
                   "« Toutes les pommes sont belles » → pour tout x, P(x)",
                   "La pomme abîmée → un contre-exemple",
                   "Une pomme suffit → il existe x tel que non P(x)"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : « pour tout x, P(x) » se nie en « il existe x tel que non P(x) » : un seul contre-exemple suffit. « Il existe x tel que P(x) » se nie en « pour tout x, non P(x) »."
               }
             },
             "metadonnees": {
@@ -3848,7 +3842,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Faut-il que toutes les pommes soient gâtées pour dire que le panier n’est pas parfait ? » Non : une seule suffit.",
+        "notes": "• Question : « Faut-il que toutes les pommes soient gâtées pour dire que le panier n’est pas parfait ? » Non : une seule suffit.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3910,7 +3904,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Faire répéter le moyen mnémotechnique : un contre-exemple suffit.",
+        "notes": "• Faire répéter le moyen mnémotechnique : un contre-exemple suffit.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3936,14 +3930,14 @@
                 "image": "/assets/cours/b1-05/v1/cles-cadenas.webp",
                 "imageAlt": "Dessin : à gauche, quatre casiers colorés, devant chacun un enfant avec une clé de la même couleur ; à droite, les mêmes casiers ouverts et un seul enfant qui tient une grosse clé dorée.",
                 "paragraphs": [
-                  "À gauche, devant quatre casiers, quatre amis tiennent chacun leur clé, toutes différentes. À droite, devant les mêmes casiers, un seul tient une clé dorée qui les ouvre tous.",
-                  "En maths, on écrit : l’ordre des quantificateurs compte. « Pour tout casier, il existe une clé qui l’ouvre » permet une clé par casier ; « il existe une clé qui ouvre tous les casiers » exige un passe-partout."
+                  "À gauche, devant quatre casiers, quatre amis tiennent chacun leur clé, toutes différentes. À droite, devant les mêmes casiers, un seul tient une clé dorée qui les ouvre tous."
                 ],
                 "items": [
                   "Une clé par casier → pour tout casier, il existe une clé",
                   "La clé dorée → il existe une clé pour tous les casiers",
                   "Les deux scènes → les mêmes mots, dans un autre ordre"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : l’ordre des quantificateurs compte. « Pour tout casier, il existe une clé qui l’ouvre » permet une clé par casier ; « il existe une clé qui ouvre tous les casiers » exige un passe-partout."
               }
             },
             "metadonnees": {
@@ -3955,7 +3949,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Quatre clés différentes font-elles un passe-partout ? » Non : la seconde phrase est plus exigeante.",
+        "notes": "• Question : « Quatre clés différentes font-elles un passe-partout ? » Non : la seconde phrase est plus exigeante.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4017,7 +4011,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.\n• Faire répéter le moyen mnémotechnique : qui choisit en second dépend du premier.",
+        "notes": "• Faire répéter le moyen mnémotechnique : qui choisit en second dépend du premier.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4077,7 +4071,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur le contraire de « tous » (étape 2).\n• Transition : « Le fichier des clients, puis l’exercice 4. »",
+        "notes": "• S’arrêter sur le contraire de « tous » (étape 2).\n• Transition : « Le fichier des clients, puis l’exercice 4. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4295,7 +4289,7 @@
           ]
         },
         "renvoi": "B1-05-A3-05-FICHIER-CLIENTS",
-        "notes": "• Temps : réflexion 2 min · travail 8 min · correction 3 min\n• Réflexion : pour chaque règle, écrire quelles lignes la contredisent.\n• Pièges : condition fausse comptée comme contre-exemple ; « ou » compté deux fois ; quantificateurs niés ou échangés.\n• Papier : exercice 4 du livret, fichier imprimé.\n• Corriger question par question, en commençant par la moins réussie.\n• Faire nommer au pupitre chaque contre-exemple du fichier.\n• Transition : jalon 3, puis pause de 15 minutes.",
+        "notes": "• Réflexion : pour chaque règle, écrire quelles lignes la contredisent.\n• Pièges : condition fausse comptée comme contre-exemple ; « ou » compté deux fois ; quantificateurs niés ou échangés.\n• Papier : exercice 4 du livret, fichier imprimé.\n• Faire nommer au pupitre chaque contre-exemple du fichier.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4461,7 +4455,7 @@
             }
           }
         },
-        "notes": "• 30 s de vote anonyme.\n• Pause de 15 minutes, hors durée programmée.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4494,7 +4488,7 @@
             }
           }
         },
-        "notes": "• 5 min individuelles, puis projeter la carte de maîtrise.\n• Tous reçoivent les douze questions de la banque : le rappel couvre tout le cours pour chacun.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4819,7 +4813,7 @@
               "renderer": "grid",
               "props": {
                 "title": "Fiche mémo : conditions et contrôles",
-                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "subtitle": "Chaque carte part d’une question et donne la méthode et son piège.",
                 "items": [
                   {
                     "title": "Et, ou, non",
@@ -4865,12 +4859,6 @@
                     "title": "Au tableur",
                     "description": "Une règle en formule ?",
                     "back": "=SI(ET(B2=\"oui\";C2>=50);\"remise\";\"sans remise\"). Textes entre guillemets, NON(OU(A;B)) = ET(NON(A);NON(B))."
-                  },
-                  {
-                    "title": "Référentiel du BTS CG",
-                    "description": "Le programme de mathématiques et l’épreuve E3.",
-                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
-                    "external": true
                   }
                 ],
                 "imprimable": true
@@ -4891,7 +4879,7 @@
             }
           }
         },
-        "notes": "• 90 s de lecture ; la fiche s’imprime pour le classeur de CCF.",
+        "notes": "",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -5047,14 +5035,14 @@
                 "image": "/assets/cours/b1-05/v1/serrures-portes.webp",
                 "imageAlt": "Dessin : à gauche, une porte fermée par un cadenas rouge et un cadenas bleu, un enfant tient une clé de chaque couleur ; à droite, une salle de jeux à deux portes ouvertes, une rouge et une bleue, trois enfants y entrent.",
                 "paragraphs": [
-                  "À gauche, une porte fermée par deux cadenas : il faut les deux clés pour entrer. À droite, une salle à deux portes ouvertes : on entre par l’une, par l’autre, ou en passant la tête par les deux.",
-                  "En maths, on écrit : les connecteurs « et », « ou » et « non » relient des conditions. « P et Q » est vraie si les deux le sont ; « P ou Q » si au moins une l’est, les deux comprises ; « non P » est le contraire de P. La table de vérité donne toutes les combinaisons."
+                  "À gauche, une porte fermée par deux cadenas : il faut les deux clés pour entrer. À droite, une salle à deux portes ouvertes : on entre par l’une, par l’autre, ou en passant la tête par les deux."
                 ],
                 "items": [
                   "Les deux cadenas → « P et Q » : les deux conditions sont exigées",
                   "Les deux portes ouvertes → « P ou Q » : une seule suffit",
                   "Celui qui passe par les deux portes → « ou » reste vrai quand les deux sont vraies"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : les connecteurs « et », « ou » et « non » relient des conditions. « P et Q » est vraie si les deux le sont ; « P ou Q » si au moins une l’est, les deux comprises ; « non P » est le contraire de P. La table de vérité donne toutes les combinaisons."
               }
             },
             "metadonnees": {
@@ -5140,15 +5128,15 @@
                 "image": "/assets/cours/b1-05/v1/pluie-arrosoir.webp",
                 "imageAlt": "Dessin : à gauche, il pleut sur un jardin, le chemin est mouillé, un enfant sous un parapluie ; à droite, grand soleil sur le même jardin, le chemin est mouillé aussi, un enfant l’arrose avec un tuyau.",
                 "paragraphs": [
-                  "Quand il pleut, le chemin est mouillé. Mais un chemin mouillé sous le soleil peut venir d’un tuyau d’arrosage : la pluie n’est pas la seule raison.",
-                  "En maths, on écrit : l’implication « si P alors Q », P ⇒ Q, n’est fausse que si P est vraie et Q fausse. L’équivalence P ⇔ Q, « P si et seulement si Q », est vraie quand P et Q ont la même valeur : elle affirme aussi la réciproque."
+                  "Quand il pleut, le chemin est mouillé. Mais un chemin mouillé sous le soleil peut venir d’un tuyau d’arrosage : la pluie n’est pas la seule raison."
                 ],
                 "items": [
                   "La pluie → la condition P",
                   "Le chemin mouillé → la conséquence Q",
                   "Le chemin mouillé au soleil → P fausse, Q vraie : l’implication reste vraie",
                   "Le tuyau d’arrosage → la réciproque Q ⇒ P n’est pas affirmée"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : l’implication « si P alors Q », P ⇒ Q, n’est fausse que si P est vraie et Q fausse. L’équivalence P ⇔ Q, « P si et seulement si Q », est vraie quand P et Q ont la même valeur : elle affirme aussi la réciproque."
               }
             },
             "metadonnees": {
@@ -5274,14 +5262,14 @@
                 "image": "/assets/cours/b1-05/v1/portillon-casque.webp",
                 "imageAlt": "Dessin : l’entrée d’un karting pour enfants fermée par un portillon ; un enfant avec billet et casque entre ; trois enfants refusés attendent : un avec billet sans casque, un avec casque sans billet, un sans rien.",
                 "paragraphs": [
-                  "Au karting, on entre avec un billet et un casque. Restent dehors celui qui n’a pas de billet, celui qui n’a pas de casque, et celui qui n’a ni l’un ni l’autre.",
-                  "En maths, on écrit : les lois de Morgan nient deux conditions. Le contraire de « P et Q » est « non P ou non Q » ; le contraire de « P ou Q » est « non P et non Q ». On nie chaque condition et on échange le connecteur."
+                  "Au karting, on entre avec un billet et un casque. Restent dehors celui qui n’a pas de billet, celui qui n’a pas de casque, et celui qui n’a ni l’un ni l’autre."
                 ],
                 "items": [
                   "Entrer → « billet et casque »",
                   "Rester dehors → « pas de billet ou pas de casque »",
                   "Les trois refusés → les trois cas du « ou », dont celui des deux manques"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : les lois de Morgan nient deux conditions. Le contraire de « P et Q » est « non P ou non Q » ; le contraire de « P ou Q » est « non P et non Q ». On nie chaque condition et on échange le connecteur."
               }
             },
             "metadonnees": {
@@ -5367,15 +5355,15 @@
                 "image": "/assets/cours/b1-05/v1/toise-manege.webp",
                 "imageAlt": "Dessin : l’entrée d’un manège avec une toise en forme de girafe et une barre horizontale ; un enfant dépasse la barre, un autre la touche pile du haut de la tête, un troisième est trop petit et regarde le manège.",
                 "paragraphs": [
-                  "À l’entrée du manège, une girafe en bois porte une barre : on passe si on la touche ou si on la dépasse. Celui qui la touche tout juste du haut de la tête entre aussi ; seul le plus petit reste dehors.",
-                  "En maths, on écrit : un prédicat P(x), comme « x ≥ 120 », devient vrai ou faux quand on remplace x par une valeur. Sa négation non P(x) est « x < 120 » : la valeur de la borne change de camp."
+                  "À l’entrée du manège, une girafe en bois porte une barre : on passe si on la touche ou si on la dépasse. Celui qui la touche tout juste du haut de la tête entre aussi ; seul le plus petit reste dehors."
                 ],
                 "items": [
                   "La barre → la borne 120 cm",
                   "Toucher ou dépasser la barre → le prédicat « x ≥ 120 »",
                   "Celui qui touche pile la barre → x = 120 vérifie P(x)",
                   "Le plus petit → la négation « x < 120 »"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : un prédicat P(x), comme « x ≥ 120 », devient vrai ou faux quand on remplace x par une valeur. Sa négation non P(x) est « x < 120 » : la valeur de la borne change de camp."
               }
             },
             "metadonnees": {
@@ -5501,14 +5489,14 @@
                 "image": "/assets/cours/b1-05/v1/panier-pommes.webp",
                 "imageAlt": "Dessin : un grand panier d’osier plein de pommes rouges sur une table de marché ; au milieu, une seule pomme brune avec un petit ver ; un enfant la montre du doigt, un autre tient une belle pomme.",
                 "paragraphs": [
-                  "Pour dire que les pommes du panier ne sont pas toutes belles, il suffit de montrer la pomme abîmée. Inutile qu’elles soient toutes gâtées.",
-                  "En maths, on écrit : « pour tout x, P(x) » se nie en « il existe x tel que non P(x) » : un seul contre-exemple suffit. « Il existe x tel que P(x) » se nie en « pour tout x, non P(x) »."
+                  "Pour dire que les pommes du panier ne sont pas toutes belles, il suffit de montrer la pomme abîmée. Inutile qu’elles soient toutes gâtées."
                 ],
                 "items": [
                   "« Toutes les pommes sont belles » → pour tout x, P(x)",
                   "La pomme abîmée → un contre-exemple",
                   "Une pomme suffit → il existe x tel que non P(x)"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : « pour tout x, P(x) » se nie en « il existe x tel que non P(x) » : un seul contre-exemple suffit. « Il existe x tel que P(x) » se nie en « pour tout x, non P(x) »."
               }
             },
             "metadonnees": {
@@ -5594,14 +5582,14 @@
                 "image": "/assets/cours/b1-05/v1/cles-cadenas.webp",
                 "imageAlt": "Dessin : à gauche, quatre casiers colorés, devant chacun un enfant avec une clé de la même couleur ; à droite, les mêmes casiers ouverts et un seul enfant qui tient une grosse clé dorée.",
                 "paragraphs": [
-                  "À gauche, devant quatre casiers, quatre amis tiennent chacun leur clé, toutes différentes. À droite, devant les mêmes casiers, un seul tient une clé dorée qui les ouvre tous.",
-                  "En maths, on écrit : l’ordre des quantificateurs compte. « Pour tout casier, il existe une clé qui l’ouvre » permet une clé par casier ; « il existe une clé qui ouvre tous les casiers » exige un passe-partout."
+                  "À gauche, devant quatre casiers, quatre amis tiennent chacun leur clé, toutes différentes. À droite, devant les mêmes casiers, un seul tient une clé dorée qui les ouvre tous."
                 ],
                 "items": [
                   "Une clé par casier → pour tout casier, il existe une clé",
                   "La clé dorée → il existe une clé pour tous les casiers",
                   "Les deux scènes → les mêmes mots, dans un autre ordre"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : l’ordre des quantificateurs compte. « Pour tout casier, il existe une clé qui l’ouvre » permet une clé par casier ; « il existe une clé qui ouvre tous les casiers » exige un passe-partout."
               }
             },
             "metadonnees": {
@@ -5724,7 +5712,7 @@
               "renderer": "grid",
               "props": {
                 "title": "Fiche mémo : conditions et contrôles",
-                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "subtitle": "Chaque carte part d’une question et donne la méthode et son piège.",
                 "items": [
                   {
                     "title": "Et, ou, non",
@@ -5770,12 +5758,6 @@
                     "title": "Au tableur",
                     "description": "Une règle en formule ?",
                     "back": "=SI(ET(B2=\"oui\";C2>=50);\"remise\";\"sans remise\"). Textes entre guillemets, NON(OU(A;B)) = ET(NON(A);NON(B))."
-                  },
-                  {
-                    "title": "Référentiel du BTS CG",
-                    "description": "Le programme de mathématiques et l’épreuve E3.",
-                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
-                    "external": true
                   }
                 ],
                 "imprimable": true

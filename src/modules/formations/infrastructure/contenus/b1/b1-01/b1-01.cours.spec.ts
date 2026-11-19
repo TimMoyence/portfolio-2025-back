@@ -84,14 +84,16 @@ describe('B1-01 — textes relus contre les données', () => {
     }
   });
 
-  it('donne à chaque méthode de trace écrite un moyen mnémotechnique, sans encadré « Au CCF »', () => {
+  it('donne à chaque méthode de trace écrite un moyen mnémotechnique, sans encadré « Les pièges »', () => {
     const traces = COURS_B1_01.ecrans.filter((ecran) =>
       texteDe(COURS_B1_01, ecran.screenId).includes('"renderer":"lesson"'),
     );
 
     expect(traces).toHaveLength(6);
     for (const trace of traces) {
-      expect(texteDe(COURS_B1_01, trace.screenId)).not.toContain('"exam"');
+      expect(texteDe(COURS_B1_01, trace.screenId)).not.toContain(
+        '"kind":"piege"',
+      );
     }
   });
 });

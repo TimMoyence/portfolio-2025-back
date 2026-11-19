@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "49a4da4092e7acb6063b05d74f4098cee9733bac15fa4cf98a51694a131b1ebc",
+  "empreinte": "13568c2df00e4c439736b44eae83aef08ff6741e2de236d8e8730d7f9f6d9c22",
   "sujet": {
     "id": "b3-03-traitement-de-texte",
     "titre": "Traitement de texte : mettre en forme et mettre en page",
@@ -2225,7 +2225,7 @@
           "libelle": "Note brute de Nadia Ferrand (texte)",
           "reservee": true
         },
-        "notes": "• Temps « réfléchir » de l’import : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : ouvrir la note dans le Bloc-notes, une ligne vide entre chaque ligne ; c’est ce qu’on va retirer.",
+        "notes": "• Révélation : ouvrir la note dans le Bloc-notes, une ligne vide entre chaque ligne ; c’est ce qu’on va retirer.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2495,7 +2495,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 11 min · correction 2 min\n• Réflexion : faire relire les quatre étapes avant de commencer ; passer dans les rangs dès l’étape 2.\n• Pièges : chercher ^p seul ; remplacer les espaces avant les paragraphes vides ; noter le second passage, qui annonce 0.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Règles 1 et 2, dites à la correction : « J’importe le texte seul, puis je le mets en forme dans Word » ; « Je travaille marques affichées : jamais de ligne vide ni d’espace pour espacer ou aligner. »\n• Transition : « La note est propre ; faisons-en des titres : un vote. »",
+        "notes": "• Réflexion : faire relire les quatre étapes avant de commencer ; passer dans les rangs dès l’étape 2.\n• Pièges : chercher ^p seul ; remplacer les espaces avant les paragraphes vides ; noter le second passage, qui annonce 0.\n• Règles 1 et 2, dites à la correction : « J’importe le texte seul, puis je le mets en forme dans Word » ; « Je travaille marques affichées : jamais de ligne vide ni d’espace pour espacer ou aligner. »\n• Transition : « La note est propre ; faisons-en des titres : un vote. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2569,7 +2569,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » des styles : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : ouvrir le volet de navigation ; le titre mis en gras à la main n’y figure pas.",
+        "notes": "• Révélation : ouvrir le volet de navigation ; le titre mis en gras à la main n’y figure pas.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2965,7 +2965,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Chacun le fait dans sa note : ce titre est le premier de l’exercice 2.\n• Ouvrir le volet de navigation sur un poste : le premier titre y est.\n• Transition : « À vous, toute la note : exercice 2. »",
+        "notes": "• Chacun le fait dans sa note : ce titre est le premier de l’exercice 2.\n• Ouvrir le volet de navigation sur un poste : le premier titre y est.\n• Transition : « À vous, toute la note : exercice 2. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3021,7 +3021,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire repérer dans la note les deux formes de numéro, « 1. » et « 1.1 », avant de styler.\n• Pièges : tout en Titre 1 ; oublier l’annexe ; styler la ligne « De : … » en titre.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Règle 3, dite à la correction : « Un titre reçoit un style, jamais une mise en forme à la main. »\n• Transition : « À la main, par un style ou par le thème ? Un tri. »",
+        "notes": "• Réflexion : faire repérer dans la note les deux formes de numéro, « 1. » et « 1.1 », avant de styler.\n• Pièges : tout en Titre 1 ; oublier l’annexe ; styler la ligne « De : … » en titre.\n• Règle 3, dite à la correction : « Un titre reçoit un style, jamais une mise en forme à la main. »\n• Transition : « À la main, par un style ou par le thème ? Un tri. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3144,7 +3144,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 7 min · correction 2 min\n• Réflexion : pour chaque carte, une question : combien de passages ce geste doit-il changer ?\n• Corriger case par case : demander combien de passages chaque geste change.\n• Règle 4, dite à la correction : « La police et les couleurs viennent du thème. »\n• Pause de 15 minutes, hors durée programmée.",
+        "notes": "• Réflexion : pour chaque carte, une question : combien de passages ce geste doit-il changer ?\n• Corriger case par case : demander combien de passages chaque geste change.\n• Règle 4, dite à la correction : « La police et les couleurs viennent du thème. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [],
@@ -3243,7 +3243,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » des paragraphes : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : décaler par des espaces, puis changer la police ; l’alignement se perd.",
+        "notes": "• Révélation : décaler par des espaces, puis changer la police ; l’alignement se perd.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3545,7 +3545,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire retrouver dans la note la liste tapée avec des tirets.\n• Pièges : chercher le tiret seul ; oublier l’espace après le tiret ; décaler la liste par des espaces.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Règle 2, redite : « Jamais de ligne vide ni d’espace pour espacer ou aligner. »\n• Transition : « Numéroter les pages : un vote. »",
+        "notes": "• Réflexion : faire retrouver dans la note la liste tapée avec des tirets.\n• Pièges : chercher le tiret seul ; oublier l’espace après le tiret ; décaler la liste par des espaces.\n• Règle 2, redite : « Jamais de ligne vide ni d’espace pour espacer ou aligner. »\n• Transition : « Numéroter les pages : un vote. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3632,7 +3632,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de la mise en page : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : ajouter une page au début ; tous les numéros tapés sont faux.",
+        "notes": "• Révélation : ajouter une page au début ; tous les numéros tapés sont faux.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3977,7 +3977,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 11 min · correction 2 min\n• Réflexion : faire dire, avant de commencer, ce qui change à chaque page et ce qui reste.\n• Pièges : en-tête sur la page de titre ; saut de page au lieu de section ; numéro tapé.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Règle 5, dite à la correction : « Ce qui change à chaque page s’insère par un champ : numéro, nombre de pages, date. »\n• Transition : « Caractère, paragraphe ou section : un tri. »",
+        "notes": "• Réflexion : faire dire, avant de commencer, ce qui change à chaque page et ce qui reste.\n• Pièges : en-tête sur la page de titre ; saut de page au lieu de section ; numéro tapé.\n• Règle 5, dite à la correction : « Ce qui change à chaque page s’insère par un champ : numéro, nombre de pages, date. »\n• Transition : « Caractère, paragraphe ou section : un tri. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4118,7 +4118,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : pour chaque réglage, une question : que faut-il sélectionner pour le changer ?\n• Corriger case par case : demander ce qu’il faut sélectionner pour changer chaque réglage.\n• Transition : « Le document est prêt ; il part au comité : un vote. »",
+        "notes": "• Réflexion : pour chaque réglage, une question : que faut-il sélectionner pour le changer ?\n• Corriger case par case : demander ce qu’il faut sélectionner pour changer chaque réglage.\n• Transition : « Le document est prêt ; il part au comité : un vote. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [],
@@ -4217,7 +4217,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » du PDF : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : ouvrir les deux PDF côte à côte ; seul l’enregistré a des signets.",
+        "notes": "• Révélation : ouvrir les deux PDF côte à côte ; seul l’enregistré a des signets.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4384,7 +4384,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : faire vérifier le volet de navigation avant d’exporter : les signets viennent des titres.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Règle 6, dite à la correction : « Le PDF s’enregistre, il ne s’imprime pas. »\n• Transition : « La fiche récap des six règles. »",
+        "notes": "• Réflexion : faire vérifier le volet de navigation avant d’exporter : les signets viennent des titres.\n• Règle 6, dite à la correction : « Le PDF s’enregistre, il ne s’imprime pas. »\n• Transition : « La fiche récap des six règles. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4489,7 +4489,7 @@
             }
           }
         },
-        "notes": "• 2 min ; la fiche s’imprime.\n• Pause de 15 minutes, hors durée programmée.",
+        "notes": "• 2 min ; la fiche s’imprime.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4523,7 +4523,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de l’IA : vote non noté, 2 min de vote et 1 min de révélation.\n• Révélation : ni la coller, ni la jeter ; la relire phrase par phrase contre la note.",
+        "notes": "• Révélation : ni la coller, ni la jeter ; la relire phrase par phrase contre la note.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4761,7 +4761,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : faire ouvrir la note nettoyée à côté ; chaque phrase se compare à elle.\n• La réécriture est écrite pour ce cours : le dire.\n• Corriger case par case ; demander à chaque fois quelle ligne de la note tranche.\n• Transition : « À vous d’écrire la consigne qui évite ces écarts : exercice 9. »",
+        "notes": "• Réflexion : faire ouvrir la note nettoyée à côté ; chaque phrase se compare à elle.\n• La réécriture est écrite pour ce cours : le dire.\n• Corriger case par case ; demander à chaque fois quelle ligne de la note tranche.\n• Transition : « À vous d’écrire la consigne qui évite ces écarts : exercice 9. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [],
@@ -4858,7 +4858,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 4 min · correction 2 min\n• Réflexion : faire relire la consigne en cinq parties et les trois contrôles.\n• La consigne écrite ici sert telle quelle à l’écran suivant.\n• Révéler les stratégies ; demander pourquoi la dernière est fausse : elle ne dit ni lecteur, ni contrainte, ni format.\n• Transition : « Votre IA au travail. »",
+        "notes": "• Réflexion : faire relire la consigne en cinq parties et les trois contrôles.\n• Révéler les stratégies ; demander pourquoi la dernière est fausse : elle ne dit ni lecteur, ni contrainte, ni format.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4987,7 +4987,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire relire la partie 4 de la note, ce que disent les données.\n• Révéler les cinq faits qu’un résumé juste doit porter ; demander qui les a tous.\n• Transition : « Gardez la fiche mémo de l’IA rédactrice. »",
+        "notes": "• Réflexion : faire relire la partie 4 de la note, ce que disent les données.\n• Révéler les cinq faits qu’un résumé juste doit porter ; demander qui les a tous.\n• Transition : « Gardez la fiche mémo de l’IA rédactrice. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],

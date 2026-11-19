@@ -40,7 +40,6 @@ const AUDIT: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['ia-redactrice'],
       notes: moteur.puces(
-        'Temps « réfléchir » de l’IA : vote non noté, 2 min de vote et 1 min de révélation.',
         'Révélation : ni la coller, ni la jeter ; la relire phrase par phrase contre la note.',
       ),
     },
@@ -163,7 +162,6 @@ const AUDIT: moteur.Acte = [
       dureeMinutes: 9,
       concepts: ['ia-redactrice'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 7),
         'Réflexion : faire ouvrir la note nettoyée à côté ; chaque phrase se compare à elle.',
         'La réécriture est écrite pour ce cours : le dire.',
       ),
@@ -361,7 +359,6 @@ const FAIRE_FAIRE: moteur.Acte = [
       dureeMinutes: 10,
       concepts: ['ia-redactrice', 'mise-en-forme-des-paragraphes'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 9),
         'Réflexion : faire relire la partie 4 de la note, ce que disent les données.',
       ),
       proprietes: {

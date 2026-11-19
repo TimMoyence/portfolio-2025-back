@@ -1,4 +1,4 @@
-import { parseVisualPresentation } from './VisualPresentation';
+import { parseVisualPresentation } from '../VisualPresentation';
 
 type Probabilite = number | '?';
 

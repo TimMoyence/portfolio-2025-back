@@ -506,6 +506,41 @@ function avecLesPiegesDUneVersionPassee(
   };
 }
 
+const leconDUneVersionPassee = z.looseObject({
+  presentation: z.looseObject({
+    renderer: z.literal('lesson'),
+    props: z.looseObject({
+      blocks: z.array(z.looseObject({ kind: z.string() })),
+    }),
+  }),
+});
+
+function avecLEncadreDesPiegesDUneVersionPassee(
+  ecran: EcranDeCoursBrut,
+): EcranDeCoursBrut {
+  const lecture =
+    ecran.brique === 'fp-story'
+      ? leconDUneVersionPassee.safeParse(ecran.proprietes)
+      : null;
+  if (lecture?.success !== true) {
+    return ecran;
+  }
+  const { presentation } = lecture.data;
+  const blocks = presentation.props.blocks.map((bloc) =>
+    bloc.kind === 'exam' ? { ...bloc, kind: 'piege' } : bloc,
+  );
+  return {
+    ...ecran,
+    proprietes: {
+      ...lecture.data,
+      presentation: {
+        ...presentation,
+        props: { ...presentation.props, blocks },
+      },
+    },
+  };
+}
+
 function sansLeGuideDUneVersionPassee(
   ecran: EcranDeCoursBrut,
 ): EcranDeCoursBrut {
@@ -527,7 +562,9 @@ export function lireCoursStocke({
     {
       ...contenu,
       ecrans: contenu.ecrans.map((ecran) =>
-        avecLesPiegesDUneVersionPassee(sansLeGuideDUneVersionPassee(ecran)),
+        avecLEncadreDesPiegesDUneVersionPassee(
+          avecLesPiegesDUneVersionPassee(sansLeGuideDUneVersionPassee(ecran)),
+        ),
       ),
     },
     `v${String(version)} en base`,

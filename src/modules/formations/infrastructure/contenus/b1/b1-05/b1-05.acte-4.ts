@@ -163,7 +163,6 @@ export const ACTE_4: moteur.Acte = [
         description: 'Une règle en formule ?',
         back: '=SI(ET(B2="oui";C2>=50);"remise";"sans remise"). Textes entre guillemets, NON(OU(A;B)) = ET(NON(A);NON(B)).',
       },
-      moteur.REFERENTIEL_DU_BTS_CG,
     ],
   ),
 ];

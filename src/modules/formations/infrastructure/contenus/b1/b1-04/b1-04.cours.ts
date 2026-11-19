@@ -155,7 +155,7 @@ const ACTE_1: moteur.Acte = [
       titre: 'Vote : un point au centre, une droite qui monte',
       dureeMinutes: 4,
       concepts: ['nuage-de-points', 'ajustement-affine'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(1),
+      notes: '',
     },
     [
       moteur.vote(
@@ -292,7 +292,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['nuage-de-points'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : un mois, un point.',
       ),
     },
@@ -360,7 +359,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['ajustement-affine', 'tableur'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : les y d’abord.',
         'Montrer à la calculatrice le menu de régression linéaire, sans lire de résultat du dossier.',
       ),
@@ -407,7 +405,7 @@ const ACTE_1: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['nuage-de-points', 'ajustement-affine'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -494,7 +492,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 11,
       concepts: ['tableur', 'nuage-de-points', 'ajustement-affine'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 9),
         'Réflexion : écrire sur papier quelle plage va en premier dans PENTE.',
         'Erreurs à chercher : plages inversées ; sommes au lieu des moyennes ; ARRONDI oublié.',
         'Papier : formules écrites sur la copie avec la grille des cellules.',
@@ -513,11 +510,7 @@ const ACTE_1: moteur.Acte = [
     },
     {
       minutes: 3,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
-        'Contrôler au pupitre : a × x̄ + b redonne ȳ, aux arrondis près.',
-        'Transition : jalon 1, puis pause de 15 minutes.',
-      ],
+      notes: ['Contrôler au pupitre : a × x̄ + b redonne ȳ, aux arrondis près.'],
     },
     [
       [
@@ -542,7 +535,6 @@ const ACTE_1: moteur.Acte = [
         'Je sais placer le point moyen et obtenir la droite des moindres carrés au tableur.',
     },
     'Si plus de 30 % « Perdu » : reprendre l’ordre des plages de PENTE après la pause.',
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 
@@ -555,7 +547,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 5,
       concepts: ['correlation', 'lecture-graphique'],
       notes: moteur.puces(
-        'Temps « réfléchir » de la notion 2 : 3 min d’écriture individuelle, puis lire trois réponses au pupitre.',
         'Ne rien trancher : la trace écrite suivante répond.',
         'Relance : « Une série qui baisse peut-elle bien prévoir ? »',
         'Papier : cadre de réponse du livret.',
@@ -611,7 +602,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['correlation', 'tableur'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : la distance à 1, pas le signe.',
       ),
     },
@@ -679,7 +669,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['lecture-graphique', 'correlation'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : chercher le troisième.',
       ),
     },
@@ -724,7 +713,7 @@ const ACTE_2: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['correlation', 'lecture-graphique'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -784,7 +773,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['tableur', 'correlation', 'ajustement-affine'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire sur papier la formule de F2, puis ce qu’elle devient en G2 une fois recopiée.',
         'Erreurs à chercher : plage du CA non figée ; plages inversées dans PENTE ; ARRONDI oublié.',
         'Papier : formules écrites sur la copie avec la grille des cellules.',
@@ -804,7 +792,6 @@ const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Faire conclure : la température, malgré son r négatif.',
         'Transition : « Une liaison forte, et pourtant : exercice 3. »',
       ],
@@ -829,7 +816,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['correlation', 'lecture-graphique'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 4),
         'Réflexion : nommer ce qui change d’octobre à mars, au bar comme en boutique.',
         'Pièges : cause tirée de r ; r négatif jugé mauvais ; r lu comme une pente.',
         'Papier : exercice 3 du livret.',
@@ -879,7 +865,7 @@ const ACTE_2: moteur.Acte = [
     },
     {
       minutes: 2,
-      notes: [moteur.CORRIGER_PAR_LA_MOINS_REUSSIE, 'Transition : jalon 2.'],
+      notes: ['Transition : jalon 2.'],
     },
     [
       [
@@ -922,7 +908,7 @@ const ACTE_3: moteur.Acte = [
       titre: 'Vote : prévoir, oui, mais jusqu’où ?',
       dureeMinutes: 5,
       concepts: ['prevision'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
+      notes: '',
     },
     [
       moteur.vote(
@@ -973,7 +959,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['prevision'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : le rang, pas l’année.',
       ),
     },
@@ -1044,7 +1029,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['prevision'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : résoudre, puis arrondir au-dessus.',
       ),
     },
@@ -1089,7 +1073,7 @@ const ACTE_3: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['prevision'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1183,7 +1167,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 10,
       concepts: ['correlation', 'ajustement-affine', 'prevision'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 8),
         'Réflexion : écrire sur la copie le rang de 2018.',
         'Pièges : r lu comme la pente ; plages inversées ; 2018 au lieu du rang ; seuil égal pris pour dépassé.',
         'Papier : exercice 4 du livret, nuage et droite D imprimés.',
@@ -1254,9 +1237,7 @@ const ACTE_3: moteur.Acte = [
     {
       minutes: 3,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Faire tracer au pupitre le trait de construction de 2018 sur le nuage.',
-        'Transition : jalon 3, puis pause de 15 minutes.',
       ],
     },
     [
@@ -1293,7 +1274,6 @@ const ACTE_3: moteur.Acte = [
       invite:
         'Je sais prévoir par une droite au bon rang, atteindre un seuil, et dire quand j’extrapole.',
     },
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 

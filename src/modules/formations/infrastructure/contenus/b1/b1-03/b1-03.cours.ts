@@ -186,7 +186,7 @@ const ACTE_1: moteur.Acte = [
       titre: 'Vote : regrouper, puis calculer',
       dureeMinutes: 4,
       concepts: ['tableau-croise-dynamique', 'moyenne-ponderee'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(1),
+      notes: '',
     },
     [
       moteur.vote(
@@ -328,7 +328,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['tableau-croise-dynamique'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : lignes, colonnes, valeurs.',
         'Au pupitre, montrer le geste dans Excel sur le fichier d’octobre, sans lire les résultats.',
       ),
@@ -401,7 +400,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['tableau-croise-dynamique', 'moyenne-ponderee'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : le calcul se fait sur les sommes.',
         'Lien à la mission : la moyenne de Théo pèse autant une vente de 10 € qu’une vente de 200 €.',
       ),
@@ -448,7 +446,7 @@ const ACTE_1: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['tableau-croise-dynamique', 'moyenne-ponderee'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -510,7 +508,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 12,
       concepts: ['tableau-croise-dynamique', 'pourcentage', 'moyenne-ponderee'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 10),
         'Réflexion : écrire sur la copie quel champ va en Lignes et lesquels en Valeurs.',
         'Pièges : Nombre au lieu de Somme ; marge divisée par le CA ; moyenne des taux.',
         'Pas d’équivalent papier : un poste avec Excel par étudiant ou par binôme ; sinon, le formateur construit le TCD au pupitre et la classe lit les valeurs.',
@@ -586,11 +583,7 @@ const ACTE_1: moteur.Acte = [
     },
     {
       minutes: 3,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
-        'Projeter le TCD juste au pupitre, champ calculé compris.',
-        'Transition : jalon 1, puis pause de 15 minutes.',
-      ],
+      notes: ['Projeter le TCD juste au pupitre, champ calculé compris.'],
     },
     [
       [
@@ -623,7 +616,6 @@ const ACTE_1: moteur.Acte = [
         'Je sais construire un TCD, y ajouter le champ calculé du taux de marge et le lire.',
     },
     'Si plus de 30 % « Perdu » : reprendre le geste du TCD au pupitre après la pause.',
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 
@@ -652,7 +644,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 5,
       concepts: ['moyenne', 'mediane', 'choix-du-resume'],
       notes: moteur.puces(
-        'Temps « réfléchir » de la notion 2 : 3 min d’écriture individuelle, puis lire trois réponses au pupitre.',
         'Ne rien trancher : la trace écrite suivante répond.',
         'Relance : « Combien de paniers dépassent la moyenne ? »',
         'Papier : cadre de réponse du livret.',
@@ -706,7 +697,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['moyenne', 'mediane', 'quartiles'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : d’abord ranger, puis couper.',
         'Insister : le rang d’un quartile s’arrondit toujours au-dessus.',
       ),
@@ -779,7 +769,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['ecart-type', 'dispersion'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : P comme population.',
       ),
     },
@@ -825,7 +814,7 @@ const ACTE_2: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['moyenne', 'mediane', 'quartiles', 'choix-du-resume'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -884,7 +873,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['mediane', 'quartiles', 'choix-du-resume'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 4),
         'Réflexion : ranger les neuf paniers sur la copie avant tout calcul.',
         'Pièges : milieu sans ranger ; rang arrondi au-dessous ; quartile tiré de la médiane.',
         'Papier : exercice 2 du livret.',
@@ -945,7 +933,6 @@ const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Transition : « Faisons faire le travail au tableur : exercice 3. »',
       ],
     },
@@ -977,7 +964,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['tableur', 'moyenne', 'quartiles', 'ecart-type'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire sur papier la formule de E2, puis ce qu’elle devient en F2 une fois recopiée vers la droite.',
         'Erreurs à chercher : ECARTYPE au lieu d’ECARTYPEP ; ARRONDI oublié ; étendue au lieu de l’écart interquartile.',
         'Papier : formules écrites sur la copie avec la grille des cellules.',
@@ -995,10 +981,7 @@ const ACTE_2: moteur.Acte = [
     },
     {
       minutes: 2,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
-        'Transition : « Comparez les deux colonnes : jalon 2. »',
-      ],
+      notes: ['Transition : « Comparez les deux colonnes : jalon 2. »'],
     },
     [
       [
@@ -1081,7 +1064,7 @@ const ACTE_3: moteur.Acte = [
       titre: 'Vote : comparer sans tout relire',
       dureeMinutes: 5,
       concepts: ['boite-a-moustaches', 'moyenne'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
+      notes: '',
     },
     [
       moteur.vote(
@@ -1135,7 +1118,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['boite-a-moustaches', 'dispersion'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : le centre, puis la boîte.',
       ),
     },
@@ -1203,7 +1185,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['moyenne', 'choix-du-resume'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : le milieu représente la classe.',
       ),
     },
@@ -1249,7 +1230,7 @@ const ACTE_3: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['boite-a-moustaches', 'moyenne'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1342,7 +1323,6 @@ const ACTE_3: moteur.Acte = [
         'dispersion',
       ],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 8),
         'Réflexion : comparer d’abord les médianes, puis les boîtes.',
         'Pièges : partie longue lue comme plus peuplée ; moyenne malgré la valeur extrême ; borne au lieu du centre.',
         'Papier : exercice 4 du livret, boîtes imprimées.',
@@ -1402,10 +1382,6 @@ const ACTE_3: moteur.Acte = [
     },
     {
       minutes: 3,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
-        'Transition : jalon 3, puis pause de 15 minutes.',
-      ],
     },
     [
       [
@@ -1437,7 +1413,6 @@ const ACTE_3: moteur.Acte = [
       invite:
         'Je sais lire deux boîtes à moustaches et calculer une moyenne par les centres des classes.',
     },
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 

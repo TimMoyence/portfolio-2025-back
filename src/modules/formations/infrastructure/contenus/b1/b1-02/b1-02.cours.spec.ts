@@ -7,7 +7,7 @@ import {
   decrireLaFicheDuCours,
   FORME_DES_COURS_B1,
   pagesDeCours,
-  pagesSansMethodeOuAvecEncadreCcf,
+  pagesSansMethodeOuAvecEncadreDePieges,
   rangDuContenu,
   valeursEtPieges,
 } from '../../../../../../../test/helpers/formations/cours/fiche-de-cours';
@@ -147,9 +147,9 @@ describe('B1-02 — textes relus contre les données', () => {
     expect(annale).not.toContain('fictives');
   });
 
-  it('B102-M1 · donne à chaque page une méthode, sans encadré « Au CCF »', () => {
+  it('B102-M1 · donne à chaque page une méthode, sans encadré « Les pièges »', () => {
     expect(pagesDeCours(COURS_B1_02)).toHaveLength(6);
-    expect(pagesSansMethodeOuAvecEncadreCcf(COURS_B1_02)).toEqual([]);
+    expect(pagesSansMethodeOuAvecEncadreDePieges(COURS_B1_02)).toEqual([]);
   });
 
   it('B102-M1 · ne garde ni mini-situation, ni défi, ni billet de sortie', () => {

@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "4302db37ee9cbb8de355c0dfcc37dba18fdf10ef01904e30e454fce40c343fd0",
+  "empreinte": "0aacea29d2397bf8bb10c0eaeb002d4d25eded8b5cfe7ac662815021143373dc",
   "sujet": {
     "id": "b2-09-probabilites-conditionnelles",
     "titre": "Probabilités conditionnelles",
@@ -61,14 +61,14 @@
                 "image": "/assets/cours/b2-09/v1/part-du-gateau.webp",
                 "imageAlt": "Un gâteau rond vu de dessus, coupé en parts toutes égales. Quelques parts portent une fraise, les autres non. Une main tend une assiette vers une part prise au hasard.",
                 "paragraphs": [
-                  "Un gâteau coupé en parts égales ; quelques parts portent une fraise, et l’on prend une part au hasard.",
-                  "En maths, on écrit : P(A) = nombre de cas de A ÷ nombre de cas en tout, quand tous les cas ont la même chance. Une probabilité est toujours entre 0 et 1."
+                  "Un gâteau coupé en parts égales ; quelques parts portent une fraise, et l’on prend une part au hasard."
                 ],
                 "items": [
                   "Toutes les parts du gâteau → tous les cas possibles, l’univers",
                   "Les parts avec une fraise → l’événement A",
                   "La part du gâteau qui porte une fraise → P(A), entre 0 et 1"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : P(A) = nombre de cas de A ÷ nombre de cas en tout, quand tous les cas ont la même chance. Une probabilité est toujours entre 0 et 1."
               }
             },
             "metadonnees": {
@@ -99,14 +99,14 @@
                 "image": "/assets/cours/b2-09/v1/sac-de-billes.webp",
                 "imageAlt": "Un sac en toile ouvert, rempli de billes. Les billes rouges sont regroupées d’un côté, toutes les autres, bleues, vertes et jaunes, de l’autre. Une étiquette « pas rouge » entoure le second groupe.",
                 "paragraphs": [
-                  "Dans le sac, des billes rouges et des billes d’autres couleurs : toute bille qui n’est pas rouge est d’une autre couleur.",
-                  "En maths, on écrit : P(Ā) = 1 − P(A) : le contraire Ā regroupe tous les cas où A n’arrive pas."
+                  "Dans le sac, des billes rouges et des billes d’autres couleurs : toute bille qui n’est pas rouge est d’une autre couleur."
                 ],
                 "items": [
                   "Les billes rouges → l’événement A",
                   "Toutes les autres billes → le contraire Ā",
                   "Le sac entier → tous les cas, de probabilité 1"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : P(Ā) = 1 − P(A) : le contraire Ā regroupe tous les cas où A n’arrive pas."
               }
             },
             "metadonnees": {
@@ -137,14 +137,14 @@
                 "image": "/assets/cours/b2-09/v1/deux-cerceaux.webp",
                 "imageAlt": "Deux cerceaux posés au sol, un rouge et un bleu, qui se chevauchent. Des jouets sont rangés dedans : certains dans le seul cerceau rouge, d’autres dans le seul bleu, quelques-uns dans la partie commune.",
                 "paragraphs": [
-                  "Deux cerceaux posés au sol se chevauchent ; des jouets sont rangés dedans, certains dans la partie commune.",
-                  "En maths, on écrit : A ∩ B, « A et B », regroupe les cas où A et B arrivent à la fois : la partie commune."
+                  "Deux cerceaux posés au sol se chevauchent ; des jouets sont rangés dedans, certains dans la partie commune."
                 ],
                 "items": [
                   "Le cerceau rouge → l’événement A",
                   "Le cerceau bleu → l’événement B",
                   "Les jouets de la partie commune → A ∩ B, A et B à la fois"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : A ∩ B, « A et B », regroupe les cas où A et B arrivent à la fois : la partie commune."
               }
             },
             "metadonnees": {
@@ -212,14 +212,14 @@
                 "image": "/assets/cours/b2-09/v1/cerceaux-reunis.webp",
                 "imageAlt": "Les deux cerceaux qui se chevauchent, vus de dessus. Une main compte les jouets un à un : ceux de la partie commune portent une seule pastille, pas deux.",
                 "paragraphs": [
-                  "On compte les jouets des deux cerceaux ; ceux de la partie commune ne se comptent qu’une fois.",
-                  "En maths, on écrit : P(A ∪ B) = P(A) + P(B) − P(A ∩ B) : A ∪ B, « A ou B », ne compte qu’une fois la partie commune."
+                  "On compte les jouets des deux cerceaux ; ceux de la partie commune ne se comptent qu’une fois."
                 ],
                 "items": [
                   "Les jouets dans au moins un cerceau → A ∪ B, A ou B",
                   "La partie commune, comptée deux fois si l’on ajoute les deux cerceaux → P(A ∩ B), à retirer une fois",
                   "La pastille unique → chaque cas compté une seule fois"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : P(A ∪ B) = P(A) + P(B) − P(A ∩ B) : A ∪ B, « A ou B », ne compte qu’une fois la partie commune."
               }
             },
             "metadonnees": {
@@ -250,15 +250,15 @@
                 "image": "/assets/cours/b2-09/v1/commode-a-tiroirs.webp",
                 "imageAlt": "Une grande commode en bois : chaque rangée de tiroirs porte une taille de chaussettes, chaque colonne une couleur. Une étiquette sur chaque tiroir indique combien de paires il contient, et une étiquette au bout de chaque rangée en donne le total.",
                 "paragraphs": [
-                  "Une commode range les chaussettes par taille, une rangée par taille, et par couleur, une colonne par couleur ; une étiquette compte chaque tiroir.",
-                  "En maths, on écrit : Un tableau croisé compte dans chaque case les cas de A ∩ B ; les totaux des lignes et des colonnes redonnent l’effectif total."
+                  "Une commode range les chaussettes par taille, une rangée par taille, et par couleur, une colonne par couleur ; une étiquette compte chaque tiroir."
                 ],
                 "items": [
                   "Une rangée de tiroirs → une ligne, un événement A",
                   "Une colonne de tiroirs → une colonne, un événement B",
                   "Un tiroir → une case, l’effectif de A ∩ B",
                   "L’étiquette au bout de la rangée → l’effectif de A"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : Un tableau croisé compte dans chaque case les cas de A ∩ B ; les totaux des lignes et des colonnes redonnent l’effectif total."
               }
             },
             "metadonnees": {
@@ -392,15 +392,15 @@
                 "image": "/assets/cours/b2-09/v1/ruisseaux-qui-se-partagent.webp",
                 "imageAlt": "Une source en haut d’une colline. Son eau se partage en deux ruisseaux, l’un large, l’autre étroit ; chaque ruisseau se partage à nouveau en deux. En bas, quatre petits bassins recueillent l’eau, plus ou moins remplis.",
                 "paragraphs": [
-                  "L’eau d’une source se partage en deux ruisseaux, puis chaque ruisseau se partage encore ; en bas, quatre petits bassins.",
-                  "En maths, on écrit : Sur un arbre pondéré, P(A ∩ B) = P(A) × P_A(B) : on multiplie le long d’un chemin, et les branches d’un même nœud somment à 1."
+                  "L’eau d’une source se partage en deux ruisseaux, puis chaque ruisseau se partage encore ; en bas, quatre petits bassins."
                 ],
                 "items": [
                   "La source → l’univers, de probabilité 1",
                   "Le premier partage → la première génération, P(A) et P(Ā)",
                   "Le second partage → la seconde génération, P_A(B) et P_A(B̄)",
                   "L’eau d’un petit bassin → le produit le long du chemin"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : Sur un arbre pondéré, P(A ∩ B) = P(A) × P_A(B) : on multiplie le long d’un chemin, et les branches d’un même nœud somment à 1."
               }
             },
             "metadonnees": {
@@ -515,8 +515,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges de l’arbre",
+                    "kind": "piege",
+                    "title": "Les pièges de l’arbre",
                     "text": "Pièges : lire P(A ∩ B) sur une branche, où l’on lit P_A(B) ; additionner le long d’un chemin ; compléter un nœud avec la branche d’un autre nœud.",
                     "steps": [
                       "Nommer les événements avec une lettre et une phrase.",
@@ -736,14 +736,14 @@
                 "image": "/assets/cours/b2-09/v1/loupe-sur-une-ligne.webp",
                 "imageAlt": "Un grand registre ouvert sur une table, couvert de lignes et de colonnes cochées. Une loupe posée dessus grossit une seule ligne ; le reste de la page est flou.",
                 "paragraphs": [
-                  "Une loupe posée sur un grand registre ne laisse voir qu’une seule ligne ; on compte les coches de cette ligne seulement.",
-                  "En maths, on écrit : P_A(B) = effectif de A ∩ B ÷ effectif de A : sachant A, on ne regarde que la ligne A."
+                  "Une loupe posée sur un grand registre ne laisse voir qu’une seule ligne ; on compte les coches de cette ligne seulement."
                 ],
                 "items": [
                   "La ligne sous la loupe → la condition A",
                   "Les cases cochées de cette ligne → les cas de A ∩ B",
                   "Le reste du registre, flou → les cas hors de A, qu’on ne compte pas"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : P_A(B) = effectif de A ∩ B ÷ effectif de A : sachant A, on ne regarde que la ligne A."
               }
             },
             "metadonnees": {
@@ -789,8 +789,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges du tableau",
+                    "kind": "piege",
+                    "title": "Les pièges du tableau",
                     "text": "Pièges : diviser par l’effectif total ; diviser par la colonne au lieu de la ligne, ce qui donne P_B(A).",
                     "steps": [
                       "Souligner la condition dans la phrase : « parmi… », « sachant… ».",
@@ -1082,8 +1082,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges des probabilités totales",
+                    "kind": "piege",
+                    "title": "Les pièges des probabilités totales",
                     "text": "Pièges : additionner les probabilités conditionnelles sans les pondérer ; oublier un chemin ; sommer sur des événements qui ne forment pas une partition.",
                     "steps": [
                       "Nommer la partition.",
@@ -1360,8 +1360,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges du sens",
+                    "kind": "piege",
+                    "title": "Les pièges du sens",
                     "text": "Pièges : répondre P_A(B), lue sur la branche, quand on demande P_B(A) ; répondre P(A) en oubliant la condition ; diviser par P(A).",
                     "steps": [
                       "Écrire la probabilité cherchée avec sa condition en indice.",
@@ -1665,14 +1665,14 @@
                 "image": "/assets/cours/b2-09/v1/piece-et-meteo.webp",
                 "imageAlt": "Deux scènes côte à côte : une pièce lancée en l’air sous un grand soleil, puis la même pièce lancée sous la pluie. Sous chaque scène, la même petite balance, parfaitement équilibrée entre pile et face.",
                 "paragraphs": [
-                  "On lance une pièce sous le soleil, puis sous la pluie : elle tombe sur pile aussi souvent par tous les temps.",
-                  "En maths, on écrit : A et B sont indépendants quand P_A(B) = P(B) : savoir A ne change pas la chance de B."
+                  "On lance une pièce sous le soleil, puis sous la pluie : elle tombe sur pile aussi souvent par tous les temps."
                 ],
                 "items": [
                   "La météo du jour → l’événement A",
                   "La pièce qui tombe sur pile → l’événement B",
                   "Pile aussi souvent sous la pluie → P_A(B) = P(B), A et B indépendants"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : A et B sont indépendants quand P_A(B) = P(B) : savoir A ne change pas la chance de B."
               }
             },
             "metadonnees": {
@@ -1723,8 +1723,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : justifier par le calcul",
+                    "kind": "piege",
+                    "title": "Justifier par le calcul",
                     "text": "Pièges : conclure sans calcul ; confondre indépendants et incompatibles ; comparer P_A(B) à P(A) au lieu de P(B).",
                     "steps": [
                       "Écrire les deux nombres à comparer.",
@@ -1992,7 +1992,7 @@
               "renderer": "grid",
               "props": {
                 "title": "Fiche mémo : probabilités conditionnelles",
-                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "subtitle": "Chaque carte part d’une question et donne la méthode et son piège.",
                 "items": [
                   {
                     "title": "Contraire et réunion",
@@ -2033,12 +2033,6 @@
                     "title": "Indépendance",
                     "description": "Comment la justifier ?",
                     "back": "A et B sont indépendants si P(A ∩ B) = P(A) × P(B), ou si P_A(B) = P(B). Indépendants n’est pas incompatibles."
-                  },
-                  {
-                    "title": "Référentiel du BTS CG",
-                    "description": "Le programme de mathématiques et l’épreuve E3.",
-                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
-                    "external": true
                   }
                 ],
                 "imprimable": true
@@ -2128,14 +2122,14 @@
                 "image": "/assets/cours/b2-09/v1/part-du-gateau.webp",
                 "imageAlt": "Un gâteau rond vu de dessus, coupé en parts toutes égales. Quelques parts portent une fraise, les autres non. Une main tend une assiette vers une part prise au hasard.",
                 "paragraphs": [
-                  "Un gâteau coupé en parts égales ; quelques parts portent une fraise, et l’on prend une part au hasard.",
-                  "En maths, on écrit : P(A) = nombre de cas de A ÷ nombre de cas en tout, quand tous les cas ont la même chance. Une probabilité est toujours entre 0 et 1."
+                  "Un gâteau coupé en parts égales ; quelques parts portent une fraise, et l’on prend une part au hasard."
                 ],
                 "items": [
                   "Toutes les parts du gâteau → tous les cas possibles, l’univers",
                   "Les parts avec une fraise → l’événement A",
                   "La part du gâteau qui porte une fraise → P(A), entre 0 et 1"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : P(A) = nombre de cas de A ÷ nombre de cas en tout, quand tous les cas ont la même chance. Une probabilité est toujours entre 0 et 1."
               }
             },
             "metadonnees": {
@@ -2147,7 +2141,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Si toutes les parts portaient une fraise, que vaudrait P(A) ? » 1 : l’événement est certain.",
+        "notes": "• Question : « Si toutes les parts portaient une fraise, que vaudrait P(A) ? » 1 : l’événement est certain.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2173,14 +2167,14 @@
                 "image": "/assets/cours/b2-09/v1/sac-de-billes.webp",
                 "imageAlt": "Un sac en toile ouvert, rempli de billes. Les billes rouges sont regroupées d’un côté, toutes les autres, bleues, vertes et jaunes, de l’autre. Une étiquette « pas rouge » entoure le second groupe.",
                 "paragraphs": [
-                  "Dans le sac, des billes rouges et des billes d’autres couleurs : toute bille qui n’est pas rouge est d’une autre couleur.",
-                  "En maths, on écrit : P(Ā) = 1 − P(A) : le contraire Ā regroupe tous les cas où A n’arrive pas."
+                  "Dans le sac, des billes rouges et des billes d’autres couleurs : toute bille qui n’est pas rouge est d’une autre couleur."
                 ],
                 "items": [
                   "Les billes rouges → l’événement A",
                   "Toutes les autres billes → le contraire Ā",
                   "Le sac entier → tous les cas, de probabilité 1"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : P(Ā) = 1 − P(A) : le contraire Ā regroupe tous les cas où A n’arrive pas."
               }
             },
             "metadonnees": {
@@ -2192,7 +2186,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Que faut-il pour obtenir la part des billes qui ne sont pas rouges ? » Retirer la part des rouges du tout.",
+        "notes": "• Question : « Que faut-il pour obtenir la part des billes qui ne sont pas rouges ? » Retirer la part des rouges du tout.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2218,14 +2212,14 @@
                 "image": "/assets/cours/b2-09/v1/deux-cerceaux.webp",
                 "imageAlt": "Deux cerceaux posés au sol, un rouge et un bleu, qui se chevauchent. Des jouets sont rangés dedans : certains dans le seul cerceau rouge, d’autres dans le seul bleu, quelques-uns dans la partie commune.",
                 "paragraphs": [
-                  "Deux cerceaux posés au sol se chevauchent ; des jouets sont rangés dedans, certains dans la partie commune.",
-                  "En maths, on écrit : A ∩ B, « A et B », regroupe les cas où A et B arrivent à la fois : la partie commune."
+                  "Deux cerceaux posés au sol se chevauchent ; des jouets sont rangés dedans, certains dans la partie commune."
                 ],
                 "items": [
                   "Le cerceau rouge → l’événement A",
                   "Le cerceau bleu → l’événement B",
                   "Les jouets de la partie commune → A ∩ B, A et B à la fois"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : A ∩ B, « A et B », regroupe les cas où A et B arrivent à la fois : la partie commune."
               }
             },
             "metadonnees": {
@@ -2237,7 +2231,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Un jouet du seul cerceau rouge est-il dans A ∩ B ? » Non : il est dans A, pas dans B.",
+        "notes": "• Question : « Un jouet du seul cerceau rouge est-il dans A ∩ B ? » Non : il est dans A, pas dans B.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2281,7 +2275,7 @@
             ]
           }
         },
-        "notes": "• Récapitulatif du lycée : deux votes non notés, une question après l’autre, sans débat entre elles.\n• Avant la révélation, faire dire au tableau ce que vaut la probabilité de l’univers : 1.\n• La révélation s’ouvre après la question 2 : revenir sur l’écran d’image de chaque erreur, le sac de billes, puis les cerceaux.\n• Papier : vote à main levée sur chaque question.",
+        "notes": "• Avant la révélation, faire dire au tableau ce que vaut la probabilité de l’univers : 1.\n• À la révélation, revenir sur l’écran d’image de chaque erreur : le sac de billes, puis les cerceaux.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2359,14 +2353,14 @@
                 "image": "/assets/cours/b2-09/v1/cerceaux-reunis.webp",
                 "imageAlt": "Les deux cerceaux qui se chevauchent, vus de dessus. Une main compte les jouets un à un : ceux de la partie commune portent une seule pastille, pas deux.",
                 "paragraphs": [
-                  "On compte les jouets des deux cerceaux ; ceux de la partie commune ne se comptent qu’une fois.",
-                  "En maths, on écrit : P(A ∪ B) = P(A) + P(B) − P(A ∩ B) : A ∪ B, « A ou B », ne compte qu’une fois la partie commune."
+                  "On compte les jouets des deux cerceaux ; ceux de la partie commune ne se comptent qu’une fois."
                 ],
                 "items": [
                   "Les jouets dans au moins un cerceau → A ∪ B, A ou B",
                   "La partie commune, comptée deux fois si l’on ajoute les deux cerceaux → P(A ∩ B), à retirer une fois",
                   "La pastille unique → chaque cas compté une seule fois"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : P(A ∪ B) = P(A) + P(B) − P(A ∩ B) : A ∪ B, « A ou B », ne compte qu’une fois la partie commune."
               }
             },
             "metadonnees": {
@@ -2378,7 +2372,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Si les cerceaux ne se touchent pas, que vaut P(A ∪ B) ? » P(A) + P(B) : il n’y a rien à retirer.",
+        "notes": "• Question : « Si les cerceaux ne se touchent pas, que vaut P(A ∪ B) ? » P(A) + P(B) : il n’y a rien à retirer.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2404,15 +2398,15 @@
                 "image": "/assets/cours/b2-09/v1/commode-a-tiroirs.webp",
                 "imageAlt": "Une grande commode en bois : chaque rangée de tiroirs porte une taille de chaussettes, chaque colonne une couleur. Une étiquette sur chaque tiroir indique combien de paires il contient, et une étiquette au bout de chaque rangée en donne le total.",
                 "paragraphs": [
-                  "Une commode range les chaussettes par taille, une rangée par taille, et par couleur, une colonne par couleur ; une étiquette compte chaque tiroir.",
-                  "En maths, on écrit : Un tableau croisé compte dans chaque case les cas de A ∩ B ; les totaux des lignes et des colonnes redonnent l’effectif total."
+                  "Une commode range les chaussettes par taille, une rangée par taille, et par couleur, une colonne par couleur ; une étiquette compte chaque tiroir."
                 ],
                 "items": [
                   "Une rangée de tiroirs → une ligne, un événement A",
                   "Une colonne de tiroirs → une colonne, un événement B",
                   "Un tiroir → une case, l’effectif de A ∩ B",
                   "L’étiquette au bout de la rangée → l’effectif de A"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : Un tableau croisé compte dans chaque case les cas de A ∩ B ; les totaux des lignes et des colonnes redonnent l’effectif total."
               }
             },
             "metadonnees": {
@@ -2427,7 +2421,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Transition : « Les probabilités du lycée sont en place. Place au dossier du jour. »",
+        "notes": "• Transition : « Les probabilités du lycée sont en place. Place au dossier du jour. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2567,15 +2561,15 @@
                 "image": "/assets/cours/b2-09/v1/ruisseaux-qui-se-partagent.webp",
                 "imageAlt": "Une source en haut d’une colline. Son eau se partage en deux ruisseaux, l’un large, l’autre étroit ; chaque ruisseau se partage à nouveau en deux. En bas, quatre petits bassins recueillent l’eau, plus ou moins remplis.",
                 "paragraphs": [
-                  "L’eau d’une source se partage en deux ruisseaux, puis chaque ruisseau se partage encore ; en bas, quatre petits bassins.",
-                  "En maths, on écrit : Sur un arbre pondéré, P(A ∩ B) = P(A) × P_A(B) : on multiplie le long d’un chemin, et les branches d’un même nœud somment à 1."
+                  "L’eau d’une source se partage en deux ruisseaux, puis chaque ruisseau se partage encore ; en bas, quatre petits bassins."
                 ],
                 "items": [
                   "La source → l’univers, de probabilité 1",
                   "Le premier partage → la première génération, P(A) et P(Ā)",
                   "Le second partage → la seconde génération, P_A(B) et P_A(B̄)",
                   "L’eau d’un petit bassin → le produit le long du chemin"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : Sur un arbre pondéré, P(A ∩ B) = P(A) × P_A(B) : on multiplie le long d’un chemin, et les branches d’un même nœud somment à 1."
               }
             },
             "metadonnees": {
@@ -2587,7 +2581,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Toute l’eau de la source arrive-t-elle dans les bassins ? » Oui : les quatre produits somment à 1.",
+        "notes": "• Question : « Toute l’eau de la source arrive-t-elle dans les bassins ? » Oui : les quatre produits somment à 1.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2704,8 +2698,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges de l’arbre",
+                    "kind": "piege",
+                    "title": "Les pièges de l’arbre",
                     "text": "Pièges : lire P(A ∩ B) sur une branche, où l’on lit P_A(B) ; additionner le long d’un chemin ; compléter un nœud avec la branche d’un autre nœud.",
                     "steps": [
                       "Nommer les événements avec une lettre et une phrase.",
@@ -2725,7 +2719,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Faire lire P_A(B) à voix haute : « probabilité de B sachant A ».",
+        "notes": "• Faire lire P_A(B) à voix haute : « probabilité de B sachant A ».",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2779,7 +2773,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur l’étape 2 : « d’entre eux » annonce une probabilité conditionnelle.\n• Transition : « À vous : exercice 1. »",
+        "notes": "• S’arrêter sur l’étape 2 : « d’entre eux » annonce une probabilité conditionnelle.\n• Transition : « À vous : exercice 1. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -2883,7 +2877,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : dessiner l’arbre sur papier, chaque nœud complété à 1, avant toute question.\n• Pièges : lire P(L ∩ A) sur une branche ; additionner le long d’un chemin ; compléter avec la branche d’un autre nœud.\n• Papier : exercice 1 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : « Et quand les données arrivent en effectifs ? Un vote pour le deviner. »",
+        "notes": "• Réflexion : dessiner l’arbre sur papier, chaque nœud complété à 1, avant toute question.\n• Pièges : lire P(L ∩ A) sur une branche ; additionner le long d’un chemin ; compléter avec la branche d’un autre nœud.\n• Papier : exercice 1 du livret.\n• Transition : « Et quand les données arrivent en effectifs ? Un vote pour le deviner. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3045,7 +3039,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » du second cycle de la notion 1 : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3123,14 +3117,14 @@
                 "image": "/assets/cours/b2-09/v1/loupe-sur-une-ligne.webp",
                 "imageAlt": "Un grand registre ouvert sur une table, couvert de lignes et de colonnes cochées. Une loupe posée dessus grossit une seule ligne ; le reste de la page est flou.",
                 "paragraphs": [
-                  "Une loupe posée sur un grand registre ne laisse voir qu’une seule ligne ; on compte les coches de cette ligne seulement.",
-                  "En maths, on écrit : P_A(B) = effectif de A ∩ B ÷ effectif de A : sachant A, on ne regarde que la ligne A."
+                  "Une loupe posée sur un grand registre ne laisse voir qu’une seule ligne ; on compte les coches de cette ligne seulement."
                 ],
                 "items": [
                   "La ligne sous la loupe → la condition A",
                   "Les cases cochées de cette ligne → les cas de A ∩ B",
                   "Le reste du registre, flou → les cas hors de A, qu’on ne compte pas"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : P_A(B) = effectif de A ∩ B ÷ effectif de A : sachant A, on ne regarde que la ligne A."
               }
             },
             "metadonnees": {
@@ -3142,7 +3136,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Par quel nombre divise-t-on : le total du registre, ou le total de la ligne ? » Le total de la ligne.",
+        "notes": "• Question : « Par quel nombre divise-t-on : le total du registre, ou le total de la ligne ? » Le total de la ligne.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3183,8 +3177,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges du tableau",
+                    "kind": "piege",
+                    "title": "Les pièges du tableau",
                     "text": "Pièges : diviser par l’effectif total ; diviser par la colonne au lieu de la ligne, ce qui donne P_B(A).",
                     "steps": [
                       "Souligner la condition dans la phrase : « parmi… », « sachant… ».",
@@ -3204,7 +3198,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Faire montrer du doigt la ligne de la condition avant chaque division.",
+        "notes": "• Faire montrer du doigt la ligne de la condition avant chaque division.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3323,7 +3317,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire sur papier quelle ligne porte 35 %, et laquelle 20 %.\n• Piège : prendre 35 % des 1 000 commandes au lieu des commandes de la ligne.\n• Papier : tableau du livret, rempli à la main.\n• Projeter le tableau juste ; faire vérifier que chaque colonne de saisie redonne son total.\n• Transition : jalon 1, puis pause de 15 minutes.",
+        "notes": "• Réflexion : écrire sur papier quelle ligne porte 35 %, et laquelle 20 %.\n• Piège : prendre 35 % des 1 000 commandes au lieu des commandes de la ligne.\n• Papier : tableau du livret, rempli à la main.\n• Projeter le tableau juste ; faire vérifier que chaque colonne de saisie redonne son total.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [],
@@ -3444,7 +3438,7 @@
             }
           }
         },
-        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre l’écran des ruisseaux après la pause.\n• Pause de 15 minutes, hors durée programmée.",
+        "notes": "• Si plus de 30 % « Perdu » : reprendre l’écran des ruisseaux après la pause.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3488,7 +3482,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de la notion 2 : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3657,8 +3651,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges des probabilités totales",
+                    "kind": "piege",
+                    "title": "Les pièges des probabilités totales",
                     "text": "Pièges : additionner les probabilités conditionnelles sans les pondérer ; oublier un chemin ; sommer sur des événements qui ne forment pas une partition.",
                     "steps": [
                       "Nommer la partition.",
@@ -3732,7 +3726,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur l’étape 3 : une probabilité au-dessus de 1 signale l’oubli de la pondération.\n• Transition : « À vous, sur les voiles : exercice 3. »",
+        "notes": "• S’arrêter sur l’étape 3 : une probabilité au-dessus de 1 signale l’oubli de la pondération.\n• Transition : « À vous, sur les voiles : exercice 3. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3811,7 +3805,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : dessiner l’arbre des ateliers, puis repérer les chemins qui finissent par D.\n• Pièges : additionner 0,04 et 0,09 ; ne garder que le chemin de La Rochelle.\n• Papier : exercice 3 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : « Une voile revient défectueuse : d’où vient-elle ? Un vote pour le deviner. »",
+        "notes": "• Réflexion : dessiner l’arbre des ateliers, puis repérer les chemins qui finissent par D.\n• Pièges : additionner 0,04 et 0,09 ; ne garder que le chemin de La Rochelle.\n• Papier : exercice 3 du livret.\n• Transition : « Une voile revient défectueuse : d’où vient-elle ? Un vote pour le deviner. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3940,7 +3934,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » du second cycle de la notion 2 : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4107,8 +4101,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges du sens",
+                    "kind": "piege",
+                    "title": "Les pièges du sens",
                     "text": "Pièges : répondre P_A(B), lue sur la branche, quand on demande P_B(A) ; répondre P(A) en oubliant la condition ; diviser par P(A).",
                     "steps": [
                       "Écrire la probabilité cherchée avec sa condition en indice.",
@@ -4212,7 +4206,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : écrire P_D(F) avec sa condition en indice, puis la formule, avant de calculer.\n• Pièges : répondre 0,09, lue sur la branche ; répondre 0,3, la part de Rochefort sans condition.\n• Papier : exercice 4 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Faire remarquer que Rochefort, qui coud 30 % des voiles, fournit près de la moitié des défectueuses.\n• Transition : jalon 2, puis pause de 15 minutes.",
+        "notes": "• Réflexion : écrire P_D(F) avec sa condition en indice, puis la formule, avant de calculer.\n• Pièges : répondre 0,09, lue sur la branche ; répondre 0,3, la part de Rochefort sans condition.\n• Papier : exercice 4 du livret.\n• Faire remarquer que Rochefort, qui coud 30 % des voiles, fournit près de la moitié des défectueuses.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4324,7 +4318,7 @@
             }
           }
         },
-        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre l’exemple guidé des paiements par carte après la pause.\n• Pause de 15 minutes, hors durée programmée.",
+        "notes": "• Si plus de 30 % « Perdu » : reprendre l’exemple guidé des paiements par carte après la pause.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4368,7 +4362,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de la notion 3 : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4591,14 +4585,14 @@
                 "image": "/assets/cours/b2-09/v1/piece-et-meteo.webp",
                 "imageAlt": "Deux scènes côte à côte : une pièce lancée en l’air sous un grand soleil, puis la même pièce lancée sous la pluie. Sous chaque scène, la même petite balance, parfaitement équilibrée entre pile et face.",
                 "paragraphs": [
-                  "On lance une pièce sous le soleil, puis sous la pluie : elle tombe sur pile aussi souvent par tous les temps.",
-                  "En maths, on écrit : A et B sont indépendants quand P_A(B) = P(B) : savoir A ne change pas la chance de B."
+                  "On lance une pièce sous le soleil, puis sous la pluie : elle tombe sur pile aussi souvent par tous les temps."
                 ],
                 "items": [
                   "La météo du jour → l’événement A",
                   "La pièce qui tombe sur pile → l’événement B",
                   "Pile aussi souvent sous la pluie → P_A(B) = P(B), A et B indépendants"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : A et B sont indépendants quand P_A(B) = P(B) : savoir A ne change pas la chance de B."
               }
             },
             "metadonnees": {
@@ -4610,7 +4604,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Une pièce peut-elle tomber à la fois sur pile et sur face ? » Non : pile et face sont incompatibles, et pas indépendants.",
+        "notes": "• Question : « Une pièce peut-elle tomber à la fois sur pile et sur face ? » Non : pile et face sont incompatibles, et pas indépendants.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4656,8 +4650,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : justifier par le calcul",
+                    "kind": "piege",
+                    "title": "Justifier par le calcul",
                     "text": "Pièges : conclure sans calcul ; confondre indépendants et incompatibles ; comparer P_A(B) à P(A) au lieu de P(B).",
                     "steps": [
                       "Écrire les deux nombres à comparer.",
@@ -4677,7 +4671,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Faire écrire les deux justifications possibles, puis l’erreur à ne pas faire : indépendants n’est pas incompatibles.",
+        "notes": "• Faire écrire les deux justifications possibles, puis l’erreur à ne pas faire : indépendants n’est pas incompatibles.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4725,7 +4719,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur l’étape 3 : on compare P_L(S) à P(S), pas à P(L).\n• Transition : « À vous : exercice 5. »",
+        "notes": "• S’arrêter sur l’étape 3 : on compare P_L(S) à P(S), pas à P(L).\n• Transition : « À vous : exercice 5. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4802,7 +4796,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : écrire les deux nombres à comparer avant de calculer.\n• Pièges : conclure sans calcul ; confondre indépendants et incompatibles ; répondre P(M ∩ B), lue dans l’énoncé ; diviser par P(B) au lieu de P(M).\n• Papier : exercice 5 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : « Une dernière situation reprend tout le cours : exercice 6. »",
+        "notes": "• Réflexion : écrire les deux nombres à comparer avant de calculer.\n• Pièges : conclure sans calcul ; confondre indépendants et incompatibles ; répondre P(M ∩ B), lue dans l’énoncé ; diviser par P(B) au lieu de P(M).\n• Papier : exercice 5 du livret.\n• Transition : « Une dernière situation reprend tout le cours : exercice 6. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4971,7 +4965,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : dessiner l’arbre T, T̄ puis R, R̄ avant de calculer.\n• Pièges : additionner 0,16 et 0,05 ; répondre 0,16, lue sur la branche ; conclure sans comparer.\n• Papier : exercice 6 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Faire remarquer que 30 % des clients fournissent plus de la moitié des retards.\n• Transition : jalon 3.",
+        "notes": "• Réflexion : dessiner l’arbre T, T̄ puis R, R̄ avant de calculer.\n• Pièges : additionner 0,16 et 0,05 ; répondre 0,16, lue sur la branche ; conclure sans comparer.\n• Papier : exercice 6 du livret.\n• Faire remarquer que 30 % des clients fournissent plus de la moitié des retards.\n• Transition : jalon 3.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -5079,7 +5073,7 @@
             }
           }
         },
-        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre l’exemple guidé de la lettre et des sacs.",
+        "notes": "• Si plus de 30 % « Perdu » : reprendre l’exemple guidé de la lettre et des sacs.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5111,7 +5105,7 @@
             }
           }
         },
-        "notes": "• 5 min individuelles, puis projeter la carte de maîtrise.\n• Tous reçoivent les deux questions obligatoires (lire P_A(B), pondérer les probabilités totales), en plus de leurs points faibles.",
+        "notes": "• Tous reçoivent les deux questions obligatoires (lire P_A(B), pondérer les probabilités totales), en plus de leurs points faibles.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -5436,7 +5430,7 @@
               "renderer": "grid",
               "props": {
                 "title": "Fiche mémo : probabilités conditionnelles",
-                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "subtitle": "Chaque carte part d’une question et donne la méthode et son piège.",
                 "items": [
                   {
                     "title": "Contraire et réunion",
@@ -5477,12 +5471,6 @@
                     "title": "Indépendance",
                     "description": "Comment la justifier ?",
                     "back": "A et B sont indépendants si P(A ∩ B) = P(A) × P(B), ou si P_A(B) = P(B). Indépendants n’est pas incompatibles."
-                  },
-                  {
-                    "title": "Référentiel du BTS CG",
-                    "description": "Le programme de mathématiques et l’épreuve E3.",
-                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
-                    "external": true
                   }
                 ],
                 "imprimable": true
@@ -5502,7 +5490,7 @@
             }
           }
         },
-        "notes": "• 90 s de lecture ; la fiche s’imprime pour le classeur de CCF.",
+        "notes": "",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -5572,14 +5560,14 @@
                 "image": "/assets/cours/b2-09/v1/part-du-gateau.webp",
                 "imageAlt": "Un gâteau rond vu de dessus, coupé en parts toutes égales. Quelques parts portent une fraise, les autres non. Une main tend une assiette vers une part prise au hasard.",
                 "paragraphs": [
-                  "Un gâteau coupé en parts égales ; quelques parts portent une fraise, et l’on prend une part au hasard.",
-                  "En maths, on écrit : P(A) = nombre de cas de A ÷ nombre de cas en tout, quand tous les cas ont la même chance. Une probabilité est toujours entre 0 et 1."
+                  "Un gâteau coupé en parts égales ; quelques parts portent une fraise, et l’on prend une part au hasard."
                 ],
                 "items": [
                   "Toutes les parts du gâteau → tous les cas possibles, l’univers",
                   "Les parts avec une fraise → l’événement A",
                   "La part du gâteau qui porte une fraise → P(A), entre 0 et 1"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : P(A) = nombre de cas de A ÷ nombre de cas en tout, quand tous les cas ont la même chance. Une probabilité est toujours entre 0 et 1."
               }
             },
             "metadonnees": {
@@ -5610,14 +5598,14 @@
                 "image": "/assets/cours/b2-09/v1/sac-de-billes.webp",
                 "imageAlt": "Un sac en toile ouvert, rempli de billes. Les billes rouges sont regroupées d’un côté, toutes les autres, bleues, vertes et jaunes, de l’autre. Une étiquette « pas rouge » entoure le second groupe.",
                 "paragraphs": [
-                  "Dans le sac, des billes rouges et des billes d’autres couleurs : toute bille qui n’est pas rouge est d’une autre couleur.",
-                  "En maths, on écrit : P(Ā) = 1 − P(A) : le contraire Ā regroupe tous les cas où A n’arrive pas."
+                  "Dans le sac, des billes rouges et des billes d’autres couleurs : toute bille qui n’est pas rouge est d’une autre couleur."
                 ],
                 "items": [
                   "Les billes rouges → l’événement A",
                   "Toutes les autres billes → le contraire Ā",
                   "Le sac entier → tous les cas, de probabilité 1"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : P(Ā) = 1 − P(A) : le contraire Ā regroupe tous les cas où A n’arrive pas."
               }
             },
             "metadonnees": {
@@ -5648,14 +5636,14 @@
                 "image": "/assets/cours/b2-09/v1/deux-cerceaux.webp",
                 "imageAlt": "Deux cerceaux posés au sol, un rouge et un bleu, qui se chevauchent. Des jouets sont rangés dedans : certains dans le seul cerceau rouge, d’autres dans le seul bleu, quelques-uns dans la partie commune.",
                 "paragraphs": [
-                  "Deux cerceaux posés au sol se chevauchent ; des jouets sont rangés dedans, certains dans la partie commune.",
-                  "En maths, on écrit : A ∩ B, « A et B », regroupe les cas où A et B arrivent à la fois : la partie commune."
+                  "Deux cerceaux posés au sol se chevauchent ; des jouets sont rangés dedans, certains dans la partie commune."
                 ],
                 "items": [
                   "Le cerceau rouge → l’événement A",
                   "Le cerceau bleu → l’événement B",
                   "Les jouets de la partie commune → A ∩ B, A et B à la fois"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : A ∩ B, « A et B », regroupe les cas où A et B arrivent à la fois : la partie commune."
               }
             },
             "metadonnees": {
@@ -5694,14 +5682,14 @@
                 "image": "/assets/cours/b2-09/v1/cerceaux-reunis.webp",
                 "imageAlt": "Les deux cerceaux qui se chevauchent, vus de dessus. Une main compte les jouets un à un : ceux de la partie commune portent une seule pastille, pas deux.",
                 "paragraphs": [
-                  "On compte les jouets des deux cerceaux ; ceux de la partie commune ne se comptent qu’une fois.",
-                  "En maths, on écrit : P(A ∪ B) = P(A) + P(B) − P(A ∩ B) : A ∪ B, « A ou B », ne compte qu’une fois la partie commune."
+                  "On compte les jouets des deux cerceaux ; ceux de la partie commune ne se comptent qu’une fois."
                 ],
                 "items": [
                   "Les jouets dans au moins un cerceau → A ∪ B, A ou B",
                   "La partie commune, comptée deux fois si l’on ajoute les deux cerceaux → P(A ∩ B), à retirer une fois",
                   "La pastille unique → chaque cas compté une seule fois"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : P(A ∪ B) = P(A) + P(B) − P(A ∩ B) : A ∪ B, « A ou B », ne compte qu’une fois la partie commune."
               }
             },
             "metadonnees": {
@@ -5732,15 +5720,15 @@
                 "image": "/assets/cours/b2-09/v1/commode-a-tiroirs.webp",
                 "imageAlt": "Une grande commode en bois : chaque rangée de tiroirs porte une taille de chaussettes, chaque colonne une couleur. Une étiquette sur chaque tiroir indique combien de paires il contient, et une étiquette au bout de chaque rangée en donne le total.",
                 "paragraphs": [
-                  "Une commode range les chaussettes par taille, une rangée par taille, et par couleur, une colonne par couleur ; une étiquette compte chaque tiroir.",
-                  "En maths, on écrit : Un tableau croisé compte dans chaque case les cas de A ∩ B ; les totaux des lignes et des colonnes redonnent l’effectif total."
+                  "Une commode range les chaussettes par taille, une rangée par taille, et par couleur, une colonne par couleur ; une étiquette compte chaque tiroir."
                 ],
                 "items": [
                   "Une rangée de tiroirs → une ligne, un événement A",
                   "Une colonne de tiroirs → une colonne, un événement B",
                   "Un tiroir → une case, l’effectif de A ∩ B",
                   "L’étiquette au bout de la rangée → l’effectif de A"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : Un tableau croisé compte dans chaque case les cas de A ∩ B ; les totaux des lignes et des colonnes redonnent l’effectif total."
               }
             },
             "metadonnees": {
@@ -5842,15 +5830,15 @@
                 "image": "/assets/cours/b2-09/v1/ruisseaux-qui-se-partagent.webp",
                 "imageAlt": "Une source en haut d’une colline. Son eau se partage en deux ruisseaux, l’un large, l’autre étroit ; chaque ruisseau se partage à nouveau en deux. En bas, quatre petits bassins recueillent l’eau, plus ou moins remplis.",
                 "paragraphs": [
-                  "L’eau d’une source se partage en deux ruisseaux, puis chaque ruisseau se partage encore ; en bas, quatre petits bassins.",
-                  "En maths, on écrit : Sur un arbre pondéré, P(A ∩ B) = P(A) × P_A(B) : on multiplie le long d’un chemin, et les branches d’un même nœud somment à 1."
+                  "L’eau d’une source se partage en deux ruisseaux, puis chaque ruisseau se partage encore ; en bas, quatre petits bassins."
                 ],
                 "items": [
                   "La source → l’univers, de probabilité 1",
                   "Le premier partage → la première génération, P(A) et P(Ā)",
                   "Le second partage → la seconde génération, P_A(B) et P_A(B̄)",
                   "L’eau d’un petit bassin → le produit le long du chemin"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : Sur un arbre pondéré, P(A ∩ B) = P(A) × P_A(B) : on multiplie le long d’un chemin, et les branches d’un même nœud somment à 1."
               }
             },
             "metadonnees": {
@@ -5965,8 +5953,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges de l’arbre",
+                    "kind": "piege",
+                    "title": "Les pièges de l’arbre",
                     "text": "Pièges : lire P(A ∩ B) sur une branche, où l’on lit P_A(B) ; additionner le long d’un chemin ; compléter un nœud avec la branche d’un autre nœud.",
                     "steps": [
                       "Nommer les événements avec une lettre et une phrase.",
@@ -6029,14 +6017,14 @@
                 "image": "/assets/cours/b2-09/v1/loupe-sur-une-ligne.webp",
                 "imageAlt": "Un grand registre ouvert sur une table, couvert de lignes et de colonnes cochées. Une loupe posée dessus grossit une seule ligne ; le reste de la page est flou.",
                 "paragraphs": [
-                  "Une loupe posée sur un grand registre ne laisse voir qu’une seule ligne ; on compte les coches de cette ligne seulement.",
-                  "En maths, on écrit : P_A(B) = effectif de A ∩ B ÷ effectif de A : sachant A, on ne regarde que la ligne A."
+                  "Une loupe posée sur un grand registre ne laisse voir qu’une seule ligne ; on compte les coches de cette ligne seulement."
                 ],
                 "items": [
                   "La ligne sous la loupe → la condition A",
                   "Les cases cochées de cette ligne → les cas de A ∩ B",
                   "Le reste du registre, flou → les cas hors de A, qu’on ne compte pas"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : P_A(B) = effectif de A ∩ B ÷ effectif de A : sachant A, on ne regarde que la ligne A."
               }
             },
             "metadonnees": {
@@ -6082,8 +6070,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges du tableau",
+                    "kind": "piege",
+                    "title": "Les pièges du tableau",
                     "text": "Pièges : diviser par l’effectif total ; diviser par la colonne au lieu de la ligne, ce qui donne P_B(A).",
                     "steps": [
                       "Souligner la condition dans la phrase : « parmi… », « sachant… ».",
@@ -6230,8 +6218,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges des probabilités totales",
+                    "kind": "piege",
+                    "title": "Les pièges des probabilités totales",
                     "text": "Pièges : additionner les probabilités conditionnelles sans les pondérer ; oublier un chemin ; sommer sur des événements qui ne forment pas une partition.",
                     "steps": [
                       "Nommer la partition.",
@@ -6376,8 +6364,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges du sens",
+                    "kind": "piege",
+                    "title": "Les pièges du sens",
                     "text": "Pièges : répondre P_A(B), lue sur la branche, quand on demande P_B(A) ; répondre P(A) en oubliant la condition ; diviser par P(A).",
                     "steps": [
                       "Écrire la probabilité cherchée avec sa condition en indice.",
@@ -6574,14 +6562,14 @@
                 "image": "/assets/cours/b2-09/v1/piece-et-meteo.webp",
                 "imageAlt": "Deux scènes côte à côte : une pièce lancée en l’air sous un grand soleil, puis la même pièce lancée sous la pluie. Sous chaque scène, la même petite balance, parfaitement équilibrée entre pile et face.",
                 "paragraphs": [
-                  "On lance une pièce sous le soleil, puis sous la pluie : elle tombe sur pile aussi souvent par tous les temps.",
-                  "En maths, on écrit : A et B sont indépendants quand P_A(B) = P(B) : savoir A ne change pas la chance de B."
+                  "On lance une pièce sous le soleil, puis sous la pluie : elle tombe sur pile aussi souvent par tous les temps."
                 ],
                 "items": [
                   "La météo du jour → l’événement A",
                   "La pièce qui tombe sur pile → l’événement B",
                   "Pile aussi souvent sous la pluie → P_A(B) = P(B), A et B indépendants"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : A et B sont indépendants quand P_A(B) = P(B) : savoir A ne change pas la chance de B."
               }
             },
             "metadonnees": {
@@ -6632,8 +6620,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : justifier par le calcul",
+                    "kind": "piege",
+                    "title": "Justifier par le calcul",
                     "text": "Pièges : conclure sans calcul ; confondre indépendants et incompatibles ; comparer P_A(B) à P(A) au lieu de P(B).",
                     "steps": [
                       "Écrire les deux nombres à comparer.",
@@ -6709,7 +6697,7 @@
               "renderer": "grid",
               "props": {
                 "title": "Fiche mémo : probabilités conditionnelles",
-                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "subtitle": "Chaque carte part d’une question et donne la méthode et son piège.",
                 "items": [
                   {
                     "title": "Contraire et réunion",
@@ -6750,12 +6738,6 @@
                     "title": "Indépendance",
                     "description": "Comment la justifier ?",
                     "back": "A et B sont indépendants si P(A ∩ B) = P(A) × P(B), ou si P_A(B) = P(B). Indépendants n’est pas incompatibles."
-                  },
-                  {
-                    "title": "Référentiel du BTS CG",
-                    "description": "Le programme de mathématiques et l’épreuve E3.",
-                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
-                    "external": true
                   }
                 ],
                 "imprimable": true

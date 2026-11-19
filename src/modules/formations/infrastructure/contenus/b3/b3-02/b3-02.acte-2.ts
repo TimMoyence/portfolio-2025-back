@@ -1,9 +1,13 @@
 import { CLASSEURS_B3_01 } from '../b3-01/b3-01.donnees';
 import {
   graphiqueTrompeur,
+  SOCLE_DU_VOTE_DES_TRENTE_SECONDES,
   voteDesTrenteSecondes,
 } from '../b3-01/b3-01.acte-3';
-import { voteDuMeilleurTrimestre } from '../b3-01/b3-01.acte-2';
+import {
+  SOCLE_DU_VOTE_DU_DELAI,
+  voteDuMeilleurTrimestre,
+} from '../b3-01/b3-01.acte-2';
 import {
   MEILLEUR_TRIMESTRE_B3_02,
   questionChiffreeB302,
@@ -28,16 +32,7 @@ const REPRISE_ET_T_COMMANDES: moteur.PieceReservee = {
 
 const DATES_ET_STATISTIQUES: moteur.Acte = [
   moteur.voteQuiOuvre(
-    {
-      screenId: 'B3-02-A2-01-VOTE-DELAI',
-      titre: 'Vote : vendredi, lundi',
-      dureeMinutes: 2,
-      concepts: ['calcul-sur-dates'],
-      notes: moteur.puces(
-        'Temps « réfléchir » des dates : vote non noté, 1 min de vote et 1 min de révélation.',
-        'Faire dire ce que promet le contrat de Norvane : une livraison en 5 jours ouvrés.',
-      ),
-    },
+    { ...SOCLE_DU_VOTE_DU_DELAI, screenId: 'B3-02-A2-01-VOTE-DELAI' },
     [
       moteur.vote(
         'b3-02-a2-delai',
@@ -135,7 +130,6 @@ const DATES_ET_STATISTIQUES: moteur.Acte = [
       dureeMinutes: 7,
       concepts: ['calcul-sur-dates', 'indicateur-statistique'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 6),
         'Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne P.',
         'Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; oublier l’agence ou l’année ; MEDIANE sous un filtre.',
       ),
@@ -172,7 +166,6 @@ const DATES_ET_STATISTIQUES: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Règle 4 du cahier : « Pour un délai typique je prends la médiane ; pour un taux, le ratio des sommes. »',
         'Transition : « Et si l’export d’octobre arrive ? Un vote. »',
       ],
@@ -198,7 +191,6 @@ const CROISER: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['tableau-croise-dynamique'],
       notes: moteur.puces(
-        'Temps « réfléchir » du tableau structuré : vote non noté, 1 min de vote et 1 min de révélation.',
         'Révélation : coller trois lignes sous les données ; =SOMME(L2:L4039) ne bouge pas.',
       ),
     },
@@ -273,7 +265,6 @@ const CROISER: moteur.Acte = [
       dureeMinutes: 7,
       concepts: ['tableau-croise-dynamique'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 6),
         'Réflexion : faire dire ce que chaque TCD montre en lignes, en colonnes et en valeurs.',
         'Pièges : % du total général ou de la colonne ; filtre annee oublié au premier TCD ; resté actif au second ; trimestres groupés sans les années.',
       ),
@@ -305,7 +296,6 @@ const CROISER: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Règle 5 du cahier : « J’écris le dénominateur de chaque pourcentage. »',
         'Transition : « Un graphique préparé pour le comité. »',
       ],
@@ -347,7 +337,7 @@ const MONTRER: moteur.Acte = [
       concepts: ['choix-du-graphique'],
       notes: moteur.puces(
         'Ouvrir d’abord le classeur de reprise avec T_Commandes, tous : l’exercice 6 s’y fait.',
-        'Temps « réfléchir » des graphiques : vote non noté ; révélation : redessiner au tableau les deux barres depuis zéro.',
+        'À la révélation, redessiner au tableau les deux barres depuis zéro.',
       ),
     },
     [
@@ -398,14 +388,8 @@ const MONTRER: moteur.Acte = [
 const DECIDER: moteur.Acte = [
   moteur.voteQuiOuvre(
     {
+      ...SOCLE_DU_VOTE_DES_TRENTE_SECONDES,
       screenId: 'B3-02-A2-14-VOTE-TRENTE-SECONDES',
-      titre: 'Vote : trente secondes',
-      dureeMinutes: 2,
-      concepts: ['tableau-de-bord'],
-      notes: moteur.puces(
-        'Temps « réfléchir » du tableau de bord : vote non noté, 1 min de vote et 1 min de révélation.',
-        'Faire dire ce que Nadia fera de chaque option devant le comité.',
-      ),
     },
     [
       voteDesTrenteSecondes(
@@ -477,7 +461,6 @@ const DECIDER: moteur.Acte = [
         'choix-du-graphique',
       ],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 9),
         'Réflexion : faire dire chaque indicateur et sa comparaison avant de construire, puis la question à laquelle répond le graphique.',
         'Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; l’axe qui ne part pas de zéro.',
       ),
@@ -519,7 +502,6 @@ const DECIDER: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Projeter l’histogramme réussi : titre qui conclut, axe depuis zéro.',
         'Règle 6 du cahier : « Je montre la méthode de chaque chiffre et le nombre de lignes retenues. »',
         'Transition : « Toutes les formules sur une page, à garder. »',

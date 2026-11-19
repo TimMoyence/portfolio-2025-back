@@ -903,7 +903,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['point-de-pourcentage'],
       notes: moteur.puces(
-        moteur.REPONSES_SOUS_CHAQUE_ETAPE,
         'À l’étape 1, guetter « −2,3 % » : exiger « points ».',
       ),
       proprietes: {
@@ -1283,7 +1282,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['evolutions-successives'],
       notes: moteur.puces(
-        moteur.REPONSES_SOUS_CHAQUE_ETAPE,
         'Pièges : étapes 4-5, retirer 10 % de 13,75 € (12,375 € au lieu de 12,50 €) ; étape 6, retirer 20 % du TTC (2 880 € au lieu de 3 000 €).',
       ),
       proprietes: {
@@ -1398,7 +1396,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['indice-base-100', 'taux-moyen'],
       notes: moteur.puces(
-        moteur.REPONSES_SOUS_CHAQUE_ETAPE,
         'Pièges : lire 119,10 comme +119,10 % ; diviser 19,10 par 3 (6,37 %).',
         'Vérifier que chacun sait taper 1,19102 ^ (1 ÷ 3) sur sa calculatrice.',
       ),
@@ -1662,7 +1659,6 @@ const ACTE_3: moteur.Acte = [
         '90 s de rédaction, puis lire deux réponses.',
         'Écarter les phrases sans source ou qui ne parlent que du rythme.',
         'Calcul attendu : 1 ÷ 1,1597 − 1 ≈ −13,8 % de valeur réelle pour des tarifs inchangés depuis 2019.',
-        'Transition : jalon 3, puis pause de 15 min.',
       ),
     },
     'reflection',
@@ -2299,7 +2295,6 @@ const ACTE_5: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['moyenne-ponderee'],
       notes: moteur.puces(
-        moteur.REPONSES_SOUS_CHAQUE_ETAPE,
         'Étapes difficiles : 5 (que serait la marge avec la répartition de 2024 ?) et 6 (négation d’un « si… alors » : « il existe… et… »).',
       ),
       proprietes: {
@@ -3420,7 +3415,6 @@ const ACTE_6: moteur.Acte = [
           href: 'https://www.insee.fr/fr/statistiques/serie/011814630',
           external: true,
         },
-        moteur.REFERENTIEL_DU_BTS_CG,
       ],
     },
   ),
@@ -3444,7 +3438,6 @@ const ACTE_6: moteur.Acte = [
         'controle-coherence',
       ],
       notes: moteur.puces(
-        '90 s de lecture.',
         'Relance : « Quelle carte pour "le taux global baisse alors que chaque taux est stable" ? » (moyenne pondérée).',
       ),
     },
@@ -3452,7 +3445,7 @@ const ACTE_6: moteur.Acte = [
     {
       title: 'Fiche mémo : quelle méthode pour quelle question ?',
       subtitle:
-        'À garder pour le CCF : chaque carte part d’une question et donne la méthode et son contrôle.',
+        'Chaque carte part d’une question et donne la méthode et son contrôle.',
       imprimable: true,
       items: [
         {

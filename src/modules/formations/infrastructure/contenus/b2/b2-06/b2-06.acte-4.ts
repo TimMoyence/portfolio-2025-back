@@ -163,7 +163,6 @@ export const ACTE_4: moteur.Acte = [
         description: 'Quelles fonctions ?',
         back: 'EXP, LN, PENTE(z ; x), ORDONNEE.ORIGINE(z ; x). Paramètres figés par des $ avant de recopier.',
       },
-      moteur.REFERENTIEL_DU_BTS_CG,
     ],
   ),
 ];

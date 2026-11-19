@@ -129,9 +129,8 @@ tout », « Parmi qui ? », « Parmi → je multiplie », « Des personnes, pas 
 « Deux % qu'on soustrait : des points », « La marque se lit sur l'étiquette »). Pas d'encadré
 « Au CCF » : les pièges sont travaillés dans les exercices et leurs corrections.
 
-Chaque exercice annonce ses temps dans les notes formateur, sous la forme
-`• Temps : réflexion N min · travail N min · correction N min`, dont la somme est la durée de
-l'écran. La correction se dévoile sur l'écran de l'exercice (`correctionSurPlace`).
+La durée de chaque exercice additionne réflexion, travail et correction ; les notes formateur
+ne la répètent pas. La correction se dévoile sur l'écran de l'exercice (`correctionSurPlace`).
 
 ### 2.4 Règles de structure
 
@@ -243,7 +242,7 @@ minutes au plus. Somme : 49 + 36 + 37 + 38 = 160.
     « + 16,7 % » (`base-arrivee`).
 - Révélation « Deux réflexes à garder » : 15 % de 80, c'est 0,15 × 80 = 12 ; une hausse se rapporte
   au prix de départ : 10 ÷ 50 = 0,20. « La deuxième question revient à l'acte 3. »
-- Notes : `NOTES_DU_VOTE_A_DEUX_QUESTIONS` ; repérer les postes sous 50 %.
+- Notes : repérer les postes sous 50 %.
 
 #### A1-04 · `B1-01-A1-04-DOSSIER` — 2 min · v2 `table` · catalogue
 
@@ -500,7 +499,6 @@ minutes au plus. Somme : 49 + 36 + 37 + 38 = 160.
     (`marque-confondue-avec-marge`).
 - Révélation « Deux pourcentages qui se ressemblent » : 24 − 18 = 6 points, soit une évolution de
   (24 − 18) ÷ 18 ≈ 33,3 % ; 90 ÷ 240 = 37,5 % du prix de vente, 90 ÷ 150 = 60 % du coût d'achat.
-- Notes : `notesDuVoteQuiOuvreLaNotion(3)`.
 
 #### A3-02 · `B1-01-A3-02-ILLUSTRATION-CODE` — 1 min · v2 `illustration` · catalogue
 
@@ -578,7 +576,7 @@ minutes au plus. Somme : 49 + 36 + 37 + 38 = 160.
 #### A4-05 · `B1-01-A4-05-FICHE-MEMO` — 2 min · v2 `grid` · catalogue
 
 - Titre public : « Fiche mémo : proportions et pourcentages »
-- Neuf cartes et le référentiel (`REFERENTIEL_DU_BTS_CG`) :
+- Neuf cartes :
   - « Proportion » · « Une part d'un tout ? » · « p = partie ÷ total. Entre 0 et 1, soit 0 % et
     100 %. »
   - « Partie ou total » · « Je connais la part ? » · « partie = p × total ; total = partie ÷ p. »

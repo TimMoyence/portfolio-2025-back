@@ -80,7 +80,6 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['mise-en-forme-des-paragraphes'],
       notes: moteur.puces(
-        'Temps « réfléchir » de l’import : vote non noté, 1 min de vote et 1 min de révélation.',
         'Révélation : ouvrir la note dans le Bloc-notes, une ligne vide entre chaque ligne ; c’est ce qu’on va retirer.',
       ),
     },
@@ -188,7 +187,6 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 12,
       concepts: ['texte-brut'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 11),
         'Réflexion : faire relire les quatre étapes avant de commencer ; passer dans les rangs dès l’étape 2.',
         'Pièges : chercher ^p seul ; remplacer les espaces avant les paragraphes vides ; noter le second passage, qui annonce 0.',
       ),
@@ -217,7 +215,6 @@ export const ACTE_1: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Règles 1 et 2, dites à la correction : « J’importe le texte seul, puis je le mets en forme dans Word » ; « Je travaille marques affichées : jamais de ligne vide ni d’espace pour espacer ou aligner. »',
         'Transition : « La note est propre ; faisons-en des titres : un vote. »',
       ],
@@ -240,7 +237,6 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['styles-et-theme'],
       notes: moteur.puces(
-        'Temps « réfléchir » des styles : vote non noté, 1 min de vote et 1 min de révélation.',
         'Révélation : ouvrir le volet de navigation ; le titre mis en gras à la main n’y figure pas.',
       ),
     },
@@ -421,7 +417,6 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['styles-et-theme'],
       notes: moteur.puces(
-        moteur.REPONSES_SOUS_CHAQUE_ETAPE,
         'Chacun le fait dans sa note : ce titre est le premier de l’exercice 2.',
       ),
       proprietes: {
@@ -491,7 +486,6 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 13,
       concepts: ['styles-et-theme'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 12),
         'Réflexion : faire repérer dans la note les deux formes de numéro, « 1. » et « 1.1 », avant de styler.',
         'Pièges : tout en Titre 1 ; oublier l’annexe ; styler la ligne « De : … » en titre.',
       ),
@@ -520,7 +514,6 @@ export const ACTE_1: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Règle 3, dite à la correction : « Un titre reçoit un style, jamais une mise en forme à la main. »',
         'Transition : « À la main, par un style ou par le thème ? Un tri. »',
       ],
@@ -545,7 +538,6 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['mise-en-forme-des-caracteres', 'styles-et-theme'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 7),
         'Réflexion : pour chaque carte, une question : combien de passages ce geste doit-il changer ?',
       ),
       proprietes: {
@@ -636,7 +628,6 @@ export const ACTE_1: moteur.Acte = [
       notes: [
         'Corriger case par case : demander combien de passages chaque geste change.',
         'Règle 4, dite à la correction : « La police et les couleurs viennent du thème. »',
-        moteur.PAUSE_HORS_DUREE,
       ],
     },
     [

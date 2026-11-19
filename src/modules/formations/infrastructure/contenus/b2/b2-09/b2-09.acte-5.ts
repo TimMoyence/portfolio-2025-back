@@ -168,7 +168,6 @@ export const ACTE_5: moteur.Acte = [
         description: 'Comment la justifier ?',
         back: 'A et B sont indépendants si P(A ∩ B) = P(A) × P(B), ou si P_A(B) = P(B). Indépendants n’est pas incompatibles.',
       },
-      moteur.REFERENTIEL_DU_BTS_CG,
     ],
   ),
 ];

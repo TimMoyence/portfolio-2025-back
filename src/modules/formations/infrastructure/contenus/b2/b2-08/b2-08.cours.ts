@@ -149,10 +149,8 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['fonction-derivee', 'optimisation'],
       notes: moteur.puces(
-        'Récapitulatif du cours 7 : deux votes non notés, une question après l’autre, sans débat entre elles.',
         'Avant la révélation, faire dériver 5x³ − 2x + 7 au tableau à main levée : 15x² − 2, le 3 saute devant.',
-        'La révélation s’ouvre après la question 2 : revenir sur l’écran d’image de chaque erreur, la boule de neige, puis le sommet.',
-        'Papier : vote à main levée sur chaque question.',
+        'À la révélation, revenir sur l’écran d’image de chaque erreur : la boule de neige, puis le sommet.',
       ),
     },
     [
@@ -340,7 +338,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['derivees-composees'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire écrire u, v, u′, v′ sur quatre lignes avant toute formule.',
       ),
     },
@@ -365,8 +362,8 @@ const ACTE_2: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : les pièges du produit et du quotient',
+          kind: 'piege',
+          title: 'Les pièges du produit et du quotient',
           text: 'Pièges : multiplier les dérivées, u′ × v′ ; écrire uv′ − u′v au numérateur ; oublier le carré du dénominateur.',
           steps: [
             'Écrire u, v, u′ et v′ sur quatre lignes.',
@@ -385,7 +382,7 @@ const ACTE_2: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['derivees-composees'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -441,7 +438,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['derivees-composees'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire u, v, u′, v′ pour chaque fonction avant la calculatrice.',
         'Pièges : u′ × v′ ; le numérateur du quotient à l’envers ; le carré du dénominateur oublié ; f(a) au lieu de f′(a).',
         'Papier : exercice 1 du livret.',
@@ -498,7 +494,6 @@ const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Transition : « Et quand l’exponentielle contient une fonction ? Un vote pour le deviner. »',
       ],
     },
@@ -527,7 +522,7 @@ const ACTE_2: moteur.Acte = [
       titre: 'Vote : dériver e^u et ln u',
       dureeMinutes: 4,
       concepts: ['derivees-composees'],
-      notes: moteur.notesDuVoteQuiRelanceLaNotion(1),
+      notes: '',
     },
     [
       moteur.vote(
@@ -578,7 +573,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['derivees-composees', 'logarithme-neperien'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Montrer une sortie de calcul formel au vidéoprojecteur, puis la vérifier en une valeur simple.',
       ),
     },
@@ -607,8 +601,8 @@ const ACTE_2: moteur.Acte = [
           text: 'Quand l’expression est longue, un logiciel de calcul formel (GeoGebra, Xcas) donne la dérivée. On vérifie sa sortie à la main en une valeur simple. Pour (2x + 1)/(x² + 1), il affiche (−2x² − 2x + 2)/(x² + 1)² ; en x = 0, la formule du quotient donne (2 × 1 − 1 × 0)/1 = 2, et la sortie aussi.',
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : les pièges de e^u et ln u',
+          kind: 'piege',
+          title: 'Les pièges de e^u et ln u',
           text: 'Pièges : oublier u′ ; écrire 1/u pour (ln u)′ ; recopier une sortie de logiciel sans la vérifier.',
           steps: [
             'Écrire u et u′.',
@@ -628,7 +622,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['derivees-composees', 'variations-d-une-fonction'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire u et u′ avant tout calcul ; pour la sortie du logiciel, la vérifier en x = 0.',
         'Pièges : u′ oublié ; f(a) au lieu de f′(a) ; un extremum conclu dès que f′ s’annule.',
         'Papier : exercice 2 du livret.',
@@ -679,7 +672,7 @@ const ACTE_2: moteur.Acte = [
         ],
       },
     },
-    moteur.CORRECTION_AVANT_LA_PREMIERE_PAUSE,
+    moteur.CORRECTION_DE_DEUX_MINUTES,
     [
       [
         'b2-08-a2-exp-u',
@@ -711,7 +704,6 @@ const ACTE_2: moteur.Acte = [
         'Je sais dériver un produit, un quotient, e^u et ln u, et vérifier une sortie de calcul formel.',
     },
     'Si plus de 30 % « Perdu » : reprendre l’écran du potager après la pause.',
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 
@@ -722,7 +714,7 @@ const ACTE_3: moteur.Acte = [
       titre: 'Vote : que coûte une unité de plus ?',
       dureeMinutes: 4,
       concepts: ['fonctions-economiques'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(2),
+      notes: '',
     },
     [
       moteur.vote(
@@ -834,7 +826,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['fonctions-economiques'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Relier aux deux graphiques : la pente de la tangente, puis le croisement des deux courbes.',
       ),
     },
@@ -863,8 +854,8 @@ const ACTE_3: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : nommer le bon coût',
+          kind: 'piege',
+          title: 'Nommer le bon coût',
           text: 'Pièges : prendre C′(q) pour le coût moyen ; chercher le minimum du coût moyen là où le coût marginal est minimal ; donner q pour le coût.',
           steps: [
             'Coût d’une unité en moyenne : diviser par q.',
@@ -883,7 +874,7 @@ const ACTE_3: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['fonctions-economiques', 'derivees-composees'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -941,7 +932,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['fonctions-economiques', 'optimisation'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
         'Réflexion : écrire C′(q) et CM(q) avant de calculer.',
         'Pièges : coût moyen et coût marginal confondus ; q donné pour le coût.',
         'Papier : exercice 3 du livret.',
@@ -993,7 +983,6 @@ const ACTE_3: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Transition : « Du coût au prix : un vote sur la recette et l’équilibre. »',
       ],
     },
@@ -1018,7 +1007,7 @@ const ACTE_3: moteur.Acte = [
       titre: 'Vote : recette et équilibre du marché',
       dureeMinutes: 4,
       concepts: ['fonctions-economiques', 'resolution-par-logarithme'],
-      notes: moteur.notesDuVoteQuiRelanceLaNotion(2),
+      notes: '',
     },
     [
       moteur.vote(
@@ -1084,7 +1073,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['fonctions-economiques', 'resolution-par-logarithme'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Relier au graphique : le croisement est la solution de D(p) = O(p).',
       ),
     },
@@ -1114,8 +1102,8 @@ const ACTE_3: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : les pièges du marché',
+          kind: 'piege',
+          title: 'Les pièges du marché',
           text: 'Pièges : prendre la quantité pour la recette ; diviser au lieu de passer par ln ; ajouter les k au lieu de les soustraire en regroupant les e.',
           steps: [
             'Écrire R(p) = p × D(p), puis la dériver comme un produit.',
@@ -1135,7 +1123,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['fonctions-economiques', 'derivees-composees'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
         'Réflexion : écrire l’équation d’équilibre et R(p) avant la calculatrice.',
         'Pièges : les k ajoutés au lieu d’être soustraits ; u′ × v′ ; la quantité prise pour la recette ; le prix donné pour la recette.',
         'Papier : exercice 4 du livret.',
@@ -1179,7 +1166,7 @@ const ACTE_3: moteur.Acte = [
         ],
       },
     },
-    moteur.CORRECTION_AVANT_LA_SECONDE_PAUSE,
+    moteur.CORRECTION_DE_DEUX_MINUTES,
     [
       [
         'b2-08-a3-prix-equilibre',
@@ -1207,7 +1194,6 @@ const ACTE_3: moteur.Acte = [
         'Je sais lire le coût marginal comme C′(q), trouver le minimum du coût moyen et un prix d’équilibre.',
     },
     'Si plus de 30 % « Perdu » : reprendre le graphique du coût moyen après la pause.',
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 
@@ -1218,7 +1204,7 @@ const ACTE_4: moteur.Acte = [
       titre: 'Vote : combien de solutions, et où ?',
       dureeMinutes: 4,
       concepts: ['resolution-approchee'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
+      notes: '',
     },
     [
       moteur.vote(
@@ -1345,7 +1331,6 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['resolution-approchee'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire justifier « une seule solution » par les trois mots : strictement monotone, k entre les valeurs aux bornes.',
       ),
     },
@@ -1374,8 +1359,8 @@ const ACTE_4: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : justifier, puis encadrer',
+          kind: 'piege',
+          title: 'Justifier, puis encadrer',
           text: 'Pièges : annoncer une solution sans regarder les variations ; donner la borne du mauvais côté ; garder la mauvaise moitié.',
           steps: [
             'Citer la stricte monotonie et les valeurs aux bornes.',
@@ -1394,7 +1379,7 @@ const ACTE_4: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['resolution-approchee'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1452,7 +1437,6 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['resolution-approchee'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
         'Réflexion : écrire les variations de N et les valeurs aux bornes avant de calculer.',
         'Pièges : compter les solutions sans les variations ; garder la mauvaise moitié ; la valeur par excès au lieu de la valeur par défaut.',
         'Papier : exercice 5 du livret, calculatrice en mode table.',
@@ -1507,7 +1491,6 @@ const ACTE_4: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Transition : « Le balayage, maintenant au tableur : exercice 6. »',
       ],
     },
@@ -1539,7 +1522,6 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['tableur', 'resolution-approchee'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
         'Réflexion : écrire sur papier la formule de B2, parenthèses du dénominateur comprises.',
         'Erreurs à chercher : EXP(0,5*A2) sans le signe moins ; les parenthèses du dénominateur oubliées.',
         'Papier : formule écrite sur la copie, puis les valeurs à la calculatrice en mode table.',

@@ -112,7 +112,7 @@ describe('B1-05 — les écrans « pour comprendre »', () => {
     MOTS_DU_COURS,
   );
 
-  it('B105-M2 · garde une seule page par notion, chacune avec sa méthode et sans encadré « Au CCF »', () => {
+  it('B105-M2 · garde une seule page par notion, chacune avec sa méthode et sans encadré « Les pièges »', () => {
     expect(fiche.pagesDeCours(COURS_B1_05).map((id) => id.slice(12))).toEqual([
       'COURS-CONNECTEURS',
       'COURS-IMPLICATION',
@@ -121,7 +121,9 @@ describe('B1-05 — les écrans « pour comprendre »', () => {
       'COURS-QUANTIFICATEURS',
       'COURS-ORDRE',
     ]);
-    expect(fiche.pagesSansMethodeOuAvecEncadreCcf(COURS_B1_05)).toEqual([]);
+    expect(fiche.pagesSansMethodeOuAvecEncadreDePieges(COURS_B1_05)).toEqual(
+      [],
+    );
   });
 });
 

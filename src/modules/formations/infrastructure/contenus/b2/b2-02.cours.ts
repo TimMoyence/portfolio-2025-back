@@ -130,7 +130,7 @@ const ACTE_1: moteur.Acte = [
       concepts: ['serie-statistique'],
       notes: moteur.puces(
         'Rappeler en une phrase B2-01 : Atelier Rivage a décidé, la banque veut maintenant des chiffres.',
-        'Annoncer le plan : trois notions, chacune en trois temps (réfléchir, comprendre, s’exercer), puis une mini-situation CCF.',
+        'Annoncer le plan : trois notions, chacune en trois temps (réfléchir, comprendre, s’exercer), puis une mini-situation.',
         'Annoncer les deux pauses de 15 minutes, après l’acte 1 et après l’acte 3.',
       ),
     },
@@ -226,7 +226,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 5,
       concepts: ['choix-du-resume'],
       notes: moteur.puces(
-        'Temps « réfléchir » de la notion 1 : 3 min d’écriture individuelle, puis lire trois réponses au pupitre.',
         'Ne rien trancher : la trace écrite suivante répond.',
         'Relance : « Votre nombre dit-il si les clients paient tous à peu près en même temps ? »',
         'Papier : cadre de réponse du livret.',
@@ -292,7 +291,7 @@ const ACTE_1: moteur.Acte = [
         {
           kind: 'method',
           title: 'Trouver la médiane sans se tromper',
-          text: 'Piège : prendre la valeur du milieu de la liste sans l’avoir triée ; ici, on lirait 8, un nombre sans signification. Réflexe CCF : écrire la série triée, dire si l’effectif est pair ou impair, puis donner la médiane avec son unité.',
+          text: 'Piège : prendre la valeur du milieu de la liste sans l’avoir triée ; ici, on lirait 8, un nombre sans signification. Réflexe : écrire la série triée, dire si l’effectif est pair ou impair, puis donner la médiane avec son unité.',
           steps: [
             'Trier la série dans l’ordre croissant.',
             'Effectif impair : la médiane est la valeur du milieu.',
@@ -328,7 +327,7 @@ const ACTE_1: moteur.Acte = [
         'Question d’ouverture : « Les clients A et B ont la même moyenne. Si vous étiez la banque, lequel préféreriez-vous ? Pourquoi ? »',
         'Faire additionner les écarts de A (−2 + 2 − 2 + 2 = 0) : c’est pour cela qu’on les élève au carré.',
         'Piège à faire dire : 50 est en jours², ce n’est pas un délai ; l’écart-type, ≈ 7,07 jours, l’est.',
-        'Relance CCF : « Nos vingt factures, est-ce toutes les factures ou un échantillon ? » Toutes : ECARTYPEP.',
+        'Relance : « Nos vingt factures, est-ce toutes les factures ou un échantillon ? » Toutes : ECARTYPEP.',
       ),
     },
     'lesson',
@@ -353,8 +352,8 @@ const ACTE_1: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : valeur extrême, fonction, unité',
+          kind: 'piege',
+          title: 'Valeur extrême, fonction, unité',
           text: 'Une valeur extrême, comme la facture contestée F105, tire la moyenne et l’écart-type, pas la médiane. Sans pièce prouvant une erreur, on la garde, on la signale et l’on publie la médiane à côté de la moyenne et de l’écart-type. Pièges : donner la variance pour l’écart-type, choisir ECARTYPE pour une population entière.',
           steps: [
             'Toutes les factures de la période : =ECARTYPEP(plage), qui divise par n.',
@@ -386,7 +385,7 @@ const ACTE_1: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 6,
       concepts: ['moyenne', 'mediane', 'ecart-type'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -460,7 +459,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 10,
       concepts: ['mediane', 'moyenne', 'ecart-type', 'choix-du-resume'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 8),
         'Réflexion : chacun relit la trace écrite et note la méthode de chaque question, sans calculer.',
         'Pièges : le milieu de la liste non triée ; une seule des deux valeurs centrales ; ECARTYPE au lieu de ECARTYPEP ; F105 retirée.',
         'Papier : exercice 1 du livret.',
@@ -532,7 +530,7 @@ const ACTE_1: moteur.Acte = [
         ],
       },
     },
-    moteur.CORRECTION_AVANT_LA_PREMIERE_PAUSE,
+    moteur.CORRECTION_DE_DEUX_MINUTES,
     [
       [
         'b2-02-a1-mediane',
@@ -564,7 +562,6 @@ const ACTE_1: moteur.Acte = [
         'Je sais résumer une série par un centre et un écart, et choisir entre moyenne et médiane.',
     },
     'Si plus de 30 % « Perdu » : reprendre la trace écrite A1-06 après la pause.',
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 
@@ -627,10 +624,7 @@ const ACTE_2: moteur.Acte = [
       titre: 'Vote : deux séries qui montent ensemble',
       dureeMinutes: 8,
       concepts: ['correlation'],
-      notes: moteur.puces(
-        'Temps « réfléchir » de la notion 2 : vote non noté.',
-        ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
-      ),
+      notes: '',
     },
     [
       moteur.vote(
@@ -709,7 +703,7 @@ const ACTE_2: moteur.Acte = [
         {
           kind: 'method',
           title: 'Placer G sans se tromper',
-          text: 'Piège : prendre pour G le point de la ligne du milieu du tableau, ou les sommes au lieu des moyennes. G n’est en général aucun des points du nuage. Réflexe CCF : écrire les deux calculs de moyenne, puis placer G sur le graphique avec un symbole distinct.',
+          text: 'Piège : prendre pour G le point de la ligne du milieu du tableau, ou les sommes au lieu des moyennes. G n’est en général aucun des points du nuage. Réflexe : écrire les deux calculs de moyenne, puis placer G sur le graphique avec un symbole distinct.',
           steps: [
             'x̄ : =MOYENNE(plage des x)',
             'ȳ : =MOYENNE(plage des y)',
@@ -740,7 +734,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['correlation'],
       notes: moteur.puces(
-        '2 min, puis 1 min sur son illustration, enchaînées sur la page 1 ; le calcul à la main n’est jamais demandé au CCF : il montre ce que la touche r calcule.',
+        '2 min, puis 1 min sur son illustration, enchaînées sur la page 1 ; le calcul à la main n’est jamais demandé : il montre ce que la touche r calcule.',
         'Question : « Si un point était en haut à gauche de G, quel serait le signe de son produit d’écarts ? » Négatif : il ferait baisser r.',
         'Relier au vote A2-02 : voiles et glaces montent ensemble, r élevé, et pourtant aucune cause.',
         'Faire dire qu’un r de −0,98 autorise aussi une droite, qui descend.',
@@ -770,8 +764,8 @@ const ACTE_2: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : lire r, et rien de plus',
+          kind: 'piege',
+          title: 'Lire r, et rien de plus',
           text: 'Trois pièges. r n’est pas la pente : il ne dit pas de combien y augmente quand x augmente de 1. Un r négatif proche de −1 justifie aussi un ajustement, par une droite qui descend. Corrélation n’est pas causalité : deux séries peuvent monter ensemble parce qu’une troisième chose, la saison ou le temps, les fait varier toutes les deux.',
           steps: [
             '=COEFFICIENT.CORRELATION(plage des x;plage des y)',
@@ -802,7 +796,7 @@ const ACTE_2: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 5,
       concepts: ['nuage-de-points', 'correlation'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -867,7 +861,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 9,
       concepts: ['nuage-de-points', 'correlation'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 7),
         'Réflexion : relire la trace écrite et repérer la touche de r sur la calculatrice.',
         'Pièges : les sommes au lieu des moyennes ; le point du milieu du tableau ; r lu comme la hausse annuelle.',
         'Papier : exercice 2 du livret.',
@@ -935,7 +928,6 @@ const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Transition : « Vérifions G autrement : les écarts au point moyen. »',
       ],
     },
@@ -967,7 +959,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 10,
       concepts: ['nuage-de-points'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 8),
         'Réflexion : prévoir le signe des écarts de la première et de la dernière année.',
         'Piège : l’écart au rang du milieu du tableau au lieu de x̄.',
         'Contrôle à faire dire : les écarts d’une colonne ont une somme nulle.',
@@ -1067,10 +1058,7 @@ const ACTE_3: moteur.Acte = [
       diffusion: 'seance',
       dureeMinutes: 5,
       concepts: ['prevision'],
-      notes: moteur.puces(
-        'Temps « réfléchir » de la notion 3 : 3 min d’écriture, puis lire trois réponses.',
-        'Papier : cadre de réponse du livret.',
-      ),
+      notes: moteur.puces('Papier : cadre de réponse du livret.'),
     },
     'reflection',
     {
@@ -1103,7 +1091,7 @@ const ACTE_3: moteur.Acte = [
       notes: moteur.puces(
         '2 min, puis 1 min sur son illustration ; reprendre les sommes de l’exemple de r (5 et 2) : rien à recalculer.',
         'Question : « Que veut dire a = 2,5 pour la boutique ? » Attendre « 2,5 milliers d’euros de plus par an, en tendance ».',
-        'Faire vérifier le passage par G avant d’accepter une équation : c’est le contrôle du CCF.',
+        'Faire vérifier le passage par G avant d’accepter une équation : c’est le contrôle de toute droite d’ajustement.',
         'Piège à faire dire : PENTE(plage des x;plage des y) donne une autre droite, celle de x en y.',
       ),
     },
@@ -1130,8 +1118,8 @@ const ACTE_3: moteur.Acte = [
         },
         {
           kind: 'method',
-          title: 'Obtenir la droite au CCF',
-          text: 'Piège : inverser les deux plages dans PENTE, ce qui donne une autre droite, ou confondre a et b. Réflexe CCF : écrire l’équation avec ses arrondis, puis la contrôler par G.',
+          title: 'Obtenir la droite',
+          text: 'Piège : inverser les deux plages dans PENTE, ce qui donne une autre droite, ou confondre a et b. Réflexe : écrire l’équation avec ses arrondis, puis la contrôler par G.',
           steps: [
             'a : =PENTE(plage des y;plage des x)',
             'b : =ORDONNEE.ORIGINE(plage des y;plage des x)',
@@ -1192,8 +1180,8 @@ const ACTE_3: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Rédiger au CCF',
+          kind: 'piege',
+          title: 'Rédiger la réponse',
           text: 'Pièges : remplacer x par l’année, arrondir le rang d’un seuil à l’entier inférieur, oublier la réserve. Une réponse complète donne l’équation, la valeur de r et sa lecture, la prévision avec son unité, puis la réserve.',
           steps: [
             '« La droite des moindres carrés a pour équation y = …x + … ; r ≈ …, les points sont presque alignés. »',
@@ -1225,7 +1213,7 @@ const ACTE_3: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 6,
       concepts: ['ajustement-affine', 'prevision'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1292,7 +1280,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 9,
       concepts: ['ajustement-affine', 'prevision'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 7),
         'Réflexion : écrire le rang de 2028 avant tout calcul.',
         'Pièges : séries inversées dans PENTE ; 2028 à la place du rang ; seuil arrondi à l’entier inférieur.',
         'Papier : exercice 4 du livret.',
@@ -1352,10 +1339,7 @@ const ACTE_3: moteur.Acte = [
     },
     {
       minutes: 2,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
-        'Transition : « Faisons le point : prévoir avec une droite. »',
-      ],
+      notes: ['Transition : « Faisons le point : prévoir avec une droite. »'],
     },
     [
       [
@@ -1387,7 +1371,6 @@ const ACTE_3: moteur.Acte = [
       invite:
         'Je sais obtenir la droite des moindres carrés, prévoir avec le rang et trouver l’année d’un seuil.',
     },
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 
@@ -1455,7 +1438,7 @@ const ACTE_4: moteur.Acte = [
   moteur.ecranV2(
     {
       screenId: 'B2-02-A4-01-SITUATION-FIBRE',
-      titre: 'Mini-situation CCF : la fibre optique en France',
+      titre: 'Mini-situation : la fibre optique en France',
       diffusion: 'catalogue',
       dureeMinutes: 3,
       concepts: ['nuage-de-points', 'prevision'],
@@ -1466,7 +1449,7 @@ const ACTE_4: moteur.Acte = [
     },
     'table',
     {
-      title: 'Mini-situation CCF : la fibre optique en France',
+      title: 'Mini-situation : la fibre optique en France',
       subtitle:
         'Nombre d’abonnements internet en fibre optique jusqu’à l’abonné en France, en fin d’année, en millions. Le rang x vaut 1 pour 2020.',
       columns: [
@@ -1495,10 +1478,9 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 15,
       concepts: ['correlation', 'ajustement-affine'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(3, 12),
         'Réflexion : chacun écrit sur papier les fonctions à utiliser et l’ordre des plages.',
         'Erreurs à chercher : plages inversées dans PENTE ; valeurs tapées à la main au lieu de formules.',
-        'Papier : même question à la calculatrice, formules écrites sur la copie ; en CCF, elle se fait devant l’examinateur.',
+        'Papier : même question à la calculatrice, formules écrites sur la copie .',
       ),
       proprietes: {
         modalite: 'solo',
@@ -1578,7 +1560,6 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 14,
       concepts: ['prevision'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 12),
         'Réflexion : écrire les rangs de 2025 et de 2030 avant d’ouvrir le coffre.',
         'Indices disponibles après 60 s. À 10 min, projeter l’énigme la moins résolue.',
         'Papier : quatre questions rédigées du livret, sans code de coffre.',
@@ -1681,7 +1662,7 @@ const ACTE_4: moteur.Acte = [
       minutes: 2,
       notes: [
         'Dévoiler énigme par énigme, en s’attardant sur la moins résolue (pupitre).',
-        'Finir sur la comparaison au réel : c’est la réserve à écrire au CCF.',
+        'Finir sur la comparaison au réel : c’est la réserve à écrire dans la réponse.',
       ],
     },
     [
@@ -1906,7 +1887,6 @@ const ACTE_4: moteur.Acte = [
         description: 'En quelle année ?',
         back: 'Résoudre ax + b ≥ seuil, prendre l’entier supérieur, le traduire en année.',
       },
-      moteur.REFERENTIEL_DU_BTS_CG,
     ],
   ),
 ];

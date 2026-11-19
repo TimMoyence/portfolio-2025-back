@@ -8,18 +8,33 @@ import type {
 export class SessionStateCacheService implements ISessionStateCache {
   private readonly etats = new Map<string, LiveSessionState>();
   private readonly activites = new Map<string, number>();
+  private readonly planchersDeRevision = new Map<string, number>();
 
   publish(sessionId: string, state: LiveSessionState): void {
-    this.etats.set(sessionId, state);
+    if (state.revision >= this.plancherDe(sessionId)) {
+      this.etats.set(sessionId, state);
+    }
   }
 
   read(sessionId: string): LiveSessionState | null {
     return this.etats.get(sessionId) ?? null;
   }
 
-  drop(sessionId: string): void {
+  drop(sessionId: string, revisionDuRetrait: number): void {
+    this.planchersDeRevision.set(
+      sessionId,
+      Math.max(revisionDuRetrait, this.plancherDe(sessionId)),
+    );
     this.etats.delete(sessionId);
     this.activites.delete(sessionId);
+  }
+
+  private plancherDe(sessionId: string): number {
+    return (
+      this.read(sessionId)?.revision ??
+      this.planchersDeRevision.get(sessionId) ??
+      0
+    );
   }
 
   signalerActivite(sessionId: string): void {

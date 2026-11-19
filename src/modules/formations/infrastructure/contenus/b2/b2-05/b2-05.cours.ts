@@ -112,9 +112,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 4,
       concepts: ['evolution-reciproque', 'somme-de-termes'],
       notes: moteur.puces(
-        'Rappel rapide : deux votes non notés, un par cours.',
         'Dire où chaque acquis resservira : la réciproque pour actualiser, le nombre de termes pour les annuités.',
-        ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
       ),
     },
     [
@@ -151,7 +149,7 @@ const ACTE_1: moteur.Acte = [
       notes: moteur.puces(
         '2 min : lire la dernière ligne de chaque colonne, c’est le fil du cours.',
         'Question : « Lequel de ces acquis servira à calculer la somme à placer aujourd’hui ? » La réciproque : on divise par le coefficient.',
-        'Ne pas refaire les cours : renvoyer aux fiches mémo du classeur de CCF.',
+        'Ne pas refaire les cours : renvoyer à leurs fiches mémo.',
       ),
     },
     'comparison',
@@ -187,7 +185,7 @@ const ACTE_1: moteur.Acte = [
           ],
         },
       ],
-      note: 'Les fiches mémo du B2-01 et du B2-04 sont dans votre classeur de CCF.',
+      note: 'Les fiches mémo du B2-01 et du B2-04 reprennent ces rappels.',
     },
   ),
   moteur.ecranV2(
@@ -301,7 +299,6 @@ const ACTE_1: moteur.Acte = [
         'Infographie « Le livret à 3 % ». 2 000 € placés à 3 % par an, intérêts laissés sur le livret. Après un an, 2 000 × 1,03 = 2 060 € ; après deux ans, 2 060 × 1,03 = 2 121,80 €, les intérêts portant aussi sur les 60 € gagnés ; après dix ans, 2 000 × 1,03¹⁰ ≈ 2 687,83 €. Aux intérêts simples, 2 000 × 1,30 = 2 600 € seulement : il manque les intérêts des intérêts. À la calculatrice : 2000 × 1,03 ^ 10, avec la touche puissance.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Avant de lire : « 3 % pendant 10 ans, est-ce 30 % ? » Laisser venir les intérêts des intérêts.',
     ],
   ),
@@ -313,7 +310,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['interets-composes', 'suite-geometrique'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : × 1,03, jamais × 0,03.',
         'Relier au B2-04 : le capital placé est une suite géométrique de raison 1 + t.',
         'Lien au dossier : « La trésorerie d’Hélène, placée combien d’années avant le chantier ? »',
@@ -367,7 +363,6 @@ const ACTE_1: moteur.Acte = [
         'Infographie « Futur : ×, présent : ÷ ». Une frise d’aujourd’hui à dans 2 ans, au taux annuel de 10 %. Vers la droite, capitaliser : 1 000 × 1,1² = 1 210 €. Vers la gauche, actualiser : 1 210 ÷ 1,1² = 1 000 €. Formules générales : Cₙ = C₀ × (1 + t)ⁿ et C₀ = Cₙ ÷ (1 + t)ⁿ. À retenir : la valeur actuelle est plus petite.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « 1 210 € dans deux ans, combien aujourd’hui ? » On divise : la valeur actuelle est plus petite.',
     ],
   ),
@@ -379,7 +374,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['valeur-actuelle', 'evolution-reciproque', 'tableur'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : vers le futur, on multiplie ; vers le présent, on divise.',
         'Relier au vote de rappel : annuler une hausse, c’est diviser par son coefficient ; actualiser, c’est annuler n hausses.',
         'Faire taper la formule sans $ sur un poste volontaire, puis la recopier : la colonne se fige, l’erreur fixe la règle.',
@@ -418,7 +412,7 @@ const ACTE_1: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['interets-composes', 'valeur-actuelle'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -485,7 +479,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['interets-composes', 'valeur-actuelle'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire le capital, le taux décimal et la durée avant de calculer ; dire, pour chaque question, s’il faut capitaliser ou actualiser.',
         'Pièges : taux pris pour le coefficient ; intérêts simples ; une année de trop ; multiplier pour actualiser.',
         'Papier : exercice 1 du livret.',
@@ -549,7 +542,6 @@ const ACTE_1: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Transition : « Faisons calculer tout le placement par le tableur : exercice 2. »',
       ],
     },
@@ -581,7 +573,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['tableur', 'interets-composes'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
         'Réflexion : écrire sur papier la formule de C3, puis ce qu’elle devient en C4 une fois recopiée.',
         'Erreurs à chercher : =C2*$G$1 (le taux seul) ; G1 sans $ : la colonne reste bloquée à 41 000 ; des intérêts toujours égaux à 1 000 €.',
         'Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.',
@@ -598,7 +589,6 @@ const ACTE_1: moteur.Acte = [
       minutes: 2,
       notes: [
         'Projeter la feuille d’un poste volontaire, relire la formule de C3 et montrer les $ qui la font recopier.',
-        'Transition : jalon 1, puis pause de 15 minutes.',
       ],
     },
     [
@@ -624,7 +614,6 @@ const ACTE_1: moteur.Acte = [
         'Je sais calculer une valeur acquise et une valeur actuelle, et les écrire au tableur.',
     },
     'Si plus de 30 % « Perdu » : reprendre la trace écrite A1-08 sur le sens de l’actualisation après la pause.',
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 
@@ -637,7 +626,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 5,
       concepts: ['annuites', 'interets-composes'],
       notes: moteur.puces(
-        'Temps « réfléchir » de la notion 2 : 3 min d’écriture individuelle, puis lire trois réponses au pupitre.',
         'Ne rien trancher : la trace écrite suivante répond.',
         'Relance : « Le versement de fin 2030 rapporte-t-il des intérêts avant fin 2030 ? »',
         'Papier : cadre de réponse du livret.',
@@ -677,7 +665,6 @@ const ACTE_2: moteur.Acte = [
         'Infographie « Chaque versement a sa durée ». 1 000 € versés à la fin de chacune de trois années, à 2 % par an. Le premier versement, placé deux ans, vaut 1 000 × 1,02² = 1 040,40 € ; le deuxième, placé un an, 1 000 × 1,02 = 1 020 € ; le troisième, pas placé, 1 000 €. Somme en fin d’année 3 : 3 060,40 €, et non 3 000 € : les deux premiers versements ont produit des intérêts.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « Trois versements de 1 000 €, donc 3 000 € ? » Non : chacun a rapporté selon sa durée.',
     ],
   ),
@@ -689,7 +676,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['annuites', 'suite-geometrique', 'somme-de-termes'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire tracer au tableau une frise de 2026 à 2030, une flèche par versement jusqu’à fin 2030.',
         'Faire répéter le moyen mnémotechnique : « × (1 + t), puis + a » : l’épargne de l’an passé grossit, puis le versement arrive.',
         'Question : « Le total des intérêts, c’est la dernière ligne de la colonne ? » Non : une somme.',
@@ -703,8 +689,7 @@ const ACTE_2: moteur.Acte = [
           kind: 'definition',
           title: 'Chaque versement a sa durée',
           text: 'Des versements égaux, en fin d’année : le premier rapporte n − 1 ans, le dernier rien.\nValeur acquise : la somme de leurs valeurs, au dernier versement.',
-          formula:
-            'Vₙ = a × ((1 + t)ⁿ − 1) ÷ t\nn versements de a, formule donnée au CCF',
+          formula: 'Vₙ = a × ((1 + t)ⁿ − 1) ÷ t\nn versements de a',
         },
         {
           kind: 'example',
@@ -738,7 +723,7 @@ const ACTE_2: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['annuites'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -805,7 +790,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 10,
       concepts: ['annuites'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(3, 7),
         'Réflexion : dessiner la frise des cinq versements et écrire sous chacun sa durée de placement.',
         'Pièges : chaque versement placé cinq ans ; versements additionnés sans intérêts ; intérêts simples.',
         'Papier : exercice 3 du livret.',
@@ -870,7 +854,6 @@ const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Transition : « Faisons tenir l’épargne dans un tableau : exercice 4. »',
       ],
     },
@@ -902,7 +885,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 10,
       concepts: ['tableur', 'annuites'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 8),
         'Réflexion : dire en français la formule de B3, puis l’écrire sur papier.',
         'Erreurs à chercher : =B2+$H$1 (pas d’intérêts) ; F1 ou H1 sans $ ; =C6 pour le total.',
         'Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.',
@@ -1004,7 +986,7 @@ const ACTE_3: moteur.Acte = [
       titre: 'Vote : rembourser et payer les intérêts',
       dureeMinutes: 4,
       concepts: ['tableau-d-amortissement', 'cout-du-credit'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
+      notes: '',
     },
     [
       moteur.vote(
@@ -1038,7 +1020,6 @@ const ACTE_3: moteur.Acte = [
         'Infographie « Les intérêts d’abord, le reste rembourse ». Emprunt de 10 000 € sur 3 ans à 5 %, annuité constante de 3 672,09 €. Trois barres de même hauteur : les intérêts baissent, 500 €, puis 341,40 €, puis 174,86 € ; l’amortissement monte, 3 172,09 €, puis 3 330,69 €, puis 3 497,23 €. Capital dû : 10 000 € au départ, puis 6 827,91 €, 3 497,22 € et 0 €. L’annuité reste la même, sa composition change.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « L’annuité ne change pas : pourquoi les intérêts baissent-ils ? » Le capital dû baisse.',
     ],
   ),
@@ -1050,7 +1031,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['tableau-d-amortissement', 'annuites'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Remplir au tableau la première ligne de l’exemple, puis la deuxième : faire dire sur quel capital portent les intérêts.',
         'Faire répéter le moyen mnémotechnique : les intérêts d’abord, le reste rembourse.',
         'Prévenir : l’amortissement d’un emprunt n’a rien à voir avec la dotation aux amortissements d’une immobilisation.',
@@ -1066,7 +1046,7 @@ const ACTE_3: moteur.Acte = [
           title: 'Une annuité paie les intérêts, puis rembourse',
           text: 'Annuité constante = intérêts de l’année + amortissement du capital.\nLes intérêts portent sur le capital restant dû : ils baissent chaque année.',
           formula:
-            'a = C × t ÷ (1 − (1 + t)⁻ⁿ), formule donnée au CCF\nintérêts = capital restant dû × t\namortissement = a − intérêts',
+            'a = C × t ÷ (1 − (1 + t)⁻ⁿ)\nintérêts = capital restant dû × t\namortissement = a − intérêts',
         },
         {
           kind: 'example',
@@ -1106,7 +1086,6 @@ const ACTE_3: moteur.Acte = [
         'Infographie « Ce que l’on paie en plus ». Emprunt de 10 000 € sur 3 ans à 5 % : 3 × 3 672,09 = 11 016,27 € remboursés pour 10 000 € empruntés. Coût du crédit : 11 016,27 − 10 000 = 1 016,27 €, la somme des intérêts à un centime près. Au tableur, VPM avec le taux 5 %, la durée 3 et le capital −10 000 donne 3 672,09 € : le signe moins rend l’annuité positive ; sans lui, −3 672,09 €.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Avant de lire : faire calculer 3 × 3 672,09 au tableau, puis demander combien on paie en plus.',
     ],
   ),
@@ -1118,7 +1097,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['cout-du-credit', 'tableur'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : VPM prend le capital avec un signe moins.',
         'Faire taper VPM sans le signe moins sur un poste volontaire : l’annuité sort négative, l’erreur fixe la règle.',
         'Question : « Le coût du crédit, c’est ce que je rembourse ? » Non : ce que je rembourse en plus.',
@@ -1156,7 +1134,7 @@ const ACTE_3: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['tableau-d-amortissement', 'cout-du-credit'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1222,7 +1200,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['tableau-d-amortissement', 'cout-du-credit', 'tableur'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire C, t et n, puis poser la formule de l’annuité sans l’effectuer.',
         'Pièges : 60 000 ÷ 5 ; intérêts toujours sur 60 000 € ; total remboursé pris pour le coût ; VPM sans signe moins.',
         'Papier : exercice 5 du livret.',
@@ -1292,7 +1269,6 @@ const ACTE_3: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Transition : « L’annuité est trouvée : remplissons le tableau d’amortissement, exercice 6. »',
       ],
     },
@@ -1324,7 +1300,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['tableau-d-amortissement'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
         'Réflexion : dire en français comment passer d’une ligne à la suivante.',
         'Pièges : intérêts sur 60 000 € chaque année ; annuité écrite comme amortissement.',
         'Papier : tableau du livret, rempli à la main, calculs arrondis au centime.',
@@ -1418,7 +1393,6 @@ const ACTE_3: moteur.Acte = [
       invite:
         'Je sais calculer une annuité, remplir un tableau d’amortissement et donner le coût d’un crédit.',
     },
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 

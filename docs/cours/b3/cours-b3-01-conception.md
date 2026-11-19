@@ -136,9 +136,8 @@ Chaque niveau suit : **Réfléchir** (vote non noté) → **Comprendre** (trace 
 parfois précédée d'un tableau v2) → **S'exercer** (tri ou atelier Excel noté, corrigé sur place).
 Un exemple guidé `fp-worked` s'insère avant l'atelier quand la manipulation est nouvelle.
 
-Chaque exercice annonce ses temps dans les notes formateur, sous la forme
-`• Temps : réflexion N min · travail M min · correction K min`, dont la somme est la durée de
-l'écran. La correction se dévoile sur l'écran de l'exercice (`correctionSurPlace`), question par
+La durée de chaque exercice additionne réflexion, travail et correction ; les notes formateur
+ne la répètent pas. La correction se dévoile sur l'écran de l'exercice (`correctionSurPlace`), question par
 question.
 
 ### 2.3 Les deux paliers d'un atelier Excel

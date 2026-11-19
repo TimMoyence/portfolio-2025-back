@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "fea8b3b337242905eaf2e538e173be934b5e0a95fbbcc4c45bcd751161909d4b",
+  "empreinte": "0834a0d124d9a9859e2fcfb537efa7d38489c7a07a05ff384460467d8c74205f",
   "sujet": {
     "id": "b3-04-publipostage",
     "titre": "Publipostage et e-mailing",
@@ -2153,7 +2153,7 @@
           "libelle": "Contacts des clients Norvane (Excel)",
           "reservee": true
         },
-        "notes": "• Temps « réfléchir » du publipostage : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : ouvrir le classeur des contacts ; chaque ligne sera une lettre, chaque colonne un champ.",
+        "notes": "• Révélation : ouvrir le classeur des contacts ; chaque ligne sera une lettre, chaque colonne un champ.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2414,7 +2414,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 11 min · correction 2 min\n• Réflexion : faire ouvrir le classeur des contacts dans Excel, le lire, puis le fermer : Word ne le lie pas tant qu’Excel le tient ouvert sur certains postes.\n• Pièges : décocher la case des en-têtes ; compter la ligne d’en-tête ; lier un autre classeur que celui du jour.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Règles 1 et 2, dites à la correction : « Une lettre type, une liste, une fusion » ; « La liste se tient dans le tableur, une ligne par destinataire, une colonne par champ, en-têtes en première ligne. »\n• Transition : « La lettre a sa liste ; plaçons-y le nom du client : un vote. »",
+        "notes": "• Réflexion : faire ouvrir le classeur des contacts dans Excel, le lire, puis le fermer : Word ne le lie pas tant qu’Excel le tient ouvert sur certains postes.\n• Pièges : décocher la case des en-têtes ; compter la ligne d’en-tête ; lier un autre classeur que celui du jour.\n• Règles 1 et 2, dites à la correction : « Une lettre type, une liste, une fusion » ; « La liste se tient dans le tableur, une ligne par destinataire, une colonne par champ, en-têtes en première ligne. »\n• Transition : « La lettre a sa liste ; plaçons-y le nom du client : un vote. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2497,7 +2497,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » des champs : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : taper les chevrons au clavier, puis Aperçu des résultats ; le texte ne change pas.",
+        "notes": "• Révélation : taper les chevrons au clavier, puis Aperçu des résultats ; le texte ne change pas.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2778,7 +2778,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Chacun le fait dans Lettre_clients.docx : ce bloc ouvre l’exercice 2.\n• Faire afficher un destinataire sur un poste : l’adresse est complète.\n• Transition : « Le reste de la lettre : exercice 2. »",
+        "notes": "• Chacun le fait dans Lettre_clients.docx : ce bloc ouvre l’exercice 2.\n• Faire afficher un destinataire sur un poste : l’adresse est complète.\n• Transition : « Le reste de la lettre : exercice 2. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -2846,7 +2846,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire repérer dans la lettre ce qui change d’un client à l’autre avant de taper.\n• Pièges : chevrons tapés ; montant sans format ; nom de l’agence tapé au lieu du champ.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Règle 3, dite à la correction : « Ce qui change d’une lettre à l’autre s’insère par un champ, jamais à la main. »\n• Transition : « Tapé, champ ou règle ? Un tri. »",
+        "notes": "• Réflexion : faire repérer dans la lettre ce qui change d’un client à l’autre avant de taper.\n• Pièges : chevrons tapés ; montant sans format ; nom de l’agence tapé au lieu du champ.\n• Règle 3, dite à la correction : « Ce qui change d’une lettre à l’autre s’insère par un champ, jamais à la main. »\n• Transition : « Tapé, champ ou règle ? Un tri. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2995,7 +2995,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : pour chaque passage, une question : est-il le même dans toutes les lettres, vient-il d’une colonne, ou dépend-il d’une condition ?\n• Corriger case par case : demander, pour chaque passage, s’il change d’une lettre à l’autre et selon quoi.\n• Pause de 15 minutes, hors durée programmée.",
+        "notes": "• Réflexion : pour chaque passage, une question : est-il le même dans toutes les lettres, vient-il d’une colonne, ou dépend-il d’une condition ?\n• Corriger case par case : demander, pour chaque passage, s’il change d’une lettre à l’autre et selon quoi.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [],
@@ -3098,7 +3098,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » du filtre : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : ouvrir le classeur ; des clients de Saint-Malo ou de Vannes relèvent de l’agence de Rennes.",
+        "notes": "• Révélation : ouvrir le classeur ; des clients de Saint-Malo ou de Vannes relèvent de l’agence de Rennes.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3373,7 +3373,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire relire les colonnes agence et ville du classeur avant de filtrer.\n• Pièges : filtrer sur ville ; inverser les deux textes de la règle ; comparer à « Madame » au lieu de « Mme ».\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Règle 4, dite à la correction : « On filtre dans Word, sans toucher au classeur. »\n• Transition : « Avant de fusionner pour de bon : un vote. »",
+        "notes": "• Réflexion : faire relire les colonnes agence et ville du classeur avant de filtrer.\n• Pièges : filtrer sur ville ; inverser les deux textes de la règle ; comparer à « Madame » au lieu de « Mme ».\n• Règle 4, dite à la correction : « On filtre dans Word, sans toucher au classeur. »\n• Transition : « Avant de fusionner pour de bon : un vote. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3447,7 +3447,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de la fusion : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : une espace oubliée dans la lettre type, c’est cinquante lettres à reprendre une fois imprimées.",
+        "notes": "• Révélation : une espace oubliée dans la lettre type, c’est cinquante lettres à reprendre une fois imprimées.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3816,7 +3816,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire qui recevra chaque fichier avant de l’enregistrer.\n• Pièges : enregistrer la lettre type en PDF ; joindre le PDF des cinquante lettres à un client.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Règles 5 et 6, dites à la correction : « On vérifie l’aperçu avant de fusionner » ; « Un destinataire ne reçoit que sa lettre. »\n• Transition : « Un défaut à l’aperçu : où le corriger ? Un tri. »",
+        "notes": "• Réflexion : faire dire qui recevra chaque fichier avant de l’enregistrer.\n• Pièges : enregistrer la lettre type en PDF ; joindre le PDF des cinquante lettres à un client.\n• Règles 5 et 6, dites à la correction : « On vérifie l’aperçu avant de fusionner » ; « Un destinataire ne reçoit que sa lettre. »\n• Transition : « Un défaut à l’aperçu : où le corriger ? Un tri. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3957,7 +3957,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 11 min · correction 2 min\n• Réflexion : pour chaque défaut, une question : se voit-il dans une seule lettre ou dans toutes ?\n• Corriger case par case : un défaut d’une seule lettre vient de sa ligne ; un défaut de toutes vient de la lettre type ou de la règle.\n• Pause de 15 minutes, hors durée programmée.",
+        "notes": "• Réflexion : pour chaque défaut, une question : se voit-il dans une seule lettre ou dans toutes ?\n• Corriger case par case : un défaut d’une seule lettre vient de sa ligne ; un défaut de toutes vient de la lettre type ou de la règle.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [],
@@ -4123,7 +4123,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de l’envoi : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : un courriel en copie à cinquante clients leur montre les adresses des quarante-neuf autres.",
+        "notes": "• Révélation : un courriel en copie à cinquante clients leur montre les adresses des quarante-neuf autres.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4378,7 +4378,7 @@
           "libelle": "Classeur d’envoi à deux lignes (Excel)",
           "reservee": true
         },
-        "notes": "• Temps : réflexion 1 min · travail 11 min · correction 2 min\n• Réflexion : faire dire, avant tout envoi, à qui partiront les courriels ; jamais au classeur des contacts, dont aucune ligne n’a d’adresse.\n• Chemin 1 sur les postes Windows à Outlook classique configuré ; tous les autres prennent le chemin 2. Passer dans les rangs avant le clic sur OK.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Règle 6, redite : « Un destinataire ne reçoit que sa lettre. »\n• Transition : « Ouvrez votre boîte : le courriel reçu. »",
+        "notes": "• Réflexion : faire dire, avant tout envoi, à qui partiront les courriels ; jamais au classeur des contacts, dont aucune ligne n’a d’adresse.\n• Chemin 1 sur les postes Windows à Outlook classique configuré ; tous les autres prennent le chemin 2. Passer dans les rangs avant le clic sur OK.\n• Règle 6, redite : « Un destinataire ne reçoit que sa lettre. »\n• Transition : « Ouvrez votre boîte : le courriel reçu. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4495,7 +4495,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de l’IA : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : coller une lettre à crochets dans la lettre type, puis Aperçu ; les crochets restent.",
+        "notes": "• Révélation : coller une lettre à crochets dans la lettre type, puis Aperçu ; les crochets restent.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4672,7 +4672,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : faire ouvrir le classeur des contacts à côté ; chaque crochet se compare à ses en-têtes.\n• La lettre est écrite pour ce cours : le dire.\n• Corriger case par case ; demander à chaque fois quelle colonne ou quelle décision tranche.\n• Transition : « La consigne qui évite ces écarts : exercice 9. »",
+        "notes": "• Réflexion : faire ouvrir le classeur des contacts à côté ; chaque crochet se compare à ses en-têtes.\n• La lettre est écrite pour ce cours : le dire.\n• Corriger case par case ; demander à chaque fois quelle colonne ou quelle décision tranche.\n• Transition : « La consigne qui évite ces écarts : exercice 9. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [],
@@ -4769,7 +4769,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 4 min · correction 2 min\n• Réflexion : faire relire la consigne de la lettre type et les en-têtes du classeur.\n• La consigne écrite ici sert telle quelle à l’écran suivant.\n• Révéler les stratégies ; demander pourquoi la dernière est fausse : ni colonnes, ni contraintes, ni format.\n• Transition : « Votre IA au travail. »",
+        "notes": "• Réflexion : faire relire la consigne de la lettre type et les en-têtes du classeur.\n• Révéler les stratégies ; demander pourquoi la dernière est fausse : ni colonnes, ni contraintes, ni format.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],

@@ -2,12 +2,13 @@ import { z } from 'zod';
 import { lienHttp } from '../../../../../common/domain/liens/lien-web';
 import { auMillionieme } from '../../../../../common/domain/nombres/arrondi';
 import { avecVirgule } from '../../../../../common/domain/nombres/ecriture-francaise';
-import { BRANCHE_A_DEDUIRE, produitDuChemin } from './ArbrePondere';
+import { BRANCHE_A_DEDUIRE, produitDuChemin } from './arbre/ArbrePondere';
 import {
   auMoinsUn,
   media,
   signaleurDe,
   texte,
+  type Signaleur,
 } from '../stockage/SchemasCommuns';
 
 const strict = <F extends z.ZodRawShape>(forme: F) => z.object(forme).strict();
@@ -80,6 +81,79 @@ const boiteAMoustaches = strict({
   }
 });
 const coordonnees = { x: z.number(), y: z.number() };
+type Axe = readonly [number, number];
+const dansLAxe = (valeur: number, [debut, fin]: Axe): boolean =>
+  valeur >= debut && valeur <= fin;
+const dansLesAxes =
+  (xRange: Axe, yRange: Axe) =>
+  ({ x, y }: { x: number; y: number }): boolean =>
+    dansLAxe(x, xRange) && dansLAxe(y, yRange);
+const signalerHorsDesAxes =
+  (signaler: Signaleur, xRange: Axe, yRange: Axe) =>
+  (
+    cle: string,
+    elements: readonly { x: number; y: number }[],
+    raison: string,
+  ): void => {
+    const visible = dansLesAxes(xRange, yRange);
+    for (const [position, element] of elements.entries()) {
+      if (!visible(element)) {
+        signaler([cle, position], raison);
+      }
+    }
+  };
+const tangente = strict({
+  ...coordonnees,
+  slope: z.number(),
+  label: texte.optional(),
+});
+const figureDeCourbe = strict({
+  formula: texte,
+  xLabel: texte,
+  yLabel: texte,
+  xRange: axeCroissant,
+  yRange: axeCroissant,
+  points: z.array(strict(coordonnees)).min(2),
+  tangents: z.array(tangente).optional(),
+  zone: strict({ from: z.number(), to: z.number(), label: texte }).optional(),
+  description: texte,
+}).superRefine(({ xRange, yRange, points, tangents = [], zone }, contexte) => {
+  const signaler = signaleurDe(contexte);
+  const horsDesAxes = signalerHorsDesAxes(signaler, xRange, yRange);
+  horsDesAxes('points', points, 'point hors des axes');
+  for (const [position, point] of points.entries()) {
+    if (position > 0 && point.x <= (points[position - 1]?.x ?? point.x)) {
+      signaler(['points', position], 'abscisses croissantes');
+    }
+  }
+  horsDesAxes('tangents', tangents, 'tangente hors des axes');
+  if (
+    zone !== undefined &&
+    !(dansLAxe(zone.from, xRange) && dansLAxe(zone.to, xRange))
+  ) {
+    signaler(['zone'], 'zone hors de l’axe des abscisses');
+  }
+  if (zone !== undefined && zone.from >= zone.to) {
+    signaler(['zone'], 'zone : du début à la fin, de gauche à droite');
+  }
+});
+const courbePasAPas = strict({
+  ...titled,
+  figure: figureDeCourbe,
+  steps: auMoinsUn(
+    strict({ title: texte, text: texte, tangent: tangente.optional() }),
+  ),
+}).superRefine(({ figure, steps }, contexte) => {
+  const visible = dansLesAxes(figure.xRange, figure.yRange);
+  for (const [position, { tangent }] of steps.entries()) {
+    if (tangent !== undefined && !visible(tangent)) {
+      signaleurDe(contexte)(
+        ['steps', position, 'tangent'],
+        'tangente hors des axes',
+      );
+    }
+  }
+});
 const nuageDePoints = strict({
   ...titled,
   xLabel: texte,
@@ -98,14 +172,12 @@ const nuageDePoints = strict({
   description: texte,
 }).superRefine(({ xRange, yRange, points, meanPoint }, contexte) => {
   const signaler = signaleurDe(contexte);
-  const dansLesAxes = ({ x, y }: { x: number; y: number }): boolean =>
-    x >= xRange[0] && x <= xRange[1] && y >= yRange[0] && y <= yRange[1];
-  for (const [position, point] of points.entries()) {
-    if (!dansLesAxes(point)) {
-      signaler(['points', position], 'point hors des axes');
-    }
-  }
-  if (meanPoint !== undefined && !dansLesAxes(meanPoint)) {
+  signalerHorsDesAxes(signaler, xRange, yRange)(
+    'points',
+    points,
+    'point hors des axes',
+  );
+  if (meanPoint !== undefined && !dansLesAxes(xRange, yRange)(meanPoint)) {
     signaler(['meanPoint'], 'point moyen hors des axes');
   }
 });
@@ -210,7 +282,7 @@ const arbrePondere = strict({
 });
 const BLOCS_MAXIMUM_D_UNE_LECON = 4;
 const blocDeLecon = strict({
-  kind: z.enum(['definition', 'property', 'method', 'example', 'exam']),
+  kind: z.enum(['definition', 'property', 'method', 'example', 'piege']),
   title: texte,
   text: texte,
   formula: texte.optional(),
@@ -245,6 +317,7 @@ const image = {
   imageAlt: texte,
   paragraphs: textes,
   items: textes.optional(),
+  conclusion: texte.optional(),
   sourceLink: lien.optional(),
 };
 const pastille = z.number().int().min(1).max(4);
@@ -358,12 +431,14 @@ export function presentationsVisuelles<S extends z.ZodRawShape>(socle: S) {
     ),
     rendu('boxplot', boiteAMoustaches),
     rendu('scatter', nuageDePoints),
+    rendu('courbe', courbePasAPas),
     rendu('arbre', arbrePondere),
     rendu(
       'lesson',
       strict({
         ...titled,
         blocks: z.array(blocDeLecon).min(1).max(BLOCS_MAXIMUM_D_UNE_LECON),
+        figure: figureDeCourbe.optional(),
       }),
     ),
     rendu(

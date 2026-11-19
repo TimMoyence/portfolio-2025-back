@@ -111,8 +111,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 4,
       concepts: ['pourcentage', 'taux-evolution'],
       notes: moteur.puces(
-        'Diagnostic : deux votes non notés, sans calculatrice. Repérer au pupitre les postes sous 50 %.',
-        ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
+        'Sans calculatrice : repérer au pupitre les postes sous 50 %.',
       ),
     },
     [
@@ -245,10 +244,7 @@ const ACTE_1: moteur.Acte = [
       imageAlt:
         'Infographie « Pour débuter : la classe de 25 ». Une classe de 25 étudiants, dont 10 en alternance, représentés par 25 silhouettes dont 10 colorées. La partie, 10 alternants, se divise par le tout, 25 étudiants : p = 10 ÷ 25 = 0,4, soit 40 %. Moyen mnémotechnique : partie en haut, tout en bas. Encadré : 60 % de la classe font 0,6 × 25 = 15 étudiants.',
     },
-    [
-      moteur.AVANT_SA_PAGE,
-      'Avant de lire : « 10 sur 25, c’est plus ou moins de la moitié ? »',
-    ],
+    ['Avant de lire : « 10 sur 25, c’est plus ou moins de la moitié ? »'],
   ),
   moteur.ecranV2(
     {
@@ -258,7 +254,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['proportion', 'pourcentage'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : partie en haut, tout en bas.',
         'Lien au dossier : « 10 alternants sur 40 salariés : quel calcul ? »',
       ),
@@ -310,7 +305,6 @@ const ACTE_1: moteur.Acte = [
         'Infographie « Parmi qui ? ». Un lycée de 800 élèves, dont 200 en STMG, dont 120 filles. Les 120 filles font 120 ÷ 200 = 60 % des élèves de STMG, mais 120 ÷ 800 = 15 % des élèves du lycée : même partie, autre tout, autre pourcentage. Le tout s’appelle la population de référence. Encart tableur : la part s’écrit =B2/$B$6, le total figé par des dollars.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « Les 120 filles, c’est 60 % ou 15 % ? » Les deux : tout dépend du tout.',
     ],
   ),
@@ -322,7 +316,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['proportion', 'tableur'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : « parmi qui ? » devant chaque pourcentage du dossier.',
         'Faire taper la formule sans $ sur un poste volontaire, puis la recopier : l’erreur fixe la règle.',
       ),
@@ -368,7 +361,7 @@ const ACTE_1: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['proportion', 'tableur'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -432,7 +425,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['proportion', 'pourcentage'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : souligner le tout de chaque question avant de calculer.',
         'Pièges : tout divisé par la partie ; 0,25 écrit pour 25 % ; mauvais tout.',
         'Papier : exercice 1 du livret.',
@@ -498,7 +490,6 @@ const ACTE_1: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Transition : « Faisons calculer toutes les parts par le tableur : exercice 2. »',
       ],
     },
@@ -530,7 +521,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 7,
       concepts: ['tableur', 'proportion'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 5),
         'Réflexion : écrire sur papier la formule de C2, puis ce qu’elle devient en C3 une fois recopiée.',
         'Erreurs à chercher : B6 sans $ (#DIV/0! dès C3) ; total tapé au clavier ; part sans × 100 ; ARRONDI oublié.',
         'Papier : formules écrites sur la copie, puis les parts à la calculatrice.',
@@ -546,7 +536,7 @@ const ACTE_1: moteur.Acte = [
         ],
       },
     },
-    moteur.CORRECTION_AVANT_LA_PREMIERE_PAUSE,
+    moteur.CORRECTION_DE_DEUX_MINUTES,
     [
       [
         'B6',
@@ -574,7 +564,6 @@ const ACTE_1: moteur.Acte = [
         'Je sais calculer une part, dire de quel tout elle parle et l’écrire au tableur.',
     },
     'Si plus de 30 % « Perdu » : reprendre la page A1-07 sur le tout, après la pause.',
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 
@@ -587,7 +576,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 5,
       concepts: ['proportion'],
       notes: moteur.puces(
-        'Temps « réfléchir » de la notion 2 : 3 min d’écriture individuelle, puis lire trois réponses au pupitre.',
         'Ne rien trancher : la trace écrite suivante répond.',
         'Relance : « Les porteurs de la carte sont-ils plus ou moins nombreux que les clients ? »',
         'Papier : cadre de réponse du livret.',
@@ -628,7 +616,6 @@ const ACTE_2: moteur.Acte = [
         'Infographie « La part d’une part ». Une salle de 200 spectateurs : 30 % ont moins de 18 ans, soit 60 ; parmi eux, 40 % ont une place gratuite, soit 24. Part de la salle : 0,30 × 0,40 = 0,12, soit 12 %, et 24 ÷ 200 = 0,12. L’addition 30 % + 40 % = 70 % est barrée. Moyen mnémotechnique : parmi, je multiplie.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « Les 40 %, ce sont 40 % de qui ? » Des moins de 18 ans, pas de la salle.',
     ],
   ),
@@ -640,7 +627,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['proportion'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Question : « 30 % + 40 % = 70 % de la salle ? » Non : il n’y a que 24 personnes.',
         'Faire répéter le moyen mnémotechnique : « parmi », je multiplie.',
       ),
@@ -691,7 +677,6 @@ const ACTE_2: moteur.Acte = [
         'Infographie « Deux classes, un taux ». Classe A : 20 élèves, 50 % reçus, soit 10 ; classe B : 30 élèves, 80 % reçus, soit 24. Taux global : 34 reçus sur 50 élèves, soit 68 %. La moyenne simple des deux taux, 65 %, est barrée : la classe B, plus nombreuse, pèse plus. Moyen mnémotechnique : des personnes, pas des pourcentages.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « Pourquoi pas 65 % ? » La classe B, plus nombreuse, pèse plus.',
     ],
   ),
@@ -703,7 +688,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['moyenne-ponderee'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : des personnes, pas des pourcentages.',
         'Relier à la question 3 de la mission : la moyenne de Théo.',
       ),
@@ -750,7 +734,7 @@ const ACTE_2: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['moyenne-ponderee', 'proportion'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -816,7 +800,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['moyenne-ponderee'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
         'Réflexion : dire en français ce qu’on saisit : des personnes, pas des pourcentages.',
         'Pièges : le taux saisi tel quel ; les clients divisés par le taux.',
         'Papier : tableau du livret, rempli à la main.',
@@ -901,7 +884,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['moyenne-ponderee', 'proportion'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : pour chaque question, écrire « parmi qui ? » avant de calculer.',
         'Pièges : taux additionnés ; moyenne simple ; mauvais tout.',
         'Papier : exercice 4 du livret.',
@@ -985,7 +967,7 @@ const ACTE_2: moteur.Acte = [
     },
     {
       minutes: 2,
-      notes: [moteur.CORRIGER_PAR_LA_MOINS_REUSSIE, 'Transition : jalon 2.'],
+      notes: ['Transition : jalon 2.'],
     },
     [
       [
@@ -1028,7 +1010,7 @@ const ACTE_3: moteur.Acte = [
       titre: 'Vote : de quel pourcentage parle-t-on ?',
       dureeMinutes: 5,
       concepts: ['point-de-pourcentage', 'pourcentage'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
+      notes: '',
     },
     [
       moteur.vote(
@@ -1062,7 +1044,6 @@ const ACTE_3: moteur.Acte = [
         'Infographie « Points ou pourcentage ? ». Le taux de réussite au code passe de 60 % en 2025 à 66 % en 2026 : l’écart est de 66 − 60 = 6 points. En évolution, (66 − 60) ÷ 60 = 0,10, soit + 10 %. L’écriture « + 6 % » est barrée. Moyen mnémotechnique : deux pourcentages qu’on soustrait, ce sont des points.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « De 60 % à 66 %, + 6 % ou + 10 % ? » Laisser venir les deux réponses avant de lire.',
     ],
   ),
@@ -1074,7 +1055,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['point-de-pourcentage', 'taux-evolution'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Relier au diagnostic A1-03 : une évolution se divise par la valeur de départ.',
         'Faire répéter le moyen mnémotechnique : deux % qu’on soustrait, ce sont des points.',
         'Les évolutions reviennent au B1-02.',
@@ -1126,7 +1106,6 @@ const ACTE_3: moteur.Acte = [
         'Infographie « Une marge, deux taux ». Un tee-shirt acheté 10 € HT et vendu 25 € HT : la marge est de 15 €. Taux de marge : 15 ÷ 10 = 150 %, la marge rapportée au coût d’achat. Taux de marque : 15 ÷ 25 = 60 %, la marge rapportée au prix de vente. Moyen mnémotechnique : la marque se lit sur l’étiquette, celle du prix de vente.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « 15 € de marge : 150 % ou 60 % ? » Les deux, selon le prix par lequel on divise.',
     ],
   ),
@@ -1138,7 +1117,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['pourcentage'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : la marque se lit sur l’étiquette.',
         'Lien au dossier : « La console à 150 € et 240 € : quel taux voit le client ? »',
       ),
@@ -1185,7 +1163,7 @@ const ACTE_3: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['pourcentage', 'point-de-pourcentage'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1248,7 +1226,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['point-de-pourcentage', 'taux-evolution', 'pourcentage'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire « proportion », « évolution » ou « marge, marque » devant chaque question.',
         'Pièges : points écrits en % ; évolution divisée par l’arrivée ; marge et marque inversées.',
         'Papier : exercice 5 du livret.',
@@ -1338,10 +1315,7 @@ const ACTE_3: moteur.Acte = [
     },
     {
       minutes: 2,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
-        'Transition : « Faisons le point : points, marge et marque. »',
-      ],
+      notes: ['Transition : « Faisons le point : points, marge et marque. »'],
     },
     [
       [
@@ -1373,7 +1347,6 @@ const ACTE_3: moteur.Acte = [
       invite:
         'Je sais écrire un écart en points et calculer un taux de marge et un taux de marque.',
     },
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 

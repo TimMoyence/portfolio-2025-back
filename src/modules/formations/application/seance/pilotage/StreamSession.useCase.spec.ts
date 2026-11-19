@@ -316,7 +316,7 @@ describe('StreamSessionUseCase', () => {
       const messages = deuxPremiers();
       await laisserPasser(100);
       seanceLue({ ecranCourant: 9 });
-      cache.drop(SESSION);
+      cache.drop(SESSION, 0);
       await laisserPasser(HEARTBEAT_MS_TEST);
       const recus = await messages;
       expect(recus[1].type).toBe('etat');
@@ -913,7 +913,7 @@ describe('StreamSessionUseCase', () => {
         await laisserPasser(changementApresMs);
 
         seanceLue({ ecranCourant: 9 });
-        cache.drop(SESSION);
+        cache.drop(SESSION, 0);
         await laisserPasser(INTERVALLE_MS_TEST + 40);
 
         expect(
@@ -933,7 +933,7 @@ describe('StreamSessionUseCase', () => {
       const ecoute = await formateurALEcoute();
 
       seanceLue({ etat: 'terminee' });
-      cache.drop(SESSION);
+      cache.drop(SESSION, 0);
       await laisserPasser(4 * INTERVALLE_MS_TEST);
 
       expect(ecoute.types().filter((type) => type !== 'etat')).toEqual([
@@ -961,7 +961,7 @@ describe('StreamSessionUseCase', () => {
       const ecoute = await formateurALEcoute();
 
       seanceLue({ etat: 'terminee' });
-      cache.drop(SESSION);
+      cache.drop(SESSION, 0);
       cache.signalerActivite(SESSION);
       await laisserPasser(INTERVALLE_MS_TEST);
 
@@ -1075,7 +1075,7 @@ describe('StreamSessionUseCase', () => {
       cache.signalerActivite(SESSION);
       await laisserPasser(1100);
       seanceLue({ etat: 'terminee' });
-      cache.drop(SESSION);
+      cache.drop(SESSION, 0);
       await laisserPasser(4000);
 
       const bilans = bilansAvantLaFin(ecoute);
@@ -1103,7 +1103,7 @@ describe('StreamSessionUseCase', () => {
       cache.signalerActivite(SESSION);
       await laisserPasser(1000);
       seanceLue({ etat: 'terminee' });
-      cache.drop(SESSION);
+      cache.drop(SESSION, 0);
       await laisserPasser(600);
       resolveurs.forEach((resoudre) => resoudre([buildAnswerRecord()]));
       await laisserPasser(1500);
@@ -1180,7 +1180,7 @@ describe('StreamSessionUseCase', () => {
       const ecoute = await ecouterFormateur();
       await laisserPasser();
       seanceLue({ etat: 'terminee' });
-      cache.drop(SESSION);
+      cache.drop(SESSION, 0);
       await laisserPasser(4 * INTERVALLE_MS_TEST);
 
       expectPanneJournalisee();

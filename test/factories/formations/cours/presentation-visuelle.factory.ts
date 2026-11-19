@@ -1,5 +1,5 @@
 import { auMillionieme } from '../../../../src/common/domain/nombres/arrondi';
-import { avecLesProduits } from '../../../../src/modules/formations/domain/cours/structure/ArbrePondere';
+import { avecLesProduits } from '../../../../src/modules/formations/domain/cours/structure/arbre/ArbrePondere';
 
 const IMAGE = 'https://images.example.test/deck/illustration.jpeg';
 
@@ -49,9 +49,36 @@ const IMAGE_ET_TEXTE = {
   paragraphs: ['Un total concordant ne prouve pas chaque ligne.'],
 };
 
+export const FIGURE_DE_COURBE_VALIDE = {
+  formula: 'f(x) = −x² + 6x',
+  xLabel: 'x',
+  yLabel: 'f(x)',
+  xRange: [0, 6],
+  yRange: [0, 10],
+  points: [
+    { x: 0, y: 0 },
+    { x: 1, y: 5 },
+    { x: 2, y: 8 },
+    { x: 3, y: 9 },
+  ],
+  description: 'Une colline qui monte de 0 à 9.',
+};
+
 export const PRESENTATIONS_VISUELLES_VALIDES: Readonly<
   Record<string, Readonly<Record<string, unknown>>>
 > = {
+  courbe: {
+    title: 'La pente change à chaque point',
+    figure: FIGURE_DE_COURBE_VALIDE,
+    steps: [
+      { title: 'La colline', text: 'f(x) = −x² + 6x monte puis descend.' },
+      {
+        title: 'En x = 1',
+        text: 'La tangente monte de 4 pour 1 pas.',
+        tangent: { x: 1, y: 5, slope: 4, label: 'pente 4' },
+      },
+    ],
+  },
   hero: { title: 'Lire un chiffre', subtitle: 'BTS CG · deuxième année' },
   'method-path': {
     title: 'De la donnée à la décision',

@@ -109,9 +109,7 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 4,
       concepts: ['suite-geometrique', 'ajustement-affine'],
       notes: moteur.puces(
-        'Rappel rapide : deux votes non notés, un par cours.',
         'Dire où chaque acquis resservira : la raison devient le coefficient e^k, PENTE ajuste z = ln y.',
-        ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
       ),
     },
     [
@@ -143,7 +141,7 @@ const ACTE_1: moteur.Acte = [
       notes: moteur.puces(
         '2 min : lire la dernière ligne de chaque colonne, c’est le fil du cours.',
         'Question : « Lequel de ces acquis devient une fonction aujourd’hui ? » La puissance qⁿ, prolongée à tout x.',
-        'Ne pas refaire les cours : renvoyer aux fiches mémo du classeur de CCF.',
+        'Ne pas refaire les cours : renvoyer à leurs fiches mémo.',
       ),
     },
     'comparison',
@@ -179,7 +177,7 @@ const ACTE_1: moteur.Acte = [
           ],
         },
       ],
-      note: 'Les fiches mémo du B2-02, du B2-04 et du B2-05 sont dans votre classeur de CCF.',
+      note: 'Les fiches mémo du B2-02, du B2-04 et du B2-05 reprennent ces rappels.',
     },
   ),
   moteur.ecranV2(
@@ -296,10 +294,7 @@ const ACTE_1: moteur.Acte = [
       imageAlt:
         'Infographie « Des puissances pour tous les nombres ». On connaît quelques valeurs de eˣ : e⁰ = 1, e¹ ≈ 2,718 et e² ≈ 7,389 aux rangs 0, 1 et 2 ; le rang 2,5 reste un point d’interrogation. La fonction exponentielle eˣ est définie pour tous les nombres réels : sa courbe passe par e^(−1) ≈ 0,368, e⁰ = 1, e^0,5 ≈ 1,649, e¹ ≈ 2,718 et e² ≈ 7,389. Par définition, e⁰ = 1 ; pour tout nombre réel x, eˣ > 0 ; pour tous les nombres réels a et b, e^(a + b) = e^a × e^b. Piège : e × 0,1 × 4 ≈ 1,087 est faux ; le juste est e^0,4 ≈ 1,492.',
     },
-    [
-      moteur.AVANT_SA_PAGE,
-      'Faire lire le piège du bas : e^0,4 n’est pas e × 0,1 × 4.',
-    ],
+    ['Faire lire le piège du bas : e^0,4 n’est pas e × 0,1 × 4.'],
   ),
   moteur.ecranV2(
     {
@@ -309,7 +304,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['fonction-exponentielle', 'suite-geometrique'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Avant l’exemple, demander : « Une suite géométrique a-t-elle une valeur au rang 2,5 ? » Non : la fonction exponentielle comble les trous.',
         'Relier au B2-04 et au B2-05 : qⁿ et (1 + t)ⁿ multiplient, ils n’ajoutent pas.',
         'Faire trouver la touche eˣ sur les calculatrices de la salle.',
@@ -367,7 +361,6 @@ const ACTE_1: moteur.Acte = [
         'Infographie « Lire a et k avant de calculer ». Deux courbes partent du même point, a = 1 000 : la verte monte, k = 0,02 > 0, croissante ; la rouge descend, k = −0,02 < 0, décroissante. e^0,02 ≈ 1,0202, soit + 2,02 % ; e^(−0,02) ≈ 0,9802, soit − 1,98 %. Taux = e^k − 1. Dans un tableur, avec 1 000 en H1 et 0,02 en H2 : =$H$1*EXP($H$2*A2).',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « Que lit-on en 0, et que dit le signe de k ? » La valeur de départ et le sens de variation.',
     ],
   ),
@@ -383,7 +376,6 @@ const ACTE_1: moteur.Acte = [
         'tableur',
       ],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire comparer k = 0,02 et le taux 2,02 % : proches, mais pas égaux ; l’écart grandit avec k.',
         'Faire taper la formule sans $ sur un poste volontaire, puis la recopier : la colonne devient fausse, l’erreur fixe la règle.',
       ),
@@ -412,7 +404,7 @@ const ACTE_1: moteur.Acte = [
         {
           kind: 'method',
           title: 'Au tableur : EXP et des paramètres figés',
-          text: 'EXP(nombre) calcule e à la puissance nombre. a et k sont rangés dans deux cellules, figées par des $, pour recopier la formule vers le bas. Au CCF : lire a et k dans l’énoncé avant d’écrire la formule.',
+          text: 'EXP(nombre) calcule e à la puissance nombre. a et k sont rangés dans deux cellules, figées par des $, pour recopier la formule vers le bas. Avant d’écrire la formule, lire a et k dans l’énoncé.',
           steps: [
             'x en A2 ; a en H1 ; k en H2.',
             'En B2 : =$H$1*EXP($H$2*A2), puis recopier vers le bas.',
@@ -431,7 +423,7 @@ const ACTE_1: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['fonction-exponentielle'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -499,7 +491,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['fonction-exponentielle'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire a et k du modèle, puis l’exposant à calculer, avant la calculatrice.',
         'Pièges : e × k × x ; 1,06⁵ au lieu de e^0,3 ; k pris pour le taux ; une exponentielle qui croîtrait toujours.',
         'Papier : exercice 1 du livret.',
@@ -568,7 +559,6 @@ const ACTE_1: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Transition : « Faisons calculer tous les mois par le tableur : exercice 2. »',
       ],
     },
@@ -600,7 +590,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['tableur', 'fonction-exponentielle'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
         'Réflexion : écrire sur papier la formule de B2, puis ce qu’elle devient en B3 une fois recopiée.',
         'Erreurs à chercher : EXP(1)*k*x ; PUISSANCE(1+k;x) ; E1 sans $ : la colonne tombe à 0 ; G1 sans $ ou A2 figé à tort : elle reste à 400 ; =B3/B2 pour le taux.',
         'Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.',
@@ -617,7 +606,6 @@ const ACTE_1: moteur.Acte = [
       minutes: 2,
       notes: [
         'Projeter la feuille d’un poste volontaire, relire la formule de B2 et montrer les $ qui la font recopier.',
-        'Transition : jalon 1, puis pause de 15 minutes.',
       ],
     },
     [
@@ -643,7 +631,6 @@ const ACTE_1: moteur.Acte = [
         'Je sais calculer une valeur de a e^(kx), en donner le taux par unité et l’écrire au tableur.',
     },
     'Si plus de 30 % « Perdu » : reprendre la trace écrite A1-08 sur le taux e^k − 1 après la pause.',
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 
@@ -656,7 +643,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 5,
       concepts: ['logarithme-neperien', 'resolution-par-logarithme'],
       notes: moteur.puces(
-        'Temps « réfléchir » de la notion 2 : 3 min d’écriture individuelle, puis lire trois réponses au pupitre.',
         'Ne rien trancher : la trace écrite suivante répond.',
         'Relance : « Pour défaire × 5, on divise. Pour défaire une puissance de e, on fait quoi ? »',
         'Papier : cadre de réponse du livret.',
@@ -696,7 +682,6 @@ const ACTE_2: moteur.Acte = [
         'Infographie « ln défait l’exponentielle ». Comme ÷ 4 défait × 4 entre 3 et 12, ln défait eˣ : 1,609 donne 5 par eˣ, et 5 redonne 1,609 par ln. La courbe de eˣ lue à l’envers : on part de 5 sur l’axe vertical, on rejoint la courbe, on descend sur 1,609. ln 1 = 0 et ln e = 1 ; ln 0 et ln(−3) n’existent pas. La touche ln donne ln 5 ≈ 1,609 ; la touche log donne log 5 ≈ 0,699 : ce n’est pas la bonne.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « × 4 a pour inverse ÷ 4 ; quel est l’inverse de eˣ ? » Laisser venir ln.',
     ],
   ),
@@ -713,7 +698,6 @@ const ACTE_2: moteur.Acte = [
         'Infographie « ln change × en + ». Sur une règle graduée 1, 2, 4, 8 à pas égaux, chaque pas multiplie par 2 et ajoute 0,693 au logarithme. ln(a × b) = ln a + ln b ; ln(a ÷ b) = ln a − ln b ; ln(aⁿ) = n × ln a. Piège : ln 2 × ln 4 ≈ 0,961 est faux ; le juste est ln(2 × 4) = ln 8 ≈ 2,079.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « Que devient × 2 quand on passe au ln ? » Une addition de 0,693.',
     ],
   ),
@@ -779,7 +763,6 @@ const ACTE_2: moteur.Acte = [
         'Infographie « Passer l’exposant devant ». Les valeurs de 1,5ⁿ pour n de 0 à 7 : 1 ; 1,50 ; 2,25 ; 3,38 ; 5,06 ; 7,59 ; 11,39 ; 17,09. Le seuil 10 est franchi entre n = 5 et n = 6. Étapes : ln(1,5ⁿ) ≥ ln 10 ; n × ln 1,5 ≥ ln 10 ; n ≥ ln 10 ÷ ln 1,5 ; ln 10 ÷ ln 1,5 ≈ 5,68 ; premier entier n = 6.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « Comment trouver le rang sans tâtonner ? » On passe l’exposant devant ln.',
     ],
   ),
@@ -796,7 +779,6 @@ const ACTE_2: moteur.Acte = [
         'Infographie « q < 1 : le sens change ». La courbe de ln x passe par (1 ; 0) : elle est négative pour x < 1, avec ln 0,7 ≈ −0,357, et positive au-delà, avec ln 1,5 ≈ 0,405. Étapes : 0,7ⁿ ≤ 0,2 ; n × ln 0,7 ≤ ln 0,2 ; n ≥ ln 0,2 ÷ ln 0,7, le signe ≥ écrit en très gros ; ln 0,2 ÷ ln 0,7 ≈ 4,51 ; premier entier n = 5. Contrôle : 0,7⁴ ≈ 0,240 et 0,7⁵ ≈ 0,168.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « Quel est le signe de ln 0,7 ? » Négatif : diviser par ln 0,7 change le sens.',
     ],
   ),
@@ -835,8 +817,8 @@ const ACTE_2: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : même méthode pour a e^(kx) ≥ s',
+          kind: 'piege',
+          title: 'Même méthode pour a e^(kx) ≥ s',
           text: 'a e^(kx) ≥ s ⇔ e^(kx) ≥ s ÷ a ⇔ kx ≥ ln(s ÷ a), puis on divise par k, en changeant le sens si k < 0. Pièges : diviser s par q au lieu de passer par ln ; garder le sens en divisant par un nombre négatif ; arrondir le seuil à l’entier inférieur.',
           steps: [
             'Isoler la puissance ou l’exponentielle.',
@@ -856,7 +838,7 @@ const ACTE_2: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['resolution-par-logarithme', 'interets-composes'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -921,7 +903,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 9,
       concepts: ['resolution-par-logarithme', 'logarithme-neperien'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 7),
         'Réflexion : pour chaque question, écrire l’inéquation, puis le signe du nombre par lequel on divisera.',
         'Pièges : diviser au lieu de passer par ln ; garder le sens avec ln 0,8 ; arrondir le seuil en dessous.',
         'Papier : exercice 3 du livret.',
@@ -985,7 +966,6 @@ const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Transition : « Et pour d’autres objectifs que 1 000 sacs ? Le tableur : exercice 4. »',
       ],
     },
@@ -1017,7 +997,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['tableur', 'resolution-par-logarithme'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire en français les deux étapes de la résolution de 400e^(0,06x) = s, puis les formules de B2 et C2.',
         'Erreurs à chercher : =A2/$E$1 sans LN ; =LN(A2)/LN($E$1) ; E1 ou G1 sans $ : la recopie affiche une erreur.',
         'Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.',
@@ -1106,7 +1085,7 @@ const ACTE_3: moteur.Acte = [
       titre: 'Vote : quel modèle pour la demande ?',
       dureeMinutes: 4,
       concepts: ['ajustement-exponentiel', 'logarithme-neperien'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
+      notes: '',
     },
     [
       moteur.vote(
@@ -1140,7 +1119,6 @@ const ACTE_3: moteur.Acte = [
         'Infographie « Ajouter ou multiplier ? ». On ajoute − 200 : 1 000, 800, 600, 400, des rapports qui changent, 0,80, 0,75, 0,67. On multiplie par 0,8 : 1 000, 800, 640, 512, des rapports constants de 0,80. Sur le graphique, la droite rouge tombe à 0 au pas 5 ; la courbe verte reste au-dessus de 0. f(x) = 500e^(−0,1x) : f(10) ≈ 183,94 ; f(x) = 100 donne x ≈ 16,09.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « Comment voir si on ajoute ou si on multiplie ? » On calcule les rapports successifs.',
     ],
   ),
@@ -1152,7 +1130,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['ajustement-exponentiel', 'resolution-par-logarithme'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire calculer au tableau deux rapports successifs du graphique : 860 ÷ 1 100 et 670 ÷ 860.',
         'Lien au dossier : « La demande des boutiques : modèle affine ou exponentiel ? »',
       ),
@@ -1205,7 +1182,6 @@ const ACTE_3: moteur.Acte = [
         'Infographie « La courbe devient une droite ». Les points (x ; y) pour x de 0 à 4 valent 100, 74, 55, 41, 30 et dessinent une courbe. Le tableau z = ln y donne 4,605 ; 4,304 ; 4,007 ; 3,714 ; 3,401. Les points (x ; z) s’alignent sur une droite. z ≈ −0,30x + 4,61 ; y = e^β × e^(αx) ; a = e^4,61 ≈ 100 ; y ≈ 100e^(−0,30x). Piège : écrire a = β est faux.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « Comment rendre droite une série qui courbe ? » On passe aux logarithmes.',
     ],
   ),
@@ -1217,7 +1193,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['ajustement-exponentiel', 'ajustement-affine', 'tableur'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Relier au B2-02 : la droite des moindres carrés est la même ; seules les ordonnées changent, z au lieu de y.',
         'Question : « β est-il le coefficient a ? » Non : a = e^β.',
       ),
@@ -1229,7 +1204,7 @@ const ACTE_3: moteur.Acte = [
         {
           kind: 'definition',
           title: 'Le changement de variable z = ln y',
-          text: 'Si y = a e^(kx), alors z = ln y vaut kx + ln a : les points (x ; z) sont alignés. On ajuste donc z en x par la méthode des moindres carrés du B2-02, z = αx + β, puis on revient à y en exponentiant : y = e^β × e^(αx). Au CCF, le changement de variable est toujours donné.',
+          text: 'Si y = a e^(kx), alors z = ln y vaut kx + ln a : les points (x ; z) sont alignés. On ajuste donc z en x par la méthode des moindres carrés du B2-02, z = αx + β, puis on revient à y en exponentiant : y = e^β × e^(αx). L’énoncé donne toujours le changement de variable.',
           formula:
             'z = ln y · z = αx + β · y = e^β × e^(αx) : a = e^β et k = α',
         },
@@ -1245,8 +1220,8 @@ const ACTE_3: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : rédiger le retour au modèle',
+          kind: 'piege',
+          title: 'Rédiger le retour au modèle',
           text: 'Le sujet donne z = ln y, demande la droite de z en x au tableur ou à la calculatrice, puis le modèle en y. Écrire les arrondis demandés, puis contrôler sur un relevé.',
           steps: [
             'Écrire z = αx + β avec les arrondis.',
@@ -1265,7 +1240,7 @@ const ACTE_3: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['ajustement-exponentiel', 'prevision'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1329,7 +1304,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['ajustement-exponentiel', 'logarithme-neperien'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
         'Réflexion : vérifier sur la calculatrice que ln 1 100 est un peu au-dessus de 7.',
         'Piège : la touche log, qui donne des valeurs autour de 3.',
         'Papier : tableau du livret, rempli à la main, au millième.',
@@ -1408,7 +1382,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['ajustement-exponentiel', 'resolution-par-logarithme'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire le retour de z à y, puis l’équation du prix, avant de calculer.',
         'Pièges : a = 8 ; a = −0,05 ; 0,95³⁸ ; le signe de k oublié ; diviser sans ln.',
         'Papier : exercice 6 du livret.',
@@ -1475,7 +1448,6 @@ const ACTE_3: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Transition : « Faisons le point sur les modèles exponentiels. »',
       ],
     },
@@ -1509,7 +1481,6 @@ const ACTE_3: moteur.Acte = [
       invite:
         'Je sais reconnaître un modèle exponentiel, l’ajuster par z = ln y et m’en servir pour prévoir.',
     },
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 

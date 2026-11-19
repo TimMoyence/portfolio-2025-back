@@ -111,7 +111,7 @@ const ACTE_1: moteur.Acte = [
       titre: 'Vote : « ou » et « si… alors »',
       dureeMinutes: 4,
       concepts: ['connecteur'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(1),
+      notes: '',
     },
     [
       moteur.vote(
@@ -245,7 +245,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['connecteur', 'proposition'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : « ou » accepte les deux.',
       ),
     },
@@ -317,7 +316,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['connecteur'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : un seul cas faux.',
       ),
     },
@@ -363,7 +361,7 @@ const ACTE_1: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['connecteur', 'proposition'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -466,7 +464,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 11,
       concepts: ['connecteur', 'proposition'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 9),
         'Réflexion : écrire chaque règle avec ses lettres P et Q.',
         'Pièges : borne stricte ; « ou » exclusif ; implication jugée fausse quand sa condition l’est ; réciproque.',
         'Papier : exercice 1 du livret.',
@@ -525,9 +522,7 @@ const ACTE_1: moteur.Acte = [
     {
       minutes: 3,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
         'Faire montrer la ligne de la table de vérité qui tranche chaque question.',
-        'Transition : jalon 1, puis pause de 15 minutes.',
       ],
     },
     [
@@ -561,7 +556,6 @@ const ACTE_1: moteur.Acte = [
         'Je sais dire quand « et », « ou » et « si… alors » sont vrais, avec la table de vérité.',
     },
     'Si plus de 30 % « Perdu » : reprendre la ligne fausse de l’implication après la pause.',
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 
@@ -574,7 +568,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 5,
       concepts: ['negation', 'connecteur'],
       notes: moteur.puces(
-        'Temps « réfléchir » de la notion 2 : 3 min d’écriture individuelle, puis lire trois réponses au pupitre.',
         'Ne rien trancher : la trace écrite suivante répond.',
         'Relance : « Un abonné à 30 € paie-t-il avec la règle de Théo ? »',
         'Papier : cadre de réponse du livret.',
@@ -631,7 +624,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['negation', 'connecteur'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : nier, puis échanger.',
       ),
     },
@@ -700,7 +692,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['proposition', 'negation'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : la borne change de camp.',
       ),
     },
@@ -746,7 +737,7 @@ const ACTE_2: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['negation', 'tableur'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -810,7 +801,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['negation', 'connecteur'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 4),
         'Réflexion : écrire chaque règle avec P et Q avant de la nier.',
         'Pièges : connecteur gardé ; borne gardée du même côté.',
         'Papier : exercice 2 du livret.',
@@ -872,10 +862,7 @@ const ACTE_2: moteur.Acte = [
     },
     {
       minutes: 2,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
-        'Transition : « Ces règles au tableur : exercice 3. »',
-      ],
+      notes: ['Transition : « Ces règles au tableur : exercice 3. »'],
     },
     [
       [
@@ -905,7 +892,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['tableur', 'connecteur', 'negation'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire sur papier la règle de F2 avec Morgan avant de la taper.',
         'Erreurs à chercher : OU à la place de ET ; > à la place de >= ; contraire sans Morgan ; textes sans guillemets.',
         'Papier : formules écrites sur la copie avec la grille des cellules.',
@@ -924,10 +910,7 @@ const ACTE_2: moteur.Acte = [
     },
     {
       minutes: 2,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
-        'Transition : jalon 2.',
-      ],
+      notes: ['Transition : jalon 2.'],
     },
     [
       [
@@ -962,7 +945,7 @@ const ACTE_3: moteur.Acte = [
       titre: 'Vote : tous, au moins un',
       dureeMinutes: 5,
       concepts: ['quantificateur'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
+      notes: '',
     },
     [
       moteur.vote(
@@ -1013,7 +996,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['quantificateur', 'negation'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : un contre-exemple suffit.',
       ),
     },
@@ -1081,7 +1063,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['quantificateur'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : qui choisit en second dépend du premier.',
       ),
     },
@@ -1127,7 +1108,7 @@ const ACTE_3: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['quantificateur', 'negation'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1224,7 +1205,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 10,
       concepts: ['quantificateur', 'connecteur', 'negation'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 8),
         'Réflexion : pour chaque règle, écrire quelles lignes la contredisent.',
         'Pièges : condition fausse comptée comme contre-exemple ; « ou » compté deux fois ; quantificateurs niés ou échangés.',
         'Papier : exercice 4 du livret, fichier imprimé.',
@@ -1296,11 +1276,7 @@ const ACTE_3: moteur.Acte = [
     },
     {
       minutes: 3,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
-        'Faire nommer au pupitre chaque contre-exemple du fichier.',
-        'Transition : jalon 3, puis pause de 15 minutes.',
-      ],
+      notes: ['Faire nommer au pupitre chaque contre-exemple du fichier.'],
     },
     [
       [
@@ -1336,7 +1312,6 @@ const ACTE_3: moteur.Acte = [
       invite:
         'Je sais nier « pour tout » et « il existe », et je lis l’ordre des quantificateurs.',
     },
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 

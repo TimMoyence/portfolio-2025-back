@@ -118,13 +118,13 @@ export function pagesDeCours(contenu: ContenuDeCours): string[] {
   return textesDesPages(contenu).map(({ id }) => id);
 }
 
-export function pagesSansMethodeOuAvecEncadreCcf(
+export function pagesSansMethodeOuAvecEncadreDePieges(
   contenu: ContenuDeCours,
 ): string[] {
   return textesDesPages(contenu)
     .filter(
       ({ texte }) =>
-        !texte.includes('"kind":"method"') || texte.includes('"exam"'),
+        !texte.includes('"kind":"method"') || texte.includes('"kind":"piege"'),
     )
     .map(({ id }) => id);
 }

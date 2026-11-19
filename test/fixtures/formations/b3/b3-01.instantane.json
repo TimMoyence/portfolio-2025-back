@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "9c7681b7e3a700e1d46b572f3fda7d98544fdb8477cbb24172f2897dc27bc322",
+  "empreinte": "86b4994aec51088573df26cfa83013477681c13594a1fb7c402cc89278bdbb16",
   "sujet": {
     "id": "b3-01-donnee-brute-decision",
     "titre": "Expert Data : de la donnée brute à la décision",
@@ -2150,7 +2150,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » du niveau 1 : deux votes non notés.\n• Première question sans révélation : la réponse tombe à la correction de l’exercice 4 ; noter au tableau la répartition des votes.\n• Deuxième question, sans débat : la révélation suit.",
+        "notes": "• Première question sans révélation : la réponse tombe à la correction de l’exercice 4 ; noter au tableau la répartition des votes.\n• Deuxième question, sans débat : la révélation suit.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2447,7 +2447,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 3 min · correction 1 min\n• Réflexion : relire les en-têtes de l’onglet Commandes avant de trier.\n• Pièges : n_commande pris pour une mesure, parce qu’il contient des chiffres ; ville prise pour un identifiant ; identifiant rangé parmi les catégories (agence_id, client_id, produit_id, commercial_id).\n• Corriger catégorie par catégorie, en commençant par la carte la plus ratée (taux d’erreur au pupitre).\n• Transition : « Une ligne, c’est quoi ? Exercice 2. »",
+        "notes": "• Réflexion : relire les en-têtes de l’onglet Commandes avant de trier.\n• Pièges : n_commande pris pour une mesure, parce qu’il contient des chiffres ; ville prise pour un identifiant ; identifiant rangé parmi les catégories (agence_id, client_id, produit_id, commercial_id).\n• Corriger catégorie par catégorie, en commençant par la carte la plus ratée (taux d’erreur au pupitre).\n• Transition : « Une ligne, c’est quoi ? Exercice 2. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [],
@@ -2606,7 +2606,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 3 min · correction 1 min\n• Réflexion : faire dire ce qu’on va compter, des lignes ou des commandes, avant de filtrer.\n• Piège : compter une commande là où l’on demande des lignes.\n• Corriger les deux questions ensemble : une commande, plusieurs lignes.\n• Transition : « Le fichier a-t-il d’autres surprises ? Un vote. »",
+        "notes": "• Réflexion : faire dire ce qu’on va compter, des lignes ou des commandes, avant de filtrer.\n• Piège : compter une commande là où l’on demande des lignes.\n• Corriger les deux questions ensemble : une commande, plusieurs lignes.\n• Transition : « Le fichier a-t-il d’autres surprises ? Un vote. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2697,7 +2697,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » du niveau 2 : vote non noté, 1 min de vote et 1 min de révélation.\n• Faire repérer dans le fichier une cellule de ca_ht alignée à gauche : l’indice d’un texte.",
+        "notes": "• Faire repérer dans le fichier une cellule de ca_ht alignée à gauche : l’indice d’un texte.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2919,7 +2919,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Le fichier sépare les milliers par une espace ordinaire. Les vrais exports utilisent souvent l’espace insécable, UNICAR(160) : SUBSTITUE(L2;UNICAR(160);\"\") la retire.\n• S’arrêter sur l’ordre des fonctions : SUBSTITUE d’abord, CNUM ensuite. Pour la ville, SUPPRESPACE et NOMPROPRE s’emboîtent dans les deux sens : accepter les deux.\n• Transition : « Avant de nettoyer, classons les anomalies : exercice 3. »",
+        "notes": "• Le fichier sépare les milliers par une espace ordinaire. Les vrais exports utilisent souvent l’espace insécable, UNICAR(160) : SUBSTITUE(L2;UNICAR(160);\"\") la retire.\n• S’arrêter sur l’ordre des fonctions : SUBSTITUE d’abord, CNUM ensuite. Pour la ville, SUPPRESPACE et NOMPROPRE s’emboîtent dans les deux sens : accepter les deux.\n• Transition : « Avant de nettoyer, classons les anomalies : exercice 3. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3006,7 +3006,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 1 min\n• Réflexion : rappeler les deux questions de la grille avant de trier.\n• Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.\n• Corriger case par case ; finir par la case vide.\n• Transition : « Au travail sur le vrai fichier : exercice 4. »",
+        "notes": "• Réflexion : rappeler les deux questions de la grille avant de trier.\n• Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.\n• Corriger case par case ; finir par la case vide.\n• Transition : « Au travail sur le vrai fichier : exercice 4. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [],
@@ -3157,7 +3157,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner avant de convertir ; poser le contrôle sur les dates converties (45 par la formule de A1-11, 39 par DATEVAL sur toute date en texte).\n• Défi, villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).\n• Défi : 48 villes ; sans SUPPRESPACE, les espaces en trop en font compter 83 ; la casse ne change rien, Excel l’ignore.\n• Piège des dates : la formule de A1-11, =SI(NBCAR(B2)=10;DATEVAL(B2);B2), laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril sur un poste réglé en français (jj/mm/aa), or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.\n• Avant la pause, dire les règles des niveaux 1 et 2 : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande. »\n• Puis pause de 15 minutes ; reprise à 9 h 45 sur le classeur de reprise.",
+        "notes": "• Réflexion : faire dire l’ordre du travail : copie, colonnes nettoyées, doublons, contrôle.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner avant de convertir ; poser le contrôle sur les dates converties (45 par la formule de A1-11, 39 par DATEVAL sur toute date en texte).\n• Défi, villes distinctes : copier la colonne N, en-tête compris, en valeurs à part, puis Supprimer les doublons, case « Mes données ont des en-têtes » cochée ; sous Excel 2021 ou 365, =NBVAL(UNIQUE(N2:N4099)).\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Révéler la part des lignes fausses ou douteuses : c’est la réponse à la première question du vote sur le fichier et Dupont, Bordeaux (A1-04).\n• Défi : 48 villes ; sans SUPPRESPACE, les espaces en trop en font compter 83 ; la casse ne change rien, Excel l’ignore.\n• Piège des dates : la formule de A1-11, =SI(NBCAR(B2)=10;DATEVAL(B2);B2), laisse en texte « 08/04/26 » (commande C-11481 : ligne 3785 du brut, 3741 de la copie dédoublonnée) ; DATEVAL la lirait 8 avril sur un poste réglé en français (jj/mm/aa), or elle est livrée le 7 août : la commande date sans doute du 4 août, et seul l’émetteur peut le dire.\n• Avant la pause, dire les règles des niveaux 1 et 2 : « Je relie les tables par un identifiant, jamais par un libellé » ; « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux et je demande. »\n• Puis pause de 15 minutes ; reprise à 9 h 45 sur le classeur de reprise.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3271,7 +3271,7 @@
           "libelle": "Classeur de reprise de l’acte 2",
           "reservee": true
         },
-        "notes": "• Ouvrir d’abord le classeur de reprise, tous, y compris ceux qui ont tout réussi : les résultats se compareront sur la même base.\n• Montrer l’onglet Quarantaine : les lignes à demander, chacune avec son motif. Les dates ISO, que DATEVAL convertit sans ambiguïté, n’y sont plus ; les produits inconnus et les prix hors norme, que le contrôle de l’exercice 4 ne voyait pas, y sont.\n• Temps « réfléchir » du niveau 3 : vote non noté, 2 min de vote et 1 min de révélation.\n• Faire dire les deux familles dans l’ordre : on cherche la catégorie, puis on additionne.",
+        "notes": "• Ouvrir d’abord le classeur de reprise, tous, y compris ceux qui ont tout réussi : les résultats se compareront sur la même base.\n• Montrer l’onglet Quarantaine : les lignes à demander, chacune avec son motif. Les dates ISO, que DATEVAL convertit sans ambiguïté, n’y sont plus ; les produits inconnus et les prix hors norme, que le contrôle de l’exercice 4 ne voyait pas, y sont.\n• Faire dire les deux familles dans l’ordre : on cherche la catégorie, puis on additionne.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3557,7 +3557,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire nommer la famille de chaque question avant d’écrire une formule.\n• Pièges : fonction DATE écrite dans les guillemets (\">=DATE(2026;1;1)\") ; plage de recherche non figée ; période oubliée.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Défi : 66 lignes avec le critère \">0,15\" ; \">15\" n’en trouve aucune : la remise est un taux.\n• Transition : « Passons au temps : un vote. »",
+        "notes": "• Réflexion : faire nommer la famille de chaque question avant d’écrire une formule.\n• Pièges : fonction DATE écrite dans les guillemets (\">=DATE(2026;1;1)\") ; plage de recherche non figée ; période oubliée.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Défi : 66 lignes avec le critère \">0,15\" ; \">15\" n’en trouve aucune : la remise est un taux.\n• Transition : « Passons au temps : un vote. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3651,7 +3651,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de la manipulation du temps : vote non noté, 1 min de vote et 1 min de révélation.\n• Faire dire ce que promet le contrat de Norvane : une livraison en 5 jours ouvrés.",
+        "notes": "• Faire dire ce que promet le contrat de Norvane : une livraison en 5 jours ouvrés.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3808,7 +3808,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.\n• Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; oublier l’agence, ou prendre MEDIANE sous un filtre, qui compte les lignes masquées.\n• Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.\n• Retards : 2025 n’a aucun retard, et toute la table donne le même compte que 2026 : faire montrer le critère 2026.\n• Défi : 32,0 % ; la moyenne des taux de ligne donne 35,4 % ; marge ÷ coût donne 47,0 % : c’est le taux de marge.\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
+        "notes": "• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.\n• Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; oublier l’agence, ou prendre MEDIANE sous un filtre, qui compte les lignes masquées.\n• Corriger question par question ; sur la médiane, trier les délais de Strasbourg pour montrer les ruptures en bas de colonne.\n• Retards : 2025 n’a aucun retard, et toute la table donne le même compte que 2026 : faire montrer le critère 2026.\n• Défi : 32,0 % ; la moyenne des taux de ligne donne 35,4 % ; marge ÷ coût donne 47,0 % : c’est le taux de marge.\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3906,7 +3906,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » du niveau 4 : vote non noté, 1 min de vote et 1 min de révélation.\n• Faire dire ce qui arrivera au tableau de bord quand l’export d’octobre sera collé sous celui de septembre.",
+        "notes": "• Faire dire ce qui arrivera au tableau de bord quand l’export d’octobre sera collé sous celui de septembre.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4108,7 +4108,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.\n• Pièges : % du total général ou de la colonne au lieu du % de la ligne ; filtre annee oublié au premier TCD ; resté actif au second, recopié du premier ou de l’exemple ; trimestres groupés sans les années.\n• Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.\n• Défi : clic dans un TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › categorie ; puis, le segment sélectionné, onglet Segment › Connexions de rapport : cocher les deux TCD.\n• Avant la pause, dire les règles des niveaux 3 et 4 : « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe. »\n• Puis pause de 15 minutes ; reprise à 11 h 01 sur le classeur de reprise de l’acte 3.",
+        "notes": "• Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.\n• Pièges : % du total général ou de la colonne au lieu du % de la ligne ; filtre annee oublié au premier TCD ; resté actif au second, recopié du premier ou de l’exemple ; trimestres groupés sans les années.\n• Corriger les deux questions ; montrer le regroupement par années qui sépare les deux printemps.\n• Défi : clic dans un TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › categorie ; puis, le segment sélectionné, onglet Segment › Connexions de rapport : cocher les deux TCD.\n• Avant la pause, dire les règles des niveaux 3 et 4 : « Avant la fonction, je nomme la famille du problème » ; « Je travaille sur un tableau structuré, jamais sur une plage fixe. »\n• Puis pause de 15 minutes ; reprise à 11 h 01 sur le classeur de reprise de l’acte 3.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4261,7 +4261,7 @@
           "libelle": "Classeur de reprise de l’acte 3",
           "reservee": true
         },
-        "notes": "• Ouvrir d’abord le classeur de reprise de l’acte 3, tous, y compris ceux qui ont tout réussi.\n• Temps « réfléchir » du niveau 5 : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : redessiner au tableau les deux barres depuis zéro.",
+        "notes": "• Ouvrir d’abord le classeur de reprise de l’acte 3, tous, y compris ceux qui ont tout réussi.\n• Révélation : redessiner au tableau les deux barres depuis zéro.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4407,7 +4407,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 1 min\n• Réflexion : faire dire où vit l’objectif : dans une autre table que les ventes, d’où SOMME.SI.ENS et pas un TCD seul.\n• Pièges : comparer neuf mois de ventes à l’objectif de toute la table ; oublier la période des deux côtés.\n• Corriger les deux questions ; projeter un graphique réussi, titre compris.\n• Défi : un TCD mois en lignes, années en colonnes, puis un graphique en courbes.\n• Transition : « Nadia a trente secondes : un vote. »",
+        "notes": "• Réflexion : faire dire où vit l’objectif : dans une autre table que les ventes, d’où SOMME.SI.ENS et pas un TCD seul.\n• Pièges : comparer neuf mois de ventes à l’objectif de toute la table ; oublier la période des deux côtés.\n• Corriger les deux questions ; projeter un graphique réussi, titre compris.\n• Défi : un TCD mois en lignes, années en colonnes, puis un graphique en courbes.\n• Transition : « Nadia a trente secondes : un vote. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4497,7 +4497,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » du niveau 6 : vote non noté, 1 min de vote et 1 min de révélation.\n• Faire dire ce que Nadia fera de chaque option devant le comité.",
+        "notes": "• Faire dire ce que Nadia fera de chaque option devant le comité.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4740,7 +4740,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; ligne d’en-tête comptée parmi les lignes.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison, et le TCD de la marge par agence en barres de données, posées sur les seules cellules des agences : le total général écraserait les autres barres.\n• Défi : clic dans le TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › region.\n• Transition : « Vos analyses de la séance racontent quatre histoires : vos recommandations. »",
+        "notes": "• Réflexion : faire dire les quatre indicateurs et la comparaison de chacun avant de construire.\n• Annoncer le palier défi aux plus rapides : il se corrige oralement, sans note.\n• Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; ligne d’en-tête comptée parmi les lignes.\n• Corriger question par question, dans l’ordre où les explications se dévoilent ; s’attarder sur la moins réussie (score sous chaque correction).\n• Projeter un tableau de bord réussi : quatre indicateurs, chacun avec sa comparaison, et le TCD de la marge par agence en barres de données, posées sur les seules cellules des agences : le total général écraserait les autres barres.\n• Défi : clic dans le TCD › Insertion › Segment (sur Mac, Analyse du tableau croisé dynamique › Segment) › region.\n• Transition : « Vos analyses de la séance racontent quatre histoires : vos recommandations. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4879,7 +4879,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire relire la synthèse de l’exercice 8 et le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.\n• Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.\n• Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.\n• Transition : « Écrivez les règles des niveaux 5 et 6, puis gardez la fiche mémo. »",
+        "notes": "• Réflexion : faire relire la synthèse de l’exercice 8 et le tableau de bord en cherchant ce qui sort de l’ordinaire : une agence, une catégorie, un délai.\n• Rouen (91,9 %) : troisième agence sous l’objectif, en recul d’environ 2 % sur un an, de −3 % à 0 % selon la catégorie, sans cause qui ressorte du détail. À surveiller, pas une histoire : un constat sans cause ne fait pas une recommandation.\n• Révéler la correction : les quatre histoires s’affichent ensemble. Les commenter une à une, en demandant à main levée qui l’avait trouvée avant de passer à la suivante.\n• Transition : « Écrivez les règles des niveaux 5 et 6, puis gardez la fiche mémo. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],

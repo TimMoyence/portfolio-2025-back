@@ -648,7 +648,6 @@ describe('B2-01 — retours de QA', () => {
     expect(COURS.ecrans.some(({ id }) => id === EXERCICE_POINTS)).toBe(false);
     expect(COURS.ecrans.some(({ id }) => id === CORRECTION_POINTS)).toBe(false);
     expect(points.renvoi).toBe('B2-01-A1-04-TABLEAU-DE-BORD');
-    expect(points.notes).toContain('étape par étape sur ce même écran');
     expect(estInteractif(points)).toBe(true);
     expect(activitesLibres(COURS).get(POINTS)).toHaveLength(
       points.proprietes.exemple.etapes.length,
@@ -970,10 +969,13 @@ describe('B2-01 — correction sur place', () => {
       'B2-01-A5-03-MOYENNE-PONDEREE',
     ]);
     expect(
-      guides.every(({ notes }) =>
-        notes.includes('étape par étape sur ce même écran'),
+      guides.filter(
+        (guide) =>
+          !estInteractif(guide) ||
+          activitesLibres(COURS).get(guide.id)?.length !==
+            guide.proprietes.exemple.etapes.length,
       ),
-    ).toBe(true);
+    ).toEqual([]);
   });
 });
 

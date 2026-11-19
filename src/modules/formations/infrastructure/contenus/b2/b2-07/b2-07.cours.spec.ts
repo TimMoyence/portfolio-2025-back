@@ -65,17 +65,16 @@ const ECRANS_D_IMAGE_DU_RECAP = [
   'B2-07-A1-05-ENFANT-SEUIL',
   'B2-07-A1-07-ENFANT-BOUCLE',
   'B2-07-A1-08-ENFANT-TANT-QUE',
-  'B2-07-A1-09-ENFANT-DEUX-CHEMINS',
 ];
 
 const identifiants = (): string[] => COURS.ecrans.map((ecran) => ecran.id);
 
 fiche.decrireLaFicheDuCours('B2-07', COURS, {
   conception: 'b2/cours-b2-07-conception.md',
-  ecrans: 39,
-  dureeMinutes: 135,
-  minutesParActe: [12, 46, 25, 44, 8, 0],
-  rythme: { expositionContinueMax: 5, interactives: 105, exposition: 30 },
+  ecrans: 35,
+  dureeMinutes: 132,
+  minutesParActe: [11, 46, 24, 43, 8, 0],
+  rythme: { expositionContinueMax: 5, interactives: 105, exposition: 27 },
   ateliersNotes: [
     'A2-07 (10)',
     'A2-11 (10)',
@@ -96,7 +95,6 @@ fiche.decrireLaFicheDuCours('B2-07', COURS, {
     'A1-05',
     'A1-07',
     'A1-08',
-    'A1-09',
     'A2-01',
     'A2-03',
     'A2-04',
@@ -122,10 +120,10 @@ fiche.decrireLaFicheDuCours('B2-07', COURS, {
 });
 
 describe('B2-07 — le récapitulatif du cours 6 et de la boucle, en images', () => {
-  it('B207-M2 · récapitule en douze minutes, sept écrans d’une idée et un vote, sans aucune question notée', () => {
+  it('RET-02 · récapitule en onze minutes, six écrans d’une idée et un vote, sans aucune question notée', () => {
     const recap = recapitulatifDe(COURS, COURS_B2_07, 'B2-07-A1-');
 
-    expect(recap.minutes).toBe(12);
+    expect(recap.minutes).toBe(11);
     expect(recap.ecransDImage).toEqual(ECRANS_D_IMAGE_DU_RECAP);
     expect(recap.briques).toContain('fp-vote');
     expect(recap.notees).toEqual([]);
@@ -147,15 +145,129 @@ describe('B2-07 — le récapitulatif du cours 6 et de la boucle, en images', ()
   });
 });
 
+interface FigureServie {
+  readonly formula: string;
+  readonly tangents?: readonly { x: number; slope: number }[];
+  readonly zone?: { from: number };
+}
+
+const blocsDe = (screenId: string) =>
+  feuille.proprietesV2(COURS_B2_07, screenId).blocks as readonly {
+    formula?: string;
+  }[];
+
+const figureDe = (screenId: string) =>
+  feuille.proprietesV2(COURS_B2_07, screenId).figure as FigureServie;
+
+describe('B2-07 — retours de Tim du 2026-11-19', () => {
+  it('RET-01 · nomme chaque lettre de a e^(kx), une idée par ligne', () => {
+    const { conclusion } = feuille.texteDeLImage(
+      COURS_B2_07,
+      'B2-07-A1-03-ENFANT-A-ET-K',
+    );
+
+    expect(conclusion.split('\n')).toEqual([
+      'En maths, on écrit : f(x) = a e^(kx).',
+      'a est la valeur de départ : f(0) = a × e⁰ = a × 1 = a.',
+      'k règle le sens : k > 0, f croît ; k < 0, f décroît.',
+      'e^k est le coefficient multiplicateur d’une unité à la suivante.',
+      'Pour 1 000e^(0,02x) : a = 1 000 et e^0,02 ≈ 1,0202, soit + 2,02 % par unité, pas + 2 %.',
+    ]);
+  });
+
+  it('RET-02 · retire l’écran des deux chemins et fait écrire la boucle de la plante dans l’écran de Tant que', () => {
+    const { conclusion } = feuille.texteDeLImage(
+      COURS_B2_07,
+      'B2-07-A1-08-ENFANT-TANT-QUE',
+    );
+
+    expect(identifiants()).not.toContain('B2-07-A1-09-ENFANT-DEUX-CHEMINS');
+    expect(JSON.stringify(COURS_B2_07)).not.toContain('deux-chemins');
+    expect(conclusion).toContain(
+      'u ← 1 ; n ← 0 ; Tant que u < 10 : n ← n + 1, u ← u × 1,5 ; Afficher n, soit 6.',
+    );
+    expect(conclusion).toContain('ln 10 ÷ ln 1,5 ≈ 5,68');
+  });
+
+  it('RET-03 · remplace le plongeoir par la colline −x² + 6x, pente après pente, jusqu’à la dérivée', () => {
+    const ecran = COURS.ecrans.find(
+      ({ id }) => id === 'B2-07-A2-04-COURBE-PENTES',
+    );
+    const props = feuille.proprietesV2(
+      COURS_B2_07,
+      'B2-07-A2-04-COURBE-PENTES',
+    );
+    const etapes = props.steps as readonly {
+      text: string;
+      tangent?: { slope: number };
+    }[];
+
+    expect([ecran?.dureeMinutes, ecran?.diffusion]).toEqual([2, 'catalogue']);
+    expect((props.figure as FigureServie).formula).toBe('f(x) = −x² + 6x');
+    expect(etapes.flatMap(({ tangent }) => tangent?.slope ?? [])).toEqual([
+      4, 2, 0, -2, -4,
+    ]);
+    expect(etapes.at(-1)?.text).toContain('f′(x) = −2x + 6');
+    expect(JSON.stringify(COURS_B2_07)).not.toContain('exposant-qui-saute');
+    expect(blocsDe('B2-07-A2-05-COURS-DERIVEE')[0]?.formula).toContain(
+      '(x²)′ = 2x',
+    );
+  });
+
+  it.each([
+    'B2-07-A2-05-COURS-DERIVEE',
+    'B2-07-A2-10-COURS-DERIVEE-EXP',
+    'B2-07-A4-04-COURS-OPTIMUM',
+  ])(
+    'RET-04 · %s écrit ses formules une par ligne, sous un titre court',
+    (screenId) => {
+      const { title } = feuille.proprietesV2(COURS_B2_07, screenId);
+      const formules = blocsDe(screenId).flatMap(({ formula }) =>
+        formula === undefined ? [] : [formula],
+      );
+
+      expect(String(title).length).toBeLessThanOrEqual(32);
+      expect(formules.filter((formule) => formule.includes('·'))).toEqual([]);
+      expect(formules.every((formule) => formule.includes('\n'))).toBe(true);
+    },
+  );
+
+  it('RET-04 · dessine sous la dérivée de l’exponentielle la courbe de son exemple et sa pente en 0', () => {
+    const figure = figureDe('B2-07-A2-10-COURS-DERIVEE-EXP');
+
+    expect(figure.formula).toBe('f(x) = 1 000e^(0,02x)');
+    expect(figure.tangents).toEqual([
+      expect.objectContaining({ x: 0, slope: 20 }),
+    ]);
+  });
+
+  it('RET-04 · dessine sous l’optimum la parabole de son exemple, son sommet et la barrière x ≥ 12', () => {
+    const figure = figureDe('B2-07-A4-04-COURS-OPTIMUM');
+
+    expect(figure.formula).toBe('f(x) = −2x² + 40x + 5');
+    expect(figure.tangents).toEqual([
+      expect.objectContaining({ x: 10, slope: 0 }),
+    ]);
+    expect(figure.zone?.from).toBe(12);
+  });
+
+  it.each(['B2-07-A2-12-JALON', 'B2-07-A3-07-JALON', 'B2-07-A4-09-JALON'])(
+    'RET-06 · ne sert plus %s',
+    (screenId) => {
+      expect(identifiants()).not.toContain(screenId);
+    },
+  );
+});
+
 describe('B2-07 — chaque notion s’ouvre sur ses écrans d’image', () => {
-  it('B207-M3 · place un écran d’image juste avant chacune des quatre traces écrites', () => {
+  it('RET-03 · place un écran d’image ou la courbe juste avant chacune des quatre traces écrites', () => {
     const ids = identifiants();
     const precedents = ids
       .map((id, rang) => [id, ids[rang - 1]] as const)
       .filter(([id]) => id.includes('-COURS-'));
 
     expect(precedents).toEqual([
-      ['B2-07-A2-05-COURS-DERIVEE', 'B2-07-A2-04-ENFANT-RECETTE'],
+      ['B2-07-A2-05-COURS-DERIVEE', 'B2-07-A2-04-COURBE-PENTES'],
       ['B2-07-A2-10-COURS-DERIVEE-EXP', 'B2-07-A2-09-ENFANT-EXPONENTIELLE'],
       ['B2-07-A3-04-COURS-VARIATIONS', 'B2-07-A3-03-ENFANT-CARTE'],
       ['B2-07-A4-04-COURS-OPTIMUM', 'B2-07-A4-03-ENFANT-BORD'],

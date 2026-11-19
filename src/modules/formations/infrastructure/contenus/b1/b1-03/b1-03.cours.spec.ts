@@ -140,7 +140,7 @@ describe('B1-03 — les écrans « pour comprendre »', () => {
     MOTS_DU_COURS,
   );
 
-  it('B103-M2 · garde une seule page par notion, chacune avec sa méthode et sans encadré « Au CCF »', () => {
+  it('B103-M2 · garde une seule page par notion, chacune avec sa méthode et sans encadré « Les pièges »', () => {
     expect(fiche.pagesDeCours(COURS_B1_03).map((id) => id.slice(12))).toEqual([
       'COURS-TCD',
       'COURS-CHAMP-CALCULE',
@@ -149,7 +149,9 @@ describe('B1-03 — les écrans « pour comprendre »', () => {
       'COURS-BOITE',
       'COURS-CLASSES',
     ]);
-    expect(fiche.pagesSansMethodeOuAvecEncadreCcf(COURS_B1_03)).toEqual([]);
+    expect(fiche.pagesSansMethodeOuAvecEncadreDePieges(COURS_B1_03)).toEqual(
+      [],
+    );
   });
 });
 

@@ -160,7 +160,6 @@ export const ACTE_4: moteur.Acte = [
         description: 'La part à recopier ?',
         back: 'Total : =SOMME(B2:B5). Part : =ARRONDI(B2/$B$6*100;1), le total figé par des $.',
       },
-      moteur.REFERENTIEL_DU_BTS_CG,
     ],
   ),
 ];

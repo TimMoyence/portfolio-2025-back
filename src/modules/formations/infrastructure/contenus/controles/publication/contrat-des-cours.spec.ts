@@ -1,37 +1,37 @@
-import { lireNombreSaisiAvecUnite } from '../../../domain/cours/formule/Formule';
-import { sansEspacesTypographiques } from '../../../../../common/domain/texte/nettoyage/sans-espaces-typographiques';
+import { lireNombreSaisiAvecUnite } from '../../../../domain/cours/formule/Formule';
+import { sansEspacesTypographiques } from '../../../../../../common/domain/texte/nettoyage/sans-espaces-typographiques';
 import {
   buildContenuDuCours,
   buildCoursDuContenu,
   prefixeDuCours,
-} from '../../../../../../test/factories/formations/cours/contenus-de-cours.factory';
-import { tireurSequentiel } from '../../../../../../test/factories/formations/cours/cours.factory';
-import { ecranDuContenu } from '../../../../../../test/helpers/formations/cours/fiche-de-cours';
+} from '../../../../../../../test/factories/formations/cours/contenus-de-cours.factory';
+import { tireurSequentiel } from '../../../../../../../test/factories/formations/cours/cours.factory';
+import { ecranDuContenu } from '../../../../../../../test/helpers/formations/cours/fiche-de-cours';
 import {
   clesDe,
   ecranDuCours,
-} from '../../../../../../test/helpers/formations/cours/lecture-de-cours';
-import { cueillirDansArbre } from '../../../domain/cours/confidentialite/ArbreDeValeurs';
-import { CONFUSIONS } from '../../../domain/cours/banque/confusions';
-import { matchesSolution } from '../../../domain/notation/GradingCore';
-import { questionsDuCours } from '../../../domain/cours/structure/Cours';
-import type { PiegeDeClassement } from '../../../domain/cours/correction/Corrige';
-import { confusionsDuCorrige } from '../../../domain/cours/stockage/CorrigeStocke';
+} from '../../../../../../../test/helpers/formations/cours/lecture-de-cours';
+import { cueillirDansArbre } from '../../../../domain/cours/confidentialite/ArbreDeValeurs';
+import { CONFUSIONS } from '../../../../domain/cours/banque/confusions';
+import { matchesSolution } from '../../../../domain/notation/GradingCore';
+import { questionsDuCours } from '../../../../domain/cours/structure/Cours';
+import type { PiegeDeClassement } from '../../../../domain/cours/correction/Corrige';
+import { confusionsDuCorrige } from '../../../../domain/cours/stockage/CorrigeStocke';
 import {
   lireCoursStocke,
   type ContenuDeCours,
   type ContenuDeCoursBrut,
-} from '../../../domain/cours/stockage/CoursStocke';
-import { deroulePresentateur } from '../../../domain/cours/diffusion/DeroulePresentateur';
-import { projeterCatalogue } from '../../../domain/cours/diffusion/Diffusion';
-import type { SensDeRecopie } from '../../../domain/cours/evaluation/FeuilleEvaluee';
-import { ouvrirTirages } from '../../../domain/cours/tirage/OuvertureTirages';
-import { ligneDeLaReference } from '../../../domain/cours/stockage/PlansStockes';
-import { slugOption } from '../../../domain/cours/stockage/QuestionStockee';
-import { verifierStructure } from '../../../domain/cours/structure/StructureCours';
-import { tirer } from '../../../domain/cours/tirage/Tirage';
-import { clicsDeRecopie } from '../feuilles';
-import { CONTENUS } from '../index';
+} from '../../../../domain/cours/stockage/CoursStocke';
+import { deroulePresentateur } from '../../../../domain/cours/diffusion/DeroulePresentateur';
+import { projeterCatalogue } from '../../../../domain/cours/diffusion/Diffusion';
+import type { SensDeRecopie } from '../../../../domain/cours/evaluation/FeuilleEvaluee';
+import { ouvrirTirages } from '../../../../domain/cours/tirage/OuvertureTirages';
+import { ligneDeLaReference } from '../../../../domain/cours/stockage/PlansStockes';
+import { slugOption } from '../../../../domain/cours/stockage/QuestionStockee';
+import { verifierStructure } from '../../../../domain/cours/structure/StructureCours';
+import { tirer } from '../../../../domain/cours/tirage/Tirage';
+import { clicsDeRecopie } from '../../feuilles';
+import { CONTENUS } from '../../index';
 
 const TAILLE_MAX_DU_BAREME = 400 * 1024;
 const TIRAGES_CONTROLES = 61;
@@ -507,4 +507,14 @@ it('sert des cours aux slugs et préfixes distincts', () => {
     CONTENUS.length,
   );
   expect(new Set(prefixes).size).toBe(prefixes.length);
+});
+
+it('REF-404 · ne montre plus la carte du référentiel du BTS CG, dont le lien est mort', () => {
+  const ecransServis = JSON.stringify(
+    CONTENUS.map((contenu) => contenu.ecrans),
+  );
+
+  expect(ecransServis).toContain('"title":"Power Query (Excel)"');
+  expect(ecransServis).not.toContain('"title":"Référentiel du BTS CG"');
+  expect(ecransServis).not.toContain('enqdip.sup.adc.education.fr');
 });

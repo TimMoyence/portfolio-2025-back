@@ -105,8 +105,8 @@ d'abscisse tombe sur un des 25 jalons calculés. Ils tracent les exemples du cou
 Chaque notion suit : **Réfléchir** (mission ou vote non noté) → écrans d'image ou graphiques →
 **Comprendre** (une trace écrite v2 `lesson` de 2 minutes, parfois suivie d'un exemple guidé
 `fp-worked`) → **S'exercer** (exercices notés corrigés sur place). N1 et N2 tiennent chacune deux
-cycles. Chaque exercice annonce ses temps dans les notes formateur, sous la forme
-`• Temps : réflexion N min · travail N min · correction N min`, dont la somme est la durée de l'écran.
+cycles. La durée de chaque exercice additionne réflexion, travail et correction ; les notes formateur
+ne la répètent pas.
 
 ### 2.4 Règles de structure
 

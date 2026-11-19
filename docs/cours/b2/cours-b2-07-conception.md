@@ -14,17 +14,17 @@
 | Cours       | `b2-07-derivee-optimisation`                                                                                              |
 | Gabarit     | `v3`, déclaré par le contenu et contrôlé par les quatre règles `gabarit-*` de `verifierStructure`                         |
 | Titre servi | « Dérivée et optimisation »                                                                                               |
-| Durée       | **135 minutes exactes** (somme des écrans), 5 actes de 12, 46, 25, 44 et 8 minutes, plus 2 pauses de 15 min hors durée    |
-| Écrans      | **39**, dont 21 écrans catalogue (14 écrans d'image)                                                                      |
+| Durée       | **132 minutes exactes** (somme des écrans), 5 actes de 11, 46, 24, 43 et 8 minutes, plus 2 pauses de 15 min hors durée    |
+| Écrans      | **35**, dont 20 écrans catalogue (12 écrans d'image et la courbe pas à pas)                                               |
 | Sources     | Devoir maison « Réviser B2-01 à B2-07 », exercice 7 et son encadré « Méthode » ; fiches B2-04 et B2-06 ; données fictives |
 
 ---
 
 ## 0. Synthèse des décisions
 
-- **Un récapitulatif de 12 minutes avant la dérivée** (décision de Tim du 6 novembre 2026). Le devoir
+- **Un récapitulatif de 11 minutes avant la dérivée** (décision de Tim du 6 novembre 2026). Le devoir
   maison a montré que le B2-06 et la boucle « Tant que » ne sont pas acquis. L'acte 1 les reprend en
-  sept écrans d'une seule idée chacun : une image du quotidien, une phrase qui la décrit, la règle
+  six écrans d'une seule idée chacun : une image du quotidien, une phrase qui la décrit, la règle
   du cours, puis la liste de ce que chaque élément de l'image devient dans le cours (décision de Tim
   du 11 novembre 2026, qui remplace les écrans « comme à cinq ans »). Un vote non noté les vérifie ;
   aucun exercice noté.
@@ -79,7 +79,7 @@ d'un coût. La notion de limite n'est pas au programme.
 ### 1.4 Public et conditions
 
 BTS CG 2e année, 25 étudiants au plus, calculatrice autorisée, un poste par étudiant ou le livret
-papier. Séance de 2 h 45 : 135 minutes de travail, pause de 15 minutes après l'acte 2 et après
+papier. Séance de 2 h 42 : 132 minutes de travail, pause de 15 minutes après l'acte 2 et après
 l'acte 3.
 
 ## 2. Architecture
@@ -88,17 +88,18 @@ l'acte 3.
 
 | Acte | Rôle                                                    | Notion | Minutes |
 | ---- | ------------------------------------------------------- | ------ | ------: |
-| 1    | Avant la dérivée : le B2-06 et la boucle, en images     | —      |      12 |
+| 1    | Avant la dérivée : le B2-06 et la boucle, en images     | —      |      11 |
 | 2    | La dérivée, pente de la courbe, et la dérivée de e^(kx) | N1     |      46 |
-| 3    | Le signe de la dérivée et les variations                | N2     |      25 |
-| 4    | L'extremum et le prix optimal                           | N3     |      44 |
+| 3    | Le signe de la dérivée et les variations                | N2     |      24 |
+| 4    | L'extremum et le prix optimal                           | N3     |      43 |
 | 5    | Rappel et fiche mémo                                    | —      |       8 |
 
-Pause 1 (15 min) après le jalon A2-12 ; pause 2 (15 min) après le jalon A3-07.
+Pause 1 (15 min) après l'exercice A2-11 ; pause 2 (15 min) après l'exercice A3-06. Les jalons
+d'auto-évaluation ont été retirés le 19/11/2026 (décision de Tim).
 
 ### 2.2 Les écrans d'image
 
-Quatorze écrans d'une minute, brique commune `moteur.pourComprendreDans(dossier)` (rendu v2
+Douze écrans d'une minute, brique commune `moteur.pourComprendreDans(dossier)` (rendu v2
 `image-left`, la même qu'au B1-03), diffusés au catalogue. Décision de Tim du 11 novembre 2026 :
 l'image n'est pas une explication pour enfant, mais un parallèle avec la réalité du cours. Chaque
 écran porte une seule idée, toujours dans le même ordre :
@@ -113,12 +114,13 @@ l'image n'est pas une explication pour enfant, mais un parallèle avec la réali
    cours », chacune nommant un élément réellement dessiné.
 
 Le mot « enfant » n'apparaît dans aucun texte servi de ces écrans, hors texte alternatif de l'image.
-Les notes formateur portent la consigne commune (« faire décrire l'image, puis faire dire à quoi
-correspond chaque élément dans le cours ») et une question de relance propre à l'écran.
+Une note formateur n'y paraît que si elle apporte un oral, une histoire ou une relance que l'écran
+ne dit pas (décision de Tim du 19/11/2026) : aucune consigne commune ni description de l'écran.
 
 Ils ne sont pas des traces écrites : la trace écrite (`lesson`) qui les suit donne la règle complète.
-Sept ouvrent le cours (quatre pour l'exponentielle et le logarithme, trois pour la boucle), sept
-précèdent les traces écrites des trois notions.
+Six ouvrent le cours (quatre pour l'exponentielle et le logarithme, deux pour la boucle), six
+précèdent les traces écrites des trois notions. En N1, la courbe pas à pas `courbe` (A2-04) tient la
+place d'un écran d'image : la tangente se dévoile point par point avant la trace écrite.
 
 ### 2.3 Le cycle d'une notion
 
@@ -128,19 +130,18 @@ Chaque notion suit : **Réfléchir** (mission, vote non noté ou réflexion écr
 place). N1 tient deux cycles : les polynômes, puis l'exponentielle. Les traces écrites partent de
 l'exemple de l'encadré du devoir maison, f(x) = −2x² + 40x + 5.
 
-Chaque exercice annonce ses temps dans les notes formateur, sous la forme
-`• Temps : réflexion N min · travail N min · correction N min`, dont la somme est la durée de
-l'écran. La correction se dévoile sur l'écran de l'exercice (`correctionSurPlace`).
+La durée de chaque exercice additionne réflexion, travail et correction ; les notes formateur
+ne la répètent pas. La correction se dévoile sur l'écran de l'exercice (`correctionSurPlace`).
 
 ### 2.4 Règles de structure
 
-39 écrans ≤ 40, 135 minutes ≤ 180, chaque trace écrite précédée d'une réflexion et suivie d'un
+35 écrans ≤ 40, 132 minutes ≤ 180, chaque trace écrite précédée d'une réflexion et suivie d'un
 exercice, chaque exercice avec ses trois temps et sa correction sur place. Exposition continue de
 6 minutes au plus, sans dérogation : le plus long bloc, de l'acte 1 au dossier, fait 5 minutes.
 
 ### 2.5 Diffusion
 
-Catalogue : l'accroche, les quatorze écrans d'image, le dossier du cabas Escale, les
+Catalogue : l'accroche, les douze écrans d'image, la courbe pas à pas, le dossier du cabas Escale, les
 quatre traces écrites et la fiche mémo. Tout le reste est servi en séance. Aucun écran catalogue ne
 porte une réponse : leurs exemples sont ceux du devoir maison ou des valeurs inédites.
 
@@ -167,41 +168,37 @@ Identifiants : `B2-07-A{acte}-{rang}-{SLUG}`, conformes à `^B2-07-A[1-6]-\d{2}-
 |    6 | B2-07-A1-06-VOTE-EXPONENTIELLE   |   4 | `fp-vote`                    |  I  |   0 | seance    |
 |    7 | B2-07-A1-07-ENFANT-BOUCLE        |   1 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
 |    8 | B2-07-A1-08-ENFANT-TANT-QUE      |   1 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|    9 | B2-07-A1-09-ENFANT-DEUX-CHEMINS  |   1 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   10 | B2-07-A2-01-DOSSIER              |   2 | `fp-story` · v2 `table`      |     |   0 | catalogue |
-|   11 | B2-07-A2-02-MISSION              |   6 | `fp-pro`                     |  I  |   0 | seance    |
-|   12 | B2-07-A2-03-ENFANT-PENTE         |   1 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   13 | B2-07-A2-04-ENFANT-RECETTE       |   1 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   14 | B2-07-A2-05-COURS-DERIVEE        |   2 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   15 | B2-07-A2-06-EXEMPLE-DERIVEE      |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   16 | B2-07-A2-07-ATELIER-DERIVEES     |  10 | `questionnaire`              |  I  |   4 | seance    |
-|   17 | B2-07-A2-08-VOTE-EXPONENTIELLE   |   4 | `fp-vote`                    |  I  |   0 | seance    |
-|   18 | B2-07-A2-09-ENFANT-EXPONENTIELLE |   1 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   19 | B2-07-A2-10-COURS-DERIVEE-EXP    |   2 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   20 | B2-07-A2-11-ATELIER-VENTES       |  10 | `questionnaire`              |  I  |   4 | seance    |
-|   21 | B2-07-A2-12-JALON                |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   22 | B2-07-A3-01-VOTE-SIGNE           |   4 | `fp-vote`                    |  I  |   0 | seance    |
-|   23 | B2-07-A3-02-ENFANT-PANNEAU       |   1 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   24 | B2-07-A3-03-ENFANT-CARTE         |   1 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   25 | B2-07-A3-04-COURS-VARIATIONS     |   2 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   26 | B2-07-A3-05-EXEMPLE-VARIATIONS   |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   27 | B2-07-A3-06-ATELIER-VARIATIONS   |  10 | `questionnaire`              |  I  |   4 | seance    |
-|   28 | B2-07-A3-07-JALON                |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   29 | B2-07-A4-01-REFLEXION-CAPACITE   |   5 | `fp-story` · v2 `reflection` |  I  |   0 | seance    |
-|   30 | B2-07-A4-02-ENFANT-SOMMET        |   1 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   31 | B2-07-A4-03-ENFANT-BORD          |   1 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
-|   32 | B2-07-A4-04-COURS-OPTIMUM        |   2 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
-|   33 | B2-07-A4-05-EXEMPLE-OPTIMUM      |   6 | `fp-worked`                  |  I  |   0 | seance    |
-|   34 | B2-07-A4-06-ATELIER-PRIX         |  10 | `questionnaire`              |  I  |   4 | seance    |
-|   35 | B2-07-A4-07-TABLEUR-BENEFICE     |   8 | `fp-sheet`                   |  I  |   0 | seance    |
-|   36 | B2-07-A4-08-ATELIER-REVISIONS    |  10 | `questionnaire`              |  I  |   4 | seance    |
-|   37 | B2-07-A4-09-JALON                |   1 | `fp-pulse`                   |     |   0 | seance    |
-|   38 | B2-07-A5-01-RAPPEL               |   6 | `fp-spaced`                  |  I  |   0 | seance    |
-|   39 | B2-07-A5-02-FICHE-MEMO           |   2 | `fp-story` · v2 `grid`       |     |   0 | catalogue |
+|    9 | B2-07-A2-01-DOSSIER              |   2 | `fp-story` · v2 `table`      |     |   0 | catalogue |
+|   10 | B2-07-A2-02-MISSION              |   6 | `fp-pro`                     |  I  |   0 | seance    |
+|   11 | B2-07-A2-03-ENFANT-PENTE         |   1 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
+|   12 | B2-07-A2-04-COURBE-PENTES        |   2 | `fp-story` · v2 `courbe`     |     |   0 | catalogue |
+|   13 | B2-07-A2-05-COURS-DERIVEE        |   2 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
+|   14 | B2-07-A2-06-EXEMPLE-DERIVEE      |   6 | `fp-worked`                  |  I  |   0 | seance    |
+|   15 | B2-07-A2-07-ATELIER-DERIVEES     |  10 | `questionnaire`              |  I  |   4 | seance    |
+|   16 | B2-07-A2-08-VOTE-EXPONENTIELLE   |   4 | `fp-vote`                    |  I  |   0 | seance    |
+|   17 | B2-07-A2-09-ENFANT-EXPONENTIELLE |   1 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
+|   18 | B2-07-A2-10-COURS-DERIVEE-EXP    |   2 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
+|   19 | B2-07-A2-11-ATELIER-VENTES       |  10 | `questionnaire`              |  I  |   4 | seance    |
+|   20 | B2-07-A3-01-VOTE-SIGNE           |   4 | `fp-vote`                    |  I  |   0 | seance    |
+|   21 | B2-07-A3-02-ENFANT-PANNEAU       |   1 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
+|   22 | B2-07-A3-03-ENFANT-CARTE         |   1 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
+|   23 | B2-07-A3-04-COURS-VARIATIONS     |   2 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
+|   24 | B2-07-A3-05-EXEMPLE-VARIATIONS   |   6 | `fp-worked`                  |  I  |   0 | seance    |
+|   25 | B2-07-A3-06-ATELIER-VARIATIONS   |  10 | `questionnaire`              |  I  |   4 | seance    |
+|   26 | B2-07-A4-01-REFLEXION-CAPACITE   |   5 | `fp-story` · v2 `reflection` |  I  |   0 | seance    |
+|   27 | B2-07-A4-02-ENFANT-SOMMET        |   1 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
+|   28 | B2-07-A4-03-ENFANT-BORD          |   1 | `fp-story` · v2 `image-left` |     |   0 | catalogue |
+|   29 | B2-07-A4-04-COURS-OPTIMUM        |   2 | `fp-story` · v2 `lesson`     |     |   0 | catalogue |
+|   30 | B2-07-A4-05-EXEMPLE-OPTIMUM      |   6 | `fp-worked`                  |  I  |   0 | seance    |
+|   31 | B2-07-A4-06-ATELIER-PRIX         |  10 | `questionnaire`              |  I  |   4 | seance    |
+|   32 | B2-07-A4-07-TABLEUR-BENEFICE     |   8 | `fp-sheet`                   |  I  |   0 | seance    |
+|   33 | B2-07-A4-08-ATELIER-REVISIONS    |  10 | `questionnaire`              |  I  |   4 | seance    |
+|   34 | B2-07-A5-01-RAPPEL               |   6 | `fp-spaced`                  |  I  |   0 | seance    |
+|   35 | B2-07-A5-02-FICHE-MEMO           |   2 | `fp-story` · v2 `grid`       |     |   0 | catalogue |
 
-Rythme : 105 minutes interactives, 30 d'exposition, exposition continue de 5 minutes au plus.
+Rythme : 105 minutes interactives, 27 d'exposition, exposition continue de 5 minutes au plus.
 
-### 3.2 Acte 1 — Avant la dérivée : le B2-06 et la boucle, en images (12 min)
+### 3.2 Acte 1 — Avant la dérivée : le B2-06 et la boucle, en images (11 min)
 
 #### A1-01 · `B2-07-A1-01-ACCROCHE` — 1 min · v2 `hero` · catalogue
 
@@ -222,8 +219,9 @@ Rythme : 105 minutes interactives, 30 d'exposition, exposition continue de 5 min
 - Titre public : « Le départ et la vitesse »
 - Image : deux ballons de même taille, l'un qu'on gonfle, l'autre qui se dégonfle. Correspondances :
   la taille commune marquée a → a = f(0) ; le ballon gonflé, k > 0 → f croissante ; le ballon qui se
-  dégonfle, k < 0 → f décroissante. Règle : f(0) = a car e⁰ = 1 ; coefficient e^k, taux e^k − 1 ;
-  1 000e^(0,02x) : + 2,02 % par unité, pas 2 %.
+  dégonfle, k < 0 → f décroissante. Règle, une idée par ligne : f(x) = a e^(kx) ; a est la valeur de
+  départ, f(0) = a × e⁰ = a ; k règle le sens ; e^k est le coefficient multiplicateur d'une unité à
+  la suivante ; 1 000e^(0,02x) : a = 1 000, e^0,02 ≈ 1,0202, + 2,02 % par unité, pas + 2 %.
 
 #### A1-04 · `B2-07-A1-04-ENFANT-LN` — 1 min · v2 `image-left` · catalogue
 
@@ -260,15 +258,10 @@ Rythme : 105 minutes interactives, 30 d'exposition, exposition continue de 5 min
 - Image : tant que l'eau n'atteint pas le trait « plein », on verse encore. Correspondances : le
   trait « plein » → le seuil ; « pas encore… » → la condition u < 1 000 ; « fini ! » → la sortie de
   la boucle, puis Afficher n. Règle : objectif u ≥ 1 000, boucle « Tant que u < 1 000 » ; pour
-  descendre sous 500, « Tant que u ≥ 500 » ; après « Tant que », le contraire de l'objectif.
-
-#### A1-09 · `B2-07-A1-09-ENFANT-DEUX-CHEMINS` — 1 min · v2 `image-left` · catalogue
-
-- Titre public : « Deux chemins, le même rang »
-- Image : deux chemins vers la même cabane, l'un à petits pas numérotés, l'autre en un saut.
-  Correspondances : les pas de 1 à 6 → la boucle « Tant que » ; le saut marqué ln → le calcul par
-  ln ; la marche 6 → le premier rang qui dépasse le seuil. Règle : la boucle sur 1,5ⁿ affiche 6 ;
-  ln 10 ÷ ln 1,5 ≈ 5,68, arrondi au-dessus, donne 6.
+  descendre sous 500, « Tant que u ≥ 500 » ; après « Tant que », le contraire de l'objectif. Puis la
+  boucle de la plante de A1-05 : u ← 1 ; n ← 0 ; Tant que u < 10 : n ← n + 1, u ← u × 1,5 ; elle
+  affiche 6, le rang que donne ln 10 ÷ ln 1,5 ≈ 5,68 arrondi au-dessus. Cette phrase remplace
+  l'ancien écran des deux chemins, retiré le 19/11/2026 (décision de Tim : il redisait A1-05).
 
 ### 3.3 Acte 2 — La dérivée, pente de la courbe (46 min)
 
@@ -292,20 +285,21 @@ Rythme : 105 minutes interactives, 30 d'exposition, exposition continue de 5 min
   la roue → la tangente ; la montée + → f′(a) > 0 ; le plat 0 → f′(a) = 0 ; la descente − →
   f′(a) < 0. Règle : f′(a) est la pente de la courbe au point d'abscisse a, celle de sa tangente.
 
-#### A2-04 · `B2-07-A2-04-ENFANT-RECETTE` — 1 min · v2 `image-left` · catalogue
+#### A2-04 · `B2-07-A2-04-COURBE-PENTES` — 2 min · v2 `courbe` · catalogue
 
-- Titre public : « La recette des puissances »
-- Image : le petit 2 qui saute du plongeoir devant le x ; un caillou 7 sur un sol plat.
-  Correspondances : le 2 qui saute → l'exposant, qui descend en coefficient ; le x resté seul →
-  l'exposant diminué de un ; le caillou 7 → une constante, de dérivée nulle. Règle : (x²)′ = 2x,
-  (x³)′ = 3x², (x)′ = 1, (k)′ = 0, (k × u)′ = k × u′, (u + v)′ = u′ + v′.
+- Titre public : « La pente, point par point »
+- La colline f(x) = −x² + 6x, dévoilée pas à pas : la tangente en x = 1, 2, 3, 4, 5, de pente 4, 2,
+  0, −2, −4 ; puis le tableau des pentes, qui baissent de 2 à chaque pas : f′(x) = −2x + 6, la
+  dérivée, qui dit sans dessiner où f monte et où elle descend. Remplace le 19/11/2026 l'écran du
+  plongeoir, que Tim ne comprenait pas.
 
 #### A2-05 · `B2-07-A2-05-COURS-DERIVEE` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : la dérivée, pente de la courbe »
-- Page 1 sur 2 : nombre dérivé f′(a), pente de la tangente ; fonction dérivée ; tableau des dérivées
-  de l'encadré ; exemple pour débuter f(x) = −2x² + 40x + 5, f′(x) = −4x + 40, f′(5) = 20 ; au CCF,
-  dériver terme à terme, et les pièges.
+- Page 1 sur 2, titre de page « La dérivée, pente de la courbe » : nombre dérivé f′(a), pente de la
+  tangente ; fonction dérivée et ce à quoi elle sert ; tableau des dérivées, une formule par ligne ;
+  exemple pour débuter f(x) = −2x² + 40x + 5, f′(x) = −4x + 40, f′(5) = 20 ; les pièges :
+  dériver terme à terme.
 
 #### A2-06 · `B2-07-A2-06-EXEMPLE-DERIVEE` — 6 min · `fp-worked` · séance
 
@@ -343,8 +337,10 @@ Rythme : 105 minutes interactives, 30 d'exposition, exposition continue de 5 min
 #### A2-10 · `B2-07-A2-10-COURS-DERIVEE-EXP` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : dériver a e^(kx) »
-- Page 2 sur 2 : (e^(kx))′ = k e^(kx) ; le signe de a k donne le sens, comme au B2-06 ; exemple
-  f(x) = 1 000e^(0,02x), f′(x) = 20e^(0,02x) ; somme d'un polynôme et d'une exponentielle ; pièges.
+- Page 2 sur 2, titre de page « Dériver a e^(kx) » : (e^(kx))′ = k e^(kx), une formule par ligne ;
+  le signe de a k donne le sens, comme au B2-06 ; exemple f(x) = 1 000e^(0,02x),
+  f′(x) = 20e^(0,02x), dessiné sous la page avec sa tangente de pente 20 en x = 0 ; somme d'un
+  polynôme et d'une exponentielle ; pièges.
 
 #### A2-11 · `B2-07-A2-11-ATELIER-VENTES` — 10 min · `questionnaire` · séance
 
@@ -359,12 +355,7 @@ Rythme : 105 minutes interactives, 30 d'exposition, exposition continue de 5 min
 - `b2-07-a2-vitesse-boutique` : W′(10), −24,13 sacs par mois ; pièges `signe-de-k-ignore` (24,13),
   `valeur-et-pente-confondues` (W(10) ≈ 603,29).
 
-#### A2-12 · `B2-07-A2-12-JALON` — 1 min · `fp-pulse` · séance
-
-- Titre public : « Jalon 1 : la dérivée »
-- Puis pause de 15 minutes.
-
-### 3.4 Acte 3 — Le signe de la dérivée et les variations (25 min)
+### 3.4 Acte 3 — Le signe de la dérivée et les variations (24 min)
 
 #### A3-01 · `B2-07-A3-01-VOTE-SIGNE` — 4 min · `fp-vote` · séance
 
@@ -412,12 +403,7 @@ Rythme : 105 minutes interactives, 30 d'exposition, exposition continue de 5 min
 - `b2-07-a3-depart` : B(12), 864 € ; piège `valeur-et-pente-confondues` (B′(12) = 168).
 - `b2-07-a3-arrivee` : B(28), 480 € ; piège `valeur-et-pente-confondues` (B′(28) = −216).
 
-#### A3-07 · `B2-07-A3-07-JALON` — 1 min · `fp-pulse` · séance
-
-- Titre public : « Jalon 2 : signe et variations »
-- Puis pause de 15 minutes.
-
-### 3.5 Acte 4 — L'extremum et le prix optimal (44 min)
+### 3.5 Acte 4 — L'extremum et le prix optimal (43 min)
 
 #### A4-01 · `B2-07-A4-01-REFLEXION-CAPACITE` — 5 min · v2 `reflection` · séance
 
@@ -444,9 +430,10 @@ Rythme : 105 minutes interactives, 30 d'exposition, exposition continue de 5 min
 #### A4-04 · `B2-07-A4-04-COURS-OPTIMUM` — 2 min · v2 `lesson` · catalogue
 
 - Titre public : « Cours : extremum et optimisation »
-- Extremum et changement de signe de f′ ; les quatre étapes de l'encadré ; maximum sur un intervalle ;
-  optimum sous contrainte ; exemple f(x) = −2x² + 40x + 5, maximum f(10) = 205 ; au CCF, le x qui
-  réalise l'optimum et la valeur de l'optimum.
+- Titre de page « Le sommet ou le bord ». Extremum et changement de signe de f′, une formule par
+  ligne ; les quatre étapes ; maximum sur un intervalle ; optimum sous contrainte ; exemple
+  f(x) = −2x² + 40x + 5, maximum f(10) = 205, dessiné sous la page avec son sommet et la zone permise
+  x ≥ 12 ; les pièges : le x qui réalise l'optimum et la valeur de l'optimum.
 
 #### A4-05 · `B2-07-A4-05-EXEMPLE-OPTIMUM` — 6 min · `fp-worked` · séance
 
@@ -492,10 +479,6 @@ Rythme : 105 minutes interactives, 30 d'exposition, exposition continue de 5 min
   `seuil-par-division` (0,25 ÷ 0,1 = 2,5), `signe-de-k-ignore` (ln 0,25 ÷ 0,1 ≈ −13,86).
 - `b2-07-a4-cout-minimal` : le coût minimal, 1 193 € ; pièges `abscisse-pour-extremum` (13,86),
   `valeur-et-pente-confondues` (C′ = 0).
-
-#### A4-09 · `B2-07-A4-09-JALON` — 1 min · `fp-pulse` · séance
-
-- Titre public : « Jalon 3 : l’optimum »
 
 ### 3.6 Acte 5 — Rappel et fiche mémo (8 min)
 
@@ -584,10 +567,10 @@ signe de f′ et sens de f, extremum sans changement de signe, maximum au bord. 
 
 ### 8.1 Principe
 
-Quatorze illustrations, une par écran d'image `image-left`, en style d'album jeunesse :
+Douze illustrations, une par écran d'image `image-left`, en style d'album jeunesse :
 une scène, très peu de texte, aucune réponse d'exercice. Chaque PNG d'origine (1 536 × 1 024 px) est
 converti en WebP à la même taille et servi depuis `/assets/cours/b2-07/v1/`. Les mini-prompts sont dans
-`illustrations-b2-07/prompts.md` (espace de travail). Le front publie le cours quand les quatorze WebP
+`illustrations-b2-07/prompts.md` (espace de travail). Le front publie le cours quand les douze WebP
 sont déposés. La gravure de l'accroche rejoint `/assets/cours/gravures/v1/`.
 
 ### 8.2 Catalogue des médias
@@ -600,9 +583,7 @@ sont déposés. La gravure de l'accroche rejoint `/assets/cours/gravures/v1/`.
 | M4  | A1-05 | production propre du cours                                                 | PNG 1 536 × 1 024 px  | Asili Design, 2026                                              | CC BY-SA 4.0   | `plante-et-fenetre.webp`         | « Quand touchera-t-on la fenêtre ? · Asili Design, 2026 · CC BY-SA 4.0 »                                       |
 | M5  | A1-07 | production propre du cours                                                 | PNG 1 536 × 1 024 px  | Asili Design, 2026                                              | CC BY-SA 4.0   | `verre-cuillere.webp`            | « La boucle répète · Asili Design, 2026 · CC BY-SA 4.0 »                                                       |
 | M6  | A1-08 | production propre du cours                                                 | PNG 1 536 × 1 024 px  | Asili Design, 2026                                              | CC BY-SA 4.0   | `pas-encore-plein.webp`          | « Tant que veut dire pas encore · Asili Design, 2026 · CC BY-SA 4.0 »                                          |
-| M7  | A1-09 | production propre du cours                                                 | PNG 1 536 × 1 024 px  | Asili Design, 2026                                              | CC BY-SA 4.0   | `deux-chemins.webp`              | « Deux chemins, le même rang · Asili Design, 2026 · CC BY-SA 4.0 »                                             |
 | M8  | A2-03 | production propre du cours                                                 | PNG 1 536 × 1 024 px  | Asili Design, 2026                                              | CC BY-SA 4.0   | `velo-sur-la-colline.webp`       | « La pente sous le vélo · Asili Design, 2026 · CC BY-SA 4.0 »                                                  |
-| M9  | A2-04 | production propre du cours                                                 | PNG 1 536 × 1 024 px  | Asili Design, 2026                                              | CC BY-SA 4.0   | `exposant-qui-saute.webp`        | « La recette des puissances · Asili Design, 2026 · CC BY-SA 4.0 »                                              |
 | M10 | A2-09 | production propre du cours                                                 | PNG 1 536 × 1 024 px  | Asili Design, 2026                                              | CC BY-SA 4.0   | `boule-de-neige.webp`            | « La boule de neige · Asili Design, 2026 · CC BY-SA 4.0 »                                                      |
 | M11 | A3-02 | production propre du cours                                                 | PNG 1 536 × 1 024 px  | Asili Design, 2026                                              | CC BY-SA 4.0   | `panneaux-de-la-route.webp`      | « Le panneau de la route · Asili Design, 2026 · CC BY-SA 4.0 »                                                 |
 | M12 | A3-03 | production propre du cours                                                 | PNG 1 536 × 1 024 px  | Asili Design, 2026                                              | CC BY-SA 4.0   | `carte-du-trajet.webp`           | « La carte du trajet · Asili Design, 2026 · CC BY-SA 4.0 »                                                     |

@@ -12,8 +12,7 @@ import { COURS_B2_07 } from './b2/b2-07/b2-07.cours';
 import { COURS_B2_08 } from './b2/b2-08/b2-08.cours';
 import { COURS_B2_09 } from './b2/b2-09/b2-09.cours';
 
-const CONSIGNE_DE_L_ECRAN =
-  '• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• ';
+const CONSIGNE_DE_L_ECRAN = /faire décrire l’image/u;
 const REGLE_DE_LA_NOTION = /^En maths, on écrit : \S/u;
 const PREFIXE_RETIRE = /^(?:Comme à cinq ans|Pour comprendre) : /u;
 const TITRE_EN_MAJUSCULE = /^(?:\p{Lu}|ln\b)/u;
@@ -22,7 +21,7 @@ const COURS = [
   [
     'B2-07',
     COURS_B2_07,
-    14,
+    12,
     /dérivée|tangente|exponentielle|logarithme|fonction|suite|boucle|algorithme|extremum|maximum|minimum|variation/iu,
   ],
   [
@@ -63,6 +62,7 @@ interface EcranDImage {
   readonly notes: string;
   readonly paragraphes: string[];
   readonly correspondances: string[];
+  readonly conclusion: string;
 }
 
 function ecransDImage(contenu: (typeof COURS)[number][1]): EcranDImage[] {
@@ -78,8 +78,13 @@ function ecransDImage(contenu: (typeof COURS)[number][1]): EcranDImage[] {
     });
 }
 
-function textesEcrits({ titre, paragraphes, correspondances }: EcranDImage) {
-  return [titre, ...paragraphes, ...correspondances];
+function textesEcrits({
+  titre,
+  paragraphes,
+  correspondances,
+  conclusion,
+}: EcranDImage) {
+  return [titre, ...paragraphes, ...correspondances, conclusion];
 }
 
 describe.each(COURS)(
@@ -99,13 +104,13 @@ describe.each(COURS)(
       ).toEqual([]);
     });
 
-    it('IMG-2 · sert la phrase de l’image, la règle de la notion, puis 3 ou 4 correspondances image → cours', () => {
+    it('RET-05 · sert la phrase de l’image, puis 3 ou 4 correspondances image → cours, et la règle de la notion en dernier', () => {
       expect(
         ecrans
           .filter(
-            ({ paragraphes, correspondances }) =>
-              paragraphes.length !== 2 ||
-              !REGLE_DE_LA_NOTION.test(paragraphes[1] ?? '') ||
+            ({ paragraphes, correspondances, conclusion }) =>
+              paragraphes.length !== 1 ||
+              !REGLE_DE_LA_NOTION.test(conclusion) ||
               correspondances.length < 3 ||
               correspondances.length > 4 ||
               !correspondances.every((ligne) => CORRESPONDANCE.test(ligne)),
@@ -122,10 +127,10 @@ describe.each(COURS)(
       ).toEqual([]);
     });
 
-    it('IMG-3 · donne au formateur la consigne de faire dire chaque correspondance, puis sa relance', () => {
+    it('RET-09 · ne dicte au formateur aucune consigne automatique de description de l’image', () => {
       expect(
         ecrans
-          .filter(({ notes }) => !notes.startsWith(CONSIGNE_DE_L_ECRAN))
+          .filter(({ notes }) => CONSIGNE_DE_L_ECRAN.test(notes))
           .map(({ id }) => id),
       ).toEqual([]);
     });

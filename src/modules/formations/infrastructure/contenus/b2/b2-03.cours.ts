@@ -266,7 +266,7 @@ const ACTE_1: moteur.Acte = [
       concepts: ['proposition'],
       notes: moteur.puces(
         'Rappeler en une phrase B2-02 : Atelier Rivage a répondu à sa banque ; l’expert-comptable prépare maintenant la clôture.',
-        'Annoncer le plan : trois notions, chacune en trois temps (réfléchir, comprendre, s’exercer), puis une mini-situation CCF.',
+        'Annoncer le plan : trois notions, chacune en trois temps (réfléchir, comprendre, s’exercer), puis une mini-situation.',
         'Annoncer les deux pauses de 15 minutes, après l’acte 1 et après l’acte 3.',
       ),
     },
@@ -344,7 +344,7 @@ const ACTE_1: moteur.Acte = [
       titre: 'Vote : « ou » et « plus de »',
       dureeMinutes: 5,
       concepts: ['connecteur', 'proposition'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(1),
+      notes: '',
     },
     [
       moteur.vote(
@@ -383,7 +383,6 @@ const ACTE_1: moteur.Acte = [
         'Schéma de l’exemple de la remise de la boutique : remise si le client est fidèle (P) ou si la commande atteint 1 000 € (Q). Client fidèle à 1 500 € : P vraie, Q vraie, P ∨ Q vraie, remise. Client fidèle à 300 € : P vraie, Q fausse, remise. Nouveau client à 1 300 € : P fausse, Q vraie, remise. Nouveau client à 300 € : P et Q fausses, pas de remise, le seul cas où « ou » est faux. Au tableur, en ligne 2 : =SI(OU(B2="Fidèle";C2>=1000);"Remise";"") ; même logique pour ET (les deux conditions vraies) et pour NON (inverse une condition).',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Demander : « Dans quel seul cas le client n’a-t-il pas la remise ? » Laisser venir « ni fidèle, ni 1 000 € ».',
     ],
   ),
@@ -395,7 +394,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['proposition', 'connecteur', 'tableur'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire lire le premier client de l’exemple (fidèle, 1 500 €) : c’est la réponse au vote précédent.',
         'Lien au dossier : « La règle du visa est-elle un “et” ou un “ou” ? » Un « ou ».',
       ),
@@ -438,7 +436,6 @@ const ACTE_1: moteur.Acte = [
         'Schéma de l’exemple de la prime d’ancienneté, règle de paie « si un salarié a plus de trois ans d’ancienneté, il touche une prime ». Anna, cinq ans, prime : P vraie et Q vraie, la règle est respectée. Bruno, cinq ans, pas de prime : P vraie et Q fausse, c’est un contre-exemple, la règle est violée. Chloé, un an, prime pour une autre raison : P fausse, la règle n’interdit rien. Réciproque « s’il touche une prime, il a plus de trois ans d’ancienneté » : Chloé la rend fausse, alors que la règle reste respectée. Récapitulatif avec David, quatre ans, prime, règle respectée. À retenir : la règle est une implication P ⇒ Q ; un contre-exemple suffit pour la rendre fausse ; la réciproque n’est pas vraie ; si P est fausse, la règle n’interdit rien.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « Chloé a une prime avec un an d’ancienneté. La règle est-elle violée ? » Non : la règle ne parle que des plus de trois ans.',
     ],
   ),
@@ -450,7 +447,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['connecteur', 'proposition'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire tester les bornes à voix haute : 60 jours pile, 5 000 € pile.',
         'Relier au vote : « plus de trois ans » exclut trois ans pile.',
       ),
@@ -488,7 +484,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['connecteur'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
         'Réflexion : chacun écrit P et Q pour la première facture avant de remplir.',
         'Pièges : « ou » lu exclusif sur la ligne V, V ; implication lue comme une équivalence sur la ligne F, V.',
         'Papier : tableau du livret, V ou F à entourer dans chaque case.',
@@ -548,7 +543,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['connecteur', 'proposition'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
         'Réflexion : écrire chaque règle avec ses lettres et ses symboles.',
         'Pièges : « ou » exclusif ; réciproque prise pour la règle.',
         'Papier : exercice 2 du livret.',
@@ -584,7 +578,7 @@ const ACTE_1: moteur.Acte = [
         ],
       },
     },
-    moteur.CORRECTION_AVANT_LA_PREMIERE_PAUSE,
+    moteur.CORRECTION_DE_DEUX_MINUTES,
     [
       [
         'b2-03-a1-implication',
@@ -608,7 +602,6 @@ const ACTE_1: moteur.Acte = [
         'Je sais traduire une règle avec non, et, ou, si… alors, et placer la borne.',
     },
     'Si plus de 30 % « Perdu » : reprendre la trace écrite A1-06 après la pause.',
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 
@@ -621,7 +614,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 5,
       concepts: ['negation'],
       notes: moteur.puces(
-        'Temps « réfléchir » de la notion 2 : 3 min d’écriture individuelle, puis lire trois réponses au pupitre.',
         'Ne rien trancher : la trace écrite suivante répond.',
         'Relance : « F209 est payée à 61 jours. Est-elle dans votre liste ? »',
         'Papier : cadre de réponse du livret.',
@@ -661,7 +653,6 @@ const ACTE_2: moteur.Acte = [
         'Schéma de l’exemple de la prime d’ancienneté : prime si ancienneté > 3 ans. Sur une droite graduée de 0 à 5, « sans prime » couvre ≤ 3 et « prime » couvre > 3. Léo a trois ans pile : 3 n’est pas > 3, il est dans le contraire, au plus trois ans, pas de prime. L’erreur à éviter : écrire « ancienneté < 3 » oublierait Léo, qui ne serait ni dans la règle, ni dans son contraire. Autre contraire : « le client est en France » devient « le client n’est pas en France », au tableur B2<>"France", qui renvoie VRAI si le client n’est pas en France. Exemple au tableur : Emma 1 an, Sam 3 ans, Léo 3 ans sans prime ; Mia 4 ans et Tom 6 ans avec prime, par la formule =SI(B2>3;"Prime";"").',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « Léo a trois ans pile. Est-il dans la règle ou dans son contraire ? » Dans le contraire.',
     ],
   ),
@@ -714,7 +705,6 @@ const ACTE_2: moteur.Acte = [
         'Schéma de l’exemple de la remise de la boutique : remise si le client est fidèle OU si la commande atteint 1 000 €. Le contraire : pas de remise si le client n’est pas fidèle ET si sa commande reste sous 1 000 €, comme le nouveau client à 300 €. L’erreur sans Morgan : « non fidèle OU moins de 1 000 € » serait vrai pour le nouveau client à 1 300 €, alors qu’il a bien la remise. Au tableur, =NON(OU(B2="Fidèle";C2>=1000)) et =ET(B2<>"Fidèle";C2<1000) donnent le même résultat : vrai uniquement quand le client n’est pas fidèle ET commande moins de 1 000 €. Exemples : Alice, fidèle, 1 500 € ; Benoît, fidèle, 300 € ; Chloé, nouvelle, 1 300 € : remise. David, nouveau, 300 € : pas de remise. Cas clés à retenir : nouveau client à 300 €, pas de remise ; nouveau client à 1 300 €, remise.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Faire vérifier sur le client à 1 300 € que la négation sans Morgan se trompe.',
     ],
   ),
@@ -726,7 +716,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['negation', 'connecteur'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Relier à la réflexion A2-01 : faire relire les réponses qui ont gardé « et ».',
       ),
     },
@@ -763,7 +752,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 9,
       concepts: ['negation', 'tableur'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 7),
         'Réflexion : écrire chaque règle avec ses lettres, puis sa négation, sans rien compter.',
         'Pièges : nier sans échanger le connecteur ; > nié en < au lieu de ≤.',
         'Papier : exercice 3 du livret.',
@@ -822,10 +810,7 @@ const ACTE_2: moteur.Acte = [
     },
     {
       minutes: 2,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
-        'Transition : « Vérifions Morgan au tableur : exercice 4. »',
-      ],
+      notes: ['Transition : « Vérifions Morgan au tableur : exercice 4. »'],
     },
     [
       [
@@ -855,7 +840,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['tableur', 'negation'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire la règle d’anomalie avec ses lettres, puis sa forme avec NON et OU.',
         'Erreurs à chercher : textes sans guillemets ; les deux colonnes qui ne s’accordent pas (Morgan oublié).',
         'Papier : les deux formules écrites sur la copie, puis appliquées aux cinq lignes.',
@@ -916,7 +900,7 @@ const ACTE_3: moteur.Acte = [
       titre: 'Vote : « toutes » et « il existe »',
       dureeMinutes: 5,
       concepts: ['quantificateur'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
+      notes: '',
     },
     [
       moteur.vote(
@@ -960,7 +944,6 @@ const ACTE_3: moteur.Acte = [
         'Schéma de l’exemple de l’équipe de vente : Léa a vendu 12 voiles, Karim 7, Sofia 15. Proposition P(x) : « x a vendu au moins 10 voiles » ; P(Léa) vraie, P(Karim) fausse, P(Sofia) vraie. ∃x, P(x), « il existe un commercial qui a vendu au moins 10 voiles » : vrai, Léa suffit. ∀x, P(x), « tous les commerciaux ont vendu au moins 10 voiles » : faux, Karim est un contre-exemple. Le contraire de ∀x, P(x) est ∃x, ¬P(x), « au moins un commercial a vendu moins de 10 voiles » : vrai, Karim le prouve. Le contraire de ∃x, P(x) est ∀x, ¬P(x), « aucun commercial n’a vendu au moins 10 voiles » : faux, Léa est un contre-exemple. Un résumé reprend les quatre propositions et leur valeur.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « Faut-il vérifier les trois commerciaux pour dire que “tous ont vendu au moins 10 voiles” est faux ? » Non : Karim suffit.',
     ],
   ),
@@ -1024,7 +1007,6 @@ const ACTE_3: moteur.Acte = [
         'Schéma de l’exemple des voiles vendues : en B2:B4, Léa 12, Karim 7, Sofia 15. =NB.SI(B2:B4;">=10") donne 2 : deux commerciaux ont vendu au moins 10 voiles, Léa et Sofia, il en existe donc au moins un. =NB.SI(B2:B4;"<10") donne 1 : un seul commercial a vendu moins de 10 voiles, Karim, donc « tous ont vendu au moins 10 voiles » est faux. L’erreur à éviter : =NB.SI(B2:B4;>=10), sans guillemets, affiché « #VALEUR ! » ; le critère doit être écrit entre guillemets. Un récapitulatif reprend les trois formules ; dans NB.SI, le critère (>=10, <10, etc.) doit toujours être écrit entre guillemets.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Faire taper NB.SI sans guillemets sur un poste volontaire : l’erreur fixe la règle.',
     ],
   ),
@@ -1035,7 +1017,7 @@ const ACTE_3: moteur.Acte = [
       diffusion: 'catalogue',
       dureeMinutes: 2,
       concepts: ['quantificateur', 'tableur'],
-      notes: moteur.puces(moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION),
+      notes: '',
     },
     'lesson',
     {
@@ -1070,7 +1052,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 9,
       concepts: ['quantificateur', 'negation'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 7),
         'Réflexion : écrire chaque affirmation avec ∀ ou ∃, puis sa négation.',
         'Pièges : « toutes » nié en « aucune » ; ≥ nié en ≤.',
         'Papier : exercice 5 du livret.',
@@ -1113,10 +1094,6 @@ const ACTE_3: moteur.Acte = [
     },
     {
       minutes: 2,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
-        'Transition : jalon 3, puis pause de 15 minutes.',
-      ],
     },
     [
       [
@@ -1140,7 +1117,6 @@ const ACTE_3: moteur.Acte = [
       invite:
         'Je sais nier une phrase avec « tous » ou « il existe » et la vérifier avec NB.SI.',
     },
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 
@@ -1258,7 +1234,7 @@ const ACTE_4: moteur.Acte = [
   moteur.ecranV2(
     {
       screenId: 'B2-03-A4-01-SITUATION-FACTURES',
-      titre: 'Mini-situation CCF : contrôler les comptes clients',
+      titre: 'Mini-situation : contrôler les comptes clients',
       diffusion: 'catalogue',
       dureeMinutes: 3,
       concepts: ['connecteur', 'tableur'],
@@ -1269,7 +1245,7 @@ const ACTE_4: moteur.Acte = [
     },
     'table',
     {
-      title: 'Mini-situation CCF : contrôler les comptes clients',
+      title: 'Mini-situation : contrôler les comptes clients',
       subtitle:
         'Le fichier de Marc Lefèvre, colonnes A à G. Barème sur 10 : une question tableur, puis quatre énigmes.',
       columns: COLONNES_DES_FACTURES.map((colonne, rang) => ({
@@ -1289,10 +1265,9 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 15,
       concepts: ['tableur', 'connecteur'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(3, 12),
         'Réflexion : chacun écrit sur papier les deux règles avec leurs symboles, puis les fonctions à utiliser.',
         'Erreurs à chercher : textes sans guillemets ; >= au lieu de > pour la relance.',
-        'Papier : formules écrites sur la copie, résultats comptés à la main ; en CCF, la question se fait devant l’examinateur.',
+        'Papier : formules écrites sur la copie, résultats comptés à la main .',
       ),
       proprietes: {
         modalite: 'solo',
@@ -1330,7 +1305,6 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 14,
       concepts: ['connecteur', 'negation'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 12),
         'Réflexion : écrire la négation de la règle de relance avant d’ouvrir le coffre.',
         'Indices disponibles après 60 s. À 10 min, projeter l’énigme la moins résolue.',
         'Papier : quatre questions rédigées du livret, sans code de coffre.',
@@ -1588,7 +1562,6 @@ const ACTE_4: moteur.Acte = [
         description: 'Filtrer une table ?',
         back: 'WHERE traduit la règle : AND pour « et », OR pour « ou », <> pour « différent de ».',
       },
-      moteur.REFERENTIEL_DU_BTS_CG,
     ],
   ),
 ];
