@@ -1,11 +1,11 @@
 import {
   construireLInstantane,
   lireLInstantane,
-} from '../../../../../../test/helpers/formations/cours/instantane-de-cours';
-import { typographierEnProfondeur } from '../../../domain/cours/formule/Typographie';
-import { COURS_B2_08 } from '../b2/b2-08/b2-08.cours';
-import { COURS_B2_09 } from '../b2/b2-09/b2-09.cours';
-import { CONTENUS, citationsLitteralesDe } from '../index';
+} from '../../../../../../../test/helpers/formations/cours/instantane-de-cours';
+import { typographierEnProfondeur } from '../../../../domain/cours/formule/Typographie';
+import { COURS_B2_08 } from '../../b2/b2-08/b2-08.cours';
+import { COURS_B2_09 } from '../../b2/b2-09/b2-09.cours';
+import { CONTENUS, citationsLitteralesDe } from '../../index';
 
 describe.each([
   ['B2-08', COURS_B2_08],

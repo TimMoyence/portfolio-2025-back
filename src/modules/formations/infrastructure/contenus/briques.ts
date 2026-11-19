@@ -65,29 +65,11 @@ export const UNE_DECIMALE = { type: 'decimales', valeur: 1 } as const;
 export const DEUX_DECIMALES = { type: 'decimales', valeur: 2 } as const;
 export const TROIS_DECIMALES = { type: 'decimales', valeur: 3 } as const;
 
-export function puces(...lignes: AuMoinsUnModifiable<string>): string {
-  return lignes.map((ligne) => `• ${ligne}`).join('\n');
-}
-
-export const NOTES_DU_VOTE_A_DEUX_QUESTIONS = [
-  'Question 1 en vote individuel, puis question 2, sans débat entre les deux.',
-  'La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.',
-  'Papier : vote à main levée sur chaque question.',
-] as const;
-
-function notesDuVote(temps: string): string {
-  return puces(
-    `Temps « réfléchir » ${temps} : votes non notés.`,
-    ...NOTES_DU_VOTE_A_DEUX_QUESTIONS,
-  );
-}
-
-export function notesDuVoteQuiOuvreLaNotion(notion: 1 | 2 | 3): string {
-  return notesDuVote(`de la notion ${notion}`);
-}
-
-export function notesDuVoteQuiRelanceLaNotion(notion: 1 | 2 | 3): string {
-  return notesDuVote(`du second cycle de la notion ${notion}`);
+export function puces(...lignes: readonly string[]): string {
+  return lignes
+    .filter((ligne) => ligne !== '')
+    .map((ligne) => `• ${ligne}`)
+    .join('\n');
 }
 
 type SocleDuVote = Pick<
@@ -120,35 +102,6 @@ export function voteQuiOuvre(
   };
 }
 
-export const PAUSE_HORS_DUREE = 'Pause de 15 minutes, hors durée programmée.';
-
-export const REPONSES_SOUS_CHAQUE_ETAPE =
-  'Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.';
-
-export const NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE = [
-  REPONSES_SOUS_CHAQUE_ETAPE,
-  'Papier : réponses sous chaque étape du livret.',
-] as const;
-
-export const AVANT_SA_PAGE =
-  '1 min, avant la trace écrite : faire décrire l’image, la page suivante en donne la règle.';
-
-export const PAGE_APRES_SON_ILLUSTRATION =
-  '2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.';
-
-export const DEUXIEME_PAGE_APRES_SON_ILLUSTRATION =
-  '2 min après l’illustration, enchaînées sur la page 1 : 6 min pour les deux pages et leurs illustrations.';
-
-export const CORRIGER_PAR_LA_MOINS_REUSSIE =
-  'Corriger question par question, en commençant par la moins réussie.';
-
-export const CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE =
-  'Corriger question par question, en commençant par la moins réussie (score sous chaque correction).';
-
-export function tempsDeLExercice(reflexion: number, travail: number): string {
-  return `Temps : réflexion ${reflexion} min · travail ${travail} min`;
-}
-
 export function pulsation(
   { screenId, titre, concepts }: SocleNomme,
   sondage: EcranDePulsation['proprietes']['sondage'],
@@ -161,7 +114,7 @@ export function pulsation(
     brique: 'fp-pulse',
     dureeMinutes: 1,
     concepts,
-    notes: puces('30 s de vote anonyme.', ...notesDuJalon),
+    notes: puces(...notesDuJalon),
     proprietes: { sondage },
   };
 }
@@ -331,28 +284,16 @@ export function suiviDeSaCorrection(
 
 export interface TempsDeCorrection {
   readonly minutes: number;
-  readonly notes: AuMoinsUnModifiable<string>;
+  readonly notes?: readonly string[];
 }
 
-function correctionAvantLaPause(jalon: 1 | 2): TempsDeCorrection {
-  return {
-    minutes: 2,
-    notes: [
-      CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
-      `Transition : jalon ${jalon}, puis pause de 15 minutes.`,
-    ],
-  };
-}
+export const CORRECTION_DE_DEUX_MINUTES: TempsDeCorrection = { minutes: 2 };
 
-export const CORRECTION_AVANT_LA_PREMIERE_PAUSE = correctionAvantLaPause(1);
-
-export const CORRECTION_AVANT_LA_SECONDE_PAUSE = correctionAvantLaPause(2);
-
-function annoncerLaCorrection(notes: string, minutes: number): string {
-  return notes.replace(
-    /^(• Temps : réflexion \d+ min · travail \d+ min)$/m,
-    `$1 · correction ${minutes} min`,
-  );
+function suiviesDeLaCorrection(
+  notes: string,
+  correction: readonly string[] = [],
+): string {
+  return [notes, puces(...correction)].filter((bloc) => bloc !== '').join('\n');
 }
 
 export function corrigeEtapeParEtape(
@@ -362,7 +303,7 @@ export function corrigeEtapeParEtape(
   return {
     ...exercice,
     dureeMinutes: exercice.dureeMinutes + minutes,
-    notes: [exercice.notes, puces(...notes)].join('\n'),
+    notes: suiviesDeLaCorrection(exercice.notes, notes),
   };
 }
 
@@ -374,10 +315,7 @@ export function corrigeSurPlace<E extends EcranDuCours>(
   return {
     ...exercice,
     dureeMinutes: exercice.dureeMinutes + minutes,
-    notes: [
-      annoncerLaCorrection(exercice.notes, minutes),
-      puces(...notes),
-    ].join('\n'),
+    notes: suiviesDeLaCorrection(exercice.notes, notes),
     proprietes: {
       ...exercice.proprietes,
       correctionSurPlace: {
@@ -423,11 +361,7 @@ export function defiDeConsigne({
       brique: 'fp-challenge',
       dureeMinutes: 5,
       concepts: ['ia-redactrice'],
-      notes: puces(
-        tempsDeLExercice(1, 4),
-        `Réflexion : faire relire ${aRelire}.`,
-        'La consigne écrite ici sert telle quelle à l’écran suivant.',
-      ),
+      notes: puces(`Réflexion : faire relire ${aRelire}.`),
       proprietes: {
         modalite: 'solo',
         probleme,
@@ -447,7 +381,6 @@ export function defiDeConsigne({
       minutes: 2,
       notes: [
         `Révéler les stratégies ; demander pourquoi la dernière est fausse : ${pourquoiLaFausse}`,
-        'Transition : « Votre IA au travail. »',
       ],
     },
     [['consigne', explication]],
@@ -535,10 +468,7 @@ export function ecranDeRappel(
     brique: 'fp-spaced',
     dureeMinutes: 6,
     concepts,
-    notes: puces(
-      '5 min individuelles, puis projeter la carte de maîtrise.',
-      obligatoiresEnNote,
-    ),
+    notes: puces(obligatoiresEnNote),
     proprietes: {
       rappel: { id: rappelId, intitule: INTITULE_DU_RAPPEL },
       banque,
@@ -551,12 +481,10 @@ export function rappelDeToutLeCours(
   rappelId: string,
   questions: AuMoinsUnModifiable<VoteDuCours>,
 ): EcranDeRappel {
-  return ecranDeRappel(
-    socle,
-    'Tous reçoivent les douze questions de la banque : le rappel couvre tout le cours pour chacun.',
-    rappelId,
-    { questions, obligatoires: questions.map((question) => question.id) },
-  );
+  return ecranDeRappel(socle, '', rappelId, {
+    questions,
+    obligatoires: questions.map((question) => question.id),
+  });
 }
 
 export function ficheMemo(
@@ -570,15 +498,13 @@ export function ficheMemo(
       diffusion: 'catalogue',
       dureeMinutes: 2,
       concepts,
-      notes: puces(
-        '90 s de lecture ; la fiche s’imprime pour le classeur de CCF.',
-      ),
+      notes: '',
     },
     'grid',
     {
       title: titre,
       subtitle:
-        'À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.',
+        'Chaque carte part d’une question et donne la méthode et son piège.',
       imprimable: true,
       items,
     },
@@ -617,7 +543,7 @@ const REGLE_DE_LA_NOTION = 'En maths, on écrit : ';
 
 function ecranDImage(
   { screenId, titre, concepts }: SocleNomme,
-  notes: AuMoinsUnModifiable<string>,
+  notes: readonly string[],
   renderer: 'illustration' | 'image-left' | 'page',
   props: Readonly<Record<string, unknown>>,
   dureeMinutes = 1,
@@ -644,7 +570,7 @@ export interface PageDeSerie {
 }
 
 export type SocleDeLaPage = SocleNomme & {
-  readonly notes: AuMoinsUnModifiable<string>;
+  readonly notes: readonly string[];
 };
 
 const DUREE_D_UNE_PAGE_DE_SERIE = 2;
@@ -720,7 +646,7 @@ export function ecranDIllustration(
   socle: SocleNomme,
   dossier: string,
   { fichier, imageAlt }: ImageDIllustration,
-  notes: AuMoinsUnModifiable<string>,
+  notes: readonly string[],
 ): EcranDeRecit {
   return ecranDImage(socle, notes, 'illustration', {
     image: `${dossier}/${fichier}`,
@@ -733,23 +659,16 @@ export const pourComprendreDans =
   (
     socle: SocleNomme,
     { fichier, imageAlt, scene, regle, correspondances }: ScenePourComprendre,
-    relance: string,
+    ...relance: readonly string[]
   ): EcranDeRecit =>
-    ecranDImage(
-      socle,
-      [
-        '1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.',
-        relance,
-      ],
-      'image-left',
-      {
-        title: socle.titre,
-        image: `${dossier}/${fichier}`,
-        imageAlt,
-        paragraphs: [scene, `${REGLE_DE_LA_NOTION}${regle}`],
-        items: enListe(correspondances),
-      },
-    );
+    ecranDImage(socle, relance, 'image-left', {
+      title: socle.titre,
+      image: `${dossier}/${fichier}`,
+      imageAlt,
+      paragraphs: [scene],
+      items: enListe(correspondances),
+      conclusion: `${REGLE_DE_LA_NOTION}${regle}`,
+    });
 
 export function mediasDesIllustrations(
   dossier: string,
@@ -844,20 +763,13 @@ export const ETAPE_TRANSFERER = {
   title: 'Acte 6 · Transférer',
   question: 'Saurez-vous le refaire seul·e ?',
   proof: 'Situation nouvelle, rappel.',
-  result: 'Une fiche mémo pour le CCF.',
+  result: 'Une fiche mémo à garder.',
 } as const;
 
 export const COLONNES_DU_DOSSIER = [
   { key: 'rubrique', label: 'Rubrique' },
   { key: 'contenu', label: 'Ce que montre le dossier' },
 ] as const;
-
-export const REFERENTIEL_DU_BTS_CG = {
-  title: 'Référentiel du BTS CG',
-  description: 'Le programme de mathématiques et l’épreuve E3.',
-  href: 'https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf',
-  external: true,
-} as const;
 
 function coursDuNiveau(niveau: string) {
   return (

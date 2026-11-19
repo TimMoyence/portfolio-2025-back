@@ -1,4 +1,4 @@
-import { avecLesProduits } from '../../../../domain/cours/structure/ArbrePondere';
+import { avecLesProduits } from '../../../../domain/cours/structure/arbre/ArbrePondere';
 import type { ContenuDeCours } from '../../../../domain/cours/stockage/CoursStocke';
 import * as moteur from '../../briques';
 import { ACTE_5 } from './b2-09.acte-5';
@@ -198,10 +198,8 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['probabilite-d-un-evenement'],
       notes: moteur.puces(
-        'Récapitulatif du lycée : deux votes non notés, une question après l’autre, sans débat entre elles.',
         'Avant la révélation, faire dire au tableau ce que vaut la probabilité de l’univers : 1.',
-        'La révélation s’ouvre après la question 2 : revenir sur l’écran d’image de chaque erreur, le sac de billes, puis les cerceaux.',
-        'Papier : vote à main levée sur chaque question.',
+        'À la révélation, revenir sur l’écran d’image de chaque erreur : le sac de billes, puis les cerceaux.',
       ),
     },
     [
@@ -416,7 +414,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['probabilite-conditionnelle'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire lire P_A(B) à voix haute : « probabilité de B sachant A ».',
       ),
     },
@@ -446,8 +443,8 @@ const ACTE_2: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : les pièges de l’arbre',
+          kind: 'piege',
+          title: 'Les pièges de l’arbre',
           text: 'Pièges : lire P(A ∩ B) sur une branche, où l’on lit P_A(B) ; additionner le long d’un chemin ; compléter un nœud avec la branche d’un autre nœud.',
           steps: [
             'Nommer les événements avec une lettre et une phrase.',
@@ -466,7 +463,7 @@ const ACTE_2: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['probabilite-conditionnelle'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -523,7 +520,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['probabilite-conditionnelle', 'probabilite-d-un-evenement'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : dessiner l’arbre sur papier, chaque nœud complété à 1, avant toute question.',
         'Pièges : lire P(L ∩ A) sur une branche ; additionner le long d’un chemin ; compléter avec la branche d’un autre nœud.',
         'Papier : exercice 1 du livret.',
@@ -586,7 +582,6 @@ const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Transition : « Et quand les données arrivent en effectifs ? Un vote pour le deviner. »',
       ],
     },
@@ -615,7 +610,7 @@ const ACTE_2: moteur.Acte = [
       titre: 'Vote : parmi qui compte-t-on ?',
       dureeMinutes: 4,
       concepts: ['probabilite-conditionnelle'],
-      notes: moteur.notesDuVoteQuiRelanceLaNotion(1),
+      notes: '',
     },
     [
       moteur.vote(
@@ -669,7 +664,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['probabilite-conditionnelle'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire montrer du doigt la ligne de la condition avant chaque division.',
       ),
     },
@@ -694,8 +688,8 @@ const ACTE_2: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : les pièges du tableau',
+          kind: 'piege',
+          title: 'Les pièges du tableau',
           text: 'Pièges : diviser par l’effectif total ; diviser par la colonne au lieu de la ligne, ce qui donne P_B(A).',
           steps: [
             'Souligner la condition dans la phrase : « parmi… », « sachant… ».',
@@ -715,7 +709,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['probabilite-conditionnelle'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire sur papier quelle ligne porte 35 %, et laquelle 20 %.',
         'Piège : prendre 35 % des 1 000 commandes au lieu des commandes de la ligne.',
         'Papier : tableau du livret, rempli à la main.',
@@ -737,7 +730,6 @@ const ACTE_2: moteur.Acte = [
       minutes: 2,
       notes: [
         'Projeter le tableau juste ; faire vérifier que chaque colonne de saisie redonne son total.',
-        'Transition : jalon 1, puis pause de 15 minutes.',
       ],
     },
     [
@@ -759,7 +751,6 @@ const ACTE_2: moteur.Acte = [
         'Je sais construire un arbre pondéré ou un tableau croisé, et y lire P_A(B).',
     },
     'Si plus de 30 % « Perdu » : reprendre l’écran des ruisseaux après la pause.',
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 
@@ -770,7 +761,7 @@ const ACTE_3: moteur.Acte = [
       titre: 'Vote : combien de chemins mènent à B ?',
       dureeMinutes: 4,
       concepts: ['probabilites-totales'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(2),
+      notes: '',
     },
     [
       moteur.vote(
@@ -857,8 +848,8 @@ const ACTE_3: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : les pièges des probabilités totales',
+          kind: 'piege',
+          title: 'Les pièges des probabilités totales',
           text: 'Pièges : additionner les probabilités conditionnelles sans les pondérer ; oublier un chemin ; sommer sur des événements qui ne forment pas une partition.',
           steps: [
             'Nommer la partition.',
@@ -877,7 +868,7 @@ const ACTE_3: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 5,
       concepts: ['probabilites-totales'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -935,7 +926,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['probabilites-totales'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
         'Réflexion : dessiner l’arbre des ateliers, puis repérer les chemins qui finissent par D.',
         'Pièges : additionner 0,04 et 0,09 ; ne garder que le chemin de La Rochelle.',
         'Papier : exercice 3 du livret.',
@@ -984,7 +974,6 @@ const ACTE_3: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Transition : « Une voile revient défectueuse : d’où vient-elle ? Un vote pour le deviner. »',
       ],
     },
@@ -1009,7 +998,7 @@ const ACTE_3: moteur.Acte = [
       titre: 'Vote : sachant quoi ?',
       dureeMinutes: 4,
       concepts: ['probabilite-conditionnelle'],
-      notes: moteur.notesDuVoteQuiRelanceLaNotion(2),
+      notes: '',
     },
     [
       moteur.vote(
@@ -1091,8 +1080,8 @@ const ACTE_3: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : les pièges du sens',
+          kind: 'piege',
+          title: 'Les pièges du sens',
           text: 'Pièges : répondre P_A(B), lue sur la branche, quand on demande P_B(A) ; répondre P(A) en oubliant la condition ; diviser par P(A).',
           steps: [
             'Écrire la probabilité cherchée avec sa condition en indice.',
@@ -1112,7 +1101,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['probabilite-conditionnelle', 'probabilites-totales'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
         'Réflexion : écrire P_D(F) avec sa condition en indice, puis la formule, avant de calculer.',
         'Pièges : répondre 0,09, lue sur la branche ; répondre 0,3, la part de Rochefort sans condition.',
         'Papier : exercice 4 du livret.',
@@ -1158,9 +1146,7 @@ const ACTE_3: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Faire remarquer que Rochefort, qui coud 30 % des voiles, fournit près de la moitié des défectueuses.',
-        'Transition : jalon 2, puis pause de 15 minutes.',
       ],
     },
     [
@@ -1190,7 +1176,6 @@ const ACTE_3: moteur.Acte = [
         'Je sais calculer P(B) par les probabilités totales, puis remonter l’arbre pour obtenir P_B(A).',
     },
     'Si plus de 30 % « Perdu » : reprendre l’exemple guidé des paiements par carte après la pause.',
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 
@@ -1201,7 +1186,7 @@ const ACTE_4: moteur.Acte = [
       titre: 'Vote : indépendants ou incompatibles ?',
       dureeMinutes: 4,
       concepts: ['independance'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
+      notes: '',
     },
     [
       moteur.vote(
@@ -1318,7 +1303,6 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['independance'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire écrire les deux justifications possibles, puis l’erreur à ne pas faire : indépendants n’est pas incompatibles.',
       ),
     },
@@ -1348,8 +1332,8 @@ const ACTE_4: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : justifier par le calcul',
+          kind: 'piege',
+          title: 'Justifier par le calcul',
           text: 'Pièges : conclure sans calcul ; confondre indépendants et incompatibles ; comparer P_A(B) à P(A) au lieu de P(B).',
           steps: [
             'Écrire les deux nombres à comparer.',
@@ -1368,7 +1352,7 @@ const ACTE_4: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['independance'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1418,7 +1402,6 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['independance', 'probabilite-conditionnelle'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
         'Réflexion : écrire les deux nombres à comparer avant de calculer.',
         'Pièges : conclure sans calcul ; confondre indépendants et incompatibles ; répondre P(M ∩ B), lue dans l’énoncé ; diviser par P(B) au lieu de P(M).',
         'Papier : exercice 5 du livret.',
@@ -1472,7 +1455,6 @@ const ACTE_4: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Transition : « Une dernière situation reprend tout le cours : exercice 6. »',
       ],
     },
@@ -1504,7 +1486,6 @@ const ACTE_4: moteur.Acte = [
         'independance',
       ],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
         'Réflexion : dessiner l’arbre T, T̄ puis R, R̄ avant de calculer.',
         'Pièges : additionner 0,16 et 0,05 ; répondre 0,16, lue sur la branche ; conclure sans comparer.',
         'Papier : exercice 6 du livret.',
@@ -1555,7 +1536,6 @@ const ACTE_4: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Faire remarquer que 30 % des clients fournissent plus de la moitié des retards.',
         'Transition : jalon 3.',
       ],

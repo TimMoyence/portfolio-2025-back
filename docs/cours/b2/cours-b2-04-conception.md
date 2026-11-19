@@ -2,7 +2,7 @@
 
 > Cahier des charges du cours B2-04 au gabarit v3 (`docs/cours/cours-gabarit-v3.md`) : une séance de
 > 3 h 30 dont 30 minutes de pause, ouverte par le rappel des trois premiers cours, puis trois notions
-> traitées chacune par un cycle réfléchir → comprendre → s'exercer, et une mini-situation CCF. Ce
+> traitées chacune par un cycle réfléchir → comprendre → s'exercer, et une mini-situation. Ce
 > document ne contient aucun code exécutable ; toute divergence d'implémentation est un défaut de
 > l'implémentation. Les tests `b2-04.cours.spec.ts` relisent ce document : § 3.1, titres publics du
 > § 3, § 5.9, § 8.2.
@@ -84,7 +84,7 @@ l'acte 3.
 | 1    | Rappel des trois cours, puis ajouter chaque an | N1     |      49 |
 | 2    | Multiplier chaque an                           | N2     |      39 |
 | 3    | Atteindre un seuil, cumuler                    | N3     |      47 |
-| 4    | Mini-situation CCF et clôture                  | —      |      45 |
+| 4    | Mini-situation et clôture                      | —      |      45 |
 
 Pause 1 (15 min) après le jalon A1-12 ; pause 2 (15 min) après le jalon A3-09. Les pauses ne sont
 pas des écrans : le formateur les annonce, la durée programmée n'en tient pas compte.
@@ -105,12 +105,11 @@ notés, corrigés sur place). N1 et N3 ont deux pages de 2 minutes, N2 une seule
 chaque illustration dure 1 minute. Chaque page se lit d'un coup d'œil : une définition en deux lignes,
 formules une par ligne ; un exemple pour débuter hors du dossier ; une méthode en trois ou quatre
 lignes courtes, titrée par un moyen mnémotechnique (« A comme Ajouter », « × q, jamais + t % »,
-« Tant que = pas encore »). Pas d'encadré « Au CCF » dans les traces écrites : les pièges sont
+« Tant que = pas encore »). Pas d'encadré « Les pièges » dans les traces écrites : les pièges sont
 travaillés dans les exercices et leurs corrections.
 
-Chaque exercice annonce ses temps dans les notes formateur, sous la forme
-`• Temps : réflexion N min · travail N min · correction N min`, dont la somme est la durée de
-l'écran. La correction se dévoile sur l'écran de l'exercice (`correctionSurPlace`).
+La durée de chaque exercice additionne réflexion, travail et correction ; les notes formateur
+ne la répètent pas. La correction se dévoile sur l'écran de l'exercice (`correctionSurPlace`).
 
 ### 2.4 Règles de structure
 
@@ -364,7 +363,7 @@ Rythme : 149 minutes interactives, 31 d'exposition, exposition continue de 6 min
 
 - Titre public : « Cours : cumul et somme de termes »
 - Page 2 sur 2 : un terme ou une somme, nombre de termes n − p + 1 (deux lignes) ; exemple pour
-  débuter (les loyers d'un bail). Sans encadré « Au CCF ».
+  débuter (les loyers d'un bail). Sans encadré « Les pièges ».
 
 #### A3-05 · `B2-04-A3-05-EXEMPLE-SEUIL` — 6 min · `fp-worked` · séance
 
@@ -397,11 +396,11 @@ Rythme : 149 minutes interactives, 31 d'exposition, exposition continue de 6 min
 - Titre public : « Jalon 3 : seuils et cumuls »
 - Puis pause de 15 minutes.
 
-### 3.5 Acte 4 — Mini-situation CCF et clôture (41 min)
+### 3.5 Acte 4 — Mini-situation et clôture (41 min)
 
 #### A4-01 · `B2-04-A4-01-SITUATION-BOUTIQUE` — 3 min · v2 `table` · catalogue
 
-- Titre public : « Mini-situation CCF : la boutique en ligne »
+- Titre public : « Mini-situation : la boutique en ligne »
 - Dossier : boutique en ligne (120 k€ en 2025, +16 % par an), seuil de rentabilité de 280 k€, coût
   d'acquisition (40 €, −10 % par an), algorithme à compléter, barème sur 10. Mention « Données
   fictives ».

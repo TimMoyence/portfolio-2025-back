@@ -3,12 +3,12 @@ import {
   cheminDeLInstantane,
   construireLInstantane,
   lireLInstantane,
-} from '../../../../../../test/helpers/formations/cours/instantane-de-cours';
+} from '../../../../../../../test/helpers/formations/cours/instantane-de-cours';
 import {
   ESPACE_FINE_INSECABLE,
   ESPACE_INSECABLE,
-} from '../../../../../common/domain/texte/nettoyage/sans-espaces-typographiques';
-import { CONTENUS, citationsLitteralesDe } from '../index';
+} from '../../../../../../common/domain/texte/nettoyage/sans-espaces-typographiques';
+import { CONTENUS, citationsLitteralesDe } from '../../index';
 
 const MILLIER_SANS_ESPACE_FINE = new RegExp(
   `(?<![\\d,])\\d{1,3}[ ${ESPACE_INSECABLE}]\\d{3}(?!\\d)`,

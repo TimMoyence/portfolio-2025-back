@@ -11,18 +11,7 @@ import { PRESENTATIONS_VISUELLES_VALIDES } from './presentation-visuelle.factory
 import { buildNumeriqueStockee } from './questions-stockees.factory';
 import { buildEcransStockesConformes } from './structure.factory';
 
-export function notesDExercice(
-  reflexion: number,
-  travail: number,
-  correction?: number,
-): string {
-  const tempsDeCorrection =
-    correction === undefined ? '' : ` · correction ${correction} min`;
-  return [
-    `• Temps : réflexion ${reflexion} min · travail ${travail} min${tempsDeCorrection}`,
-    '• Relancer les binômes bloqués.',
-  ].join('\n');
-}
+const NOTE_DU_FORMATEUR = '• Relancer les binômes bloqués.';
 
 export function corrigeSurPlaceV3(
   exercice: EcranDeCoursBrut,
@@ -31,7 +20,7 @@ export function corrigeSurPlaceV3(
   return {
     ...exercice,
     dureeMinutes: 12,
-    notes: notesDExercice(2, 6, 4),
+    notes: NOTE_DU_FORMATEUR,
     proprietes: {
       ...exercice.proprietes,
       correctionSurPlace: {
@@ -77,7 +66,7 @@ export function buildExerciceV3(screenId: string): EcranDeCoursBrut {
     screenId,
     titre: 'Exercice',
     dureeMinutes: 8,
-    notes: notesDExercice(2, 6),
+    notes: NOTE_DU_FORMATEUR,
     proprietes: {
       ...buildProprietesStockees('questionnaire'),
       questions: [buildNumeriqueStockee({ id: `${screenId.toLowerCase()}-q` })],
@@ -88,9 +77,9 @@ export function buildExerciceV3(screenId: string): EcranDeCoursBrut {
 export function buildMiniSituationV3(screenId: string): EcranDeCoursBrut {
   return buildEcranDeBrique('fp-escape', {
     screenId,
-    titre: 'Mini-situation CCF',
+    titre: 'Mini-situation',
     dureeMinutes: 10,
-    notes: notesDExercice(2, 8),
+    notes: NOTE_DU_FORMATEUR,
   });
 }
 

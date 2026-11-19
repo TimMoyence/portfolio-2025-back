@@ -1772,6 +1772,7 @@ seanceComplete(COURS_B2_07, {
   questionsNotees: 21,
   cellulesDesFeuilles: [16],
   exerciceEnAvance: 'B2-07-A2-06-EXEMPLE-DERIVEE',
+  jalons: 0,
   enigmes: 0,
 });
 

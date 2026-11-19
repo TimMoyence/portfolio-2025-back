@@ -135,7 +135,7 @@ export const ACTE_4: moteur.Acte = [
       {
         title: 'Annuité d’emprunt',
         description: 'Combien rembourser chaque année ?',
-        back: 'a = C × t ÷ (1 − (1 + t)⁻ⁿ). Formule donnée au CCF.',
+        back: 'a = C × t ÷ (1 − (1 + t)⁻ⁿ).',
       },
       {
         title: 'Tableau d’amortissement',
@@ -162,7 +162,6 @@ export const ACTE_4: moteur.Acte = [
         description: 'Quel sens du temps ?',
         back: 'Vers le futur : × (1 + t)ⁿ. Vers le présent : ÷ (1 + t)ⁿ. Relire la question avant de calculer.',
       },
-      moteur.REFERENTIEL_DU_BTS_CG,
     ],
   ),
 ];

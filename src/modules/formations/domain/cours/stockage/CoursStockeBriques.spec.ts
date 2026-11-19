@@ -16,7 +16,9 @@ import {
   buildProprietesTableDeVerite,
   QUESTIONS_LIBRES_DE_MISSION,
 } from '../../../../../../test/factories/formations/cours/ecrans-stockes.factory';
+import { buildLeconV3 } from '../../../../../../test/factories/formations/cours/gabarit-v3.factory';
 import type { Ecran } from '../../contrats/cours';
+import { presentationDe } from '../structure/Cours';
 import { creerRng, creerTirage } from '../tirage/Aleatoire';
 import type { EcranDeCoursBrut } from './CoursStocke';
 import {
@@ -1169,5 +1171,40 @@ describe('stockage multi-briques (B1)', () => {
 
       expect(() => lireEcran(ecran)).toThrow(ContenuDeCoursInvalideError);
     });
+  });
+});
+
+describe('encadré « Les pièges » d une version passée (RET-07)', () => {
+  function leconDUneVersionPassee(): EcranDeCoursBrut {
+    const lecon = buildLeconV3('B2-02-A2-04-COURS');
+    const presentation = lecon.proprietes['presentation'] as {
+      props: { blocks: Record<string, unknown>[] };
+    };
+    presentation.props.blocks.push({
+      kind: 'exam',
+      title: 'Au CCF',
+      text: 'Justifier chaque calcul.',
+    });
+    return lecon;
+  }
+
+  it('RET-07 · relit le bloc « exam » d une version passée comme « piege », les autres blocs inchangés', () => {
+    const presentation = presentationDe(
+      lireEcran(leconDUneVersionPassee()),
+    ) as {
+      props: { blocks: { kind: string }[] };
+    } | null;
+
+    expect(presentation?.props.blocks.map(({ kind }) => kind)).toEqual([
+      'definition',
+      'method',
+      'piege',
+    ]);
+  });
+
+  it('RET-07 · refuse de publier un bloc « exam »', () => {
+    expect(() =>
+      lireContenuAPublier(buildContenuPubliable([leconDUneVersionPassee()])),
+    ).toThrow(/kind/);
   });
 });

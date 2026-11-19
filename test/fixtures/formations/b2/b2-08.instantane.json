@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "d2473c28c64841861ca45f431e17e8076380554c6d431654a5d8ddad84955d19",
+  "empreinte": "9d54b11fd552fbf8e024e3f00d7303b318f1106fe67f1a3d5375e1c807109665",
   "sujet": {
     "id": "b2-08-derivees-composees-fonctions-economiques",
     "titre": "Dérivées composées et fonctions économiques",
@@ -67,15 +67,15 @@
                 "image": "/assets/cours/b2-07/v1/velo-sur-la-colline.webp",
                 "imageAlt": "Une colline vue de côté et trois fois le même enfant à vélo : il monte en pédalant fort, flèche verte +, roule à plat au sommet, trait bleu 0, puis descend, flèche rouge −. Sous chaque roue, un petit segment suit la pente.",
                 "paragraphs": [
-                  "Le vélo monte la colline, roule à plat tout en haut, puis redescend.",
-                  "En maths, on écrit : f′(a) est la pente de la courbe de f au point d’abscisse a, celle de sa tangente. f(a) dit où l’on est ; f′(a) dit de combien on monte, juste là."
+                  "Le vélo monte la colline, roule à plat tout en haut, puis redescend."
                 ],
                 "items": [
                   "Le segment sous la roue → la tangente au point d’abscisse a",
                   "La montée, flèche verte + → f′(a) > 0",
                   "Le plat du sommet, trait bleu 0 → f′(a) = 0",
                   "La descente, flèche rouge − → f′(a) < 0"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f′(a) est la pente de la courbe de f au point d’abscisse a, celle de sa tangente. f(a) dit où l’on est ; f′(a) dit de combien on monte, juste là."
               }
             },
             "metadonnees": {
@@ -106,14 +106,14 @@
                 "image": "/assets/cours/b2-07/v1/exposant-qui-saute.webp",
                 "imageAlt": "Un grand x debout sur un plongeoir : le petit 2 de son exposant saute et atterrit devant lui, on lit 2x. À côté, un caillou marqué 7 sur un sol plat, avec l’étiquette pente 0.",
                 "paragraphs": [
-                  "Le petit 2 en haut du x saute du plongeoir et atterrit devant lui. Le caillou 7, posé sur un sol plat, ne monte jamais.",
-                  "En maths, on écrit : (xⁿ)′ = n xⁿ⁻¹ ; (k)′ = 0 ; (k × u)′ = k × u′ ; (u + v)′ = u′ + v′. Ce sont les briques de toutes les dérivées de ce cours."
+                  "Le petit 2 en haut du x saute du plongeoir et atterrit devant lui. Le caillou 7, posé sur un sol plat, ne monte jamais."
                 ],
                 "items": [
                   "Le 2 qui saute devant le x → l’exposant, qui descend en coefficient",
                   "Le x resté seul sur le plongeoir → l’exposant diminué de un",
                   "Le caillou 7 sur le sol plat → une constante, de dérivée nulle"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : (xⁿ)′ = n xⁿ⁻¹ ; (k)′ = 0 ; (k × u)′ = k × u′ ; (u + v)′ = u′ + v′. Ce sont les briques de toutes les dérivées de ce cours."
               }
             },
             "metadonnees": {
@@ -144,14 +144,14 @@
                 "image": "/assets/cours/b2-07/v1/boule-de-neige.webp",
                 "imageAlt": "Une pente enneigée : on pousse une boule de neige qui roule en grossissant, petite, moyenne, puis très grosse. Derrière chaque boule, des traits de vitesse de plus en plus longs.",
                 "paragraphs": [
-                  "La boule de neige roule dans la pente : plus elle est grosse, plus elle ramasse de neige à chaque tour.",
-                  "En maths, on écrit : (a e^(kx))′ = a k e^(kx) : on multiplie par k, l’exposant reste. Comme e^(kx) > 0, le signe de la dérivée est celui de a × k."
+                  "La boule de neige roule dans la pente : plus elle est grosse, plus elle ramasse de neige à chaque tour."
                 ],
                 "items": [
                   "La taille de la boule → la valeur a e^(kx)",
                   "La neige ramassée à chaque tour → la dérivée a k e^(kx)",
                   "Les traits de vitesse, plus longs derrière la plus grosse → la dérivée, proportionnelle à la valeur"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : (a e^(kx))′ = a k e^(kx) : on multiplie par k, l’exposant reste. Comme e^(kx) > 0, le signe de la dérivée est celui de a × k."
               }
             },
             "metadonnees": {
@@ -219,14 +219,14 @@
                 "image": "/assets/cours/b2-07/v1/panneaux-de-la-route.webp",
                 "imageAlt": "Une route de montagne et une voiture. Au bord de la route, un panneau vert marqué + annonce la montée, un panneau rouge marqué − annonce la descente. Un petit repère d’altitude suit la voiture.",
                 "paragraphs": [
-                  "Au bord de la route de montagne, un panneau vert annonce la montée, un panneau rouge la descente.",
-                  "En maths, on écrit : f′ > 0 sur un intervalle : f y est croissante ; f′ < 0 : f y est décroissante. C’est le signe de f′ qu’on lit, pas celui de f."
+                  "Au bord de la route de montagne, un panneau vert annonce la montée, un panneau rouge la descente."
                 ],
                 "items": [
                   "Le panneau vert + → f′ > 0, f croissante",
                   "Le panneau rouge − → f′ < 0, f décroissante",
                   "L’altitude de la voiture → f(x), que le signe de f′ ne donne pas"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f′ > 0 sur un intervalle : f y est croissante ; f′ < 0 : f y est décroissante. C’est le signe de f′ qu’on lit, pas celui de f."
               }
             },
             "metadonnees": {
@@ -257,14 +257,14 @@
                 "image": "/assets/cours/b2-07/v1/sommet-de-la-colline.webp",
                 "imageAlt": "Le cycliste au sommet de la colline, entre la montée et la descente, à côté d’un drapeau marqué sommet. Plus loin, un replat barré où la route continue de monter.",
                 "paragraphs": [
-                  "Le vélo s’arrête au sommet, entre la montée et la descente. Plus loin, sur un replat, la route reprend sa montée.",
-                  "En maths, on écrit : f′ s’annule en a en passant de + à − : f(a) est un maximum ; de − à + : un minimum. Le x du sommet n’est pas sa hauteur f(a)."
+                  "Le vélo s’arrête au sommet, entre la montée et la descente. Plus loin, sur un replat, la route reprend sa montée."
                 ],
                 "items": [
                   "Le drapeau « sommet » → un maximum, f′ passe de + à −",
                   "Le replat barré → f′ = 0 sans changement de signe : pas d’extremum",
                   "La hauteur du drapeau → la valeur du maximum, f(a)"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f′ s’annule en a en passant de + à − : f(a) est un maximum ; de − à + : un minimum. Le x du sommet n’est pas sa hauteur f(a)."
               }
             },
             "metadonnees": {
@@ -392,15 +392,15 @@
                 "image": "/assets/cours/b2-08/v1/potager-qui-s-agrandit.webp",
                 "imageAlt": "Un potager rectangulaire vu de dessus. Une jardinière recule la clôture du côté long d’un pas, un jardinier celle du côté court. La surface gagnée est faite de deux bandes colorées, l’une verte le long du côté court, l’autre orange le long du côté long, et d’un minuscule coin gris.",
                 "paragraphs": [
-                  "Le potager s’allonge et s’élargit en même temps : la surface gagnée est faite de deux bandes, et d’un coin si petit qu’on le néglige.",
-                  "En maths, on écrit : (uv)′ = u′v + uv′ : la longueur u qui grandit, fois la largeur v, plus la longueur u, fois la largeur qui grandit. Pas u′ × v′, le petit coin."
+                  "Le potager s’allonge et s’élargit en même temps : la surface gagnée est faite de deux bandes, et d’un coin si petit qu’on le néglige."
                 ],
                 "items": [
                   "La longueur du potager → u",
                   "La largeur du potager → v",
                   "La bande verte et la bande orange → u′v et uv′, à ajouter",
                   "Le minuscule coin gris → u′ × v′, qui n’est pas la dérivée"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : (uv)′ = u′v + uv′ : la longueur u qui grandit, fois la largeur v, plus la longueur u, fois la largeur qui grandit. Pas u′ × v′, le petit coin."
               }
             },
             "metadonnees": {
@@ -446,8 +446,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges du produit et du quotient",
+                    "kind": "piege",
+                    "title": "Les pièges du produit et du quotient",
                     "text": "Pièges : multiplier les dérivées, u′ × v′ ; écrire uv′ − u′v au numérateur ; oublier le carré du dénominateur.",
                     "steps": [
                       "Écrire u, v, u′ et v′ sur quatre lignes.",
@@ -661,14 +661,14 @@
                 "image": "/assets/cours/b2-08/v1/deux-engrenages.webp",
                 "imageAlt": "Une manivelle fait tourner une petite roue dentée marquée u, qui entraîne une grande roue dentée marquée e. Un petit drapeau sur chaque roue montre combien elle a tourné.",
                 "paragraphs": [
-                  "La manivelle fait tourner la petite roue, qui fait tourner la grande : pour savoir à quelle vitesse tourne la grande roue, il faut aussi la vitesse de la petite.",
-                  "En maths, on écrit : (e^u)′ = u′e^u et (ln u)′ = u′/u, pour u > 0. On dérive la grande roue, puis on multiplie par u′, la vitesse de la petite."
+                  "La manivelle fait tourner la petite roue, qui fait tourner la grande : pour savoir à quelle vitesse tourne la grande roue, il faut aussi la vitesse de la petite."
                 ],
                 "items": [
                   "La petite roue marquée u → la fonction u, à l’intérieur",
                   "La grande roue marquée e → e^u ou ln u, à l’extérieur",
                   "La vitesse de la petite roue → u′, le facteur à ne pas oublier"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : (e^u)′ = u′e^u et (ln u)′ = u′/u, pour u > 0. On dérive la grande roue, puis on multiplie par u′, la vitesse de la petite."
               }
             },
             "metadonnees": {
@@ -718,8 +718,8 @@
                     "text": "Quand l’expression est longue, un logiciel de calcul formel (GeoGebra, Xcas) donne la dérivée. On vérifie sa sortie à la main en une valeur simple. Pour (2x + 1)/(x² + 1), il affiche (−2x² − 2x + 2)/(x² + 1)² ; en x = 0, la formule du quotient donne (2 × 1 − 1 × 0)/1 = 2, et la sortie aussi."
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges de e^u et ln u",
+                    "kind": "piege",
+                    "title": "Les pièges de e^u et ln u",
                     "text": "Pièges : oublier u′ ; écrire 1/u pour (ln u)′ ; recopier une sortie de logiciel sans la vérifier.",
                     "steps": [
                       "Écrire u et u′.",
@@ -1570,8 +1570,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : nommer le bon coût",
+                    "kind": "piege",
+                    "title": "Nommer le bon coût",
                     "text": "Pièges : prendre C′(q) pour le coût moyen ; chercher le minimum du coût moyen là où le coût marginal est minimal ; donner q pour le coût.",
                     "steps": [
                       "Coût d’une unité en moyenne : diviser par q.",
@@ -1852,8 +1852,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges du marché",
+                    "kind": "piege",
+                    "title": "Les pièges du marché",
                     "text": "Pièges : prendre la quantité pour la recette ; diviser au lieu de passer par ln ; ajouter les k au lieu de les soustraire en regroupant les e.",
                     "steps": [
                       "Écrire R(p) = p × D(p), puis la dériver comme un produit.",
@@ -2758,15 +2758,15 @@
                 "image": "/assets/cours/b2-08/v1/nombre-secret.webp",
                 "imageAlt": "Deux amis jouent au nombre secret. Une ficelle graduée de 1 à 100 est tendue entre deux poteaux ; l’une coupe la ficelle en son milieu, à 50, avec des ciseaux ; l’autre répond « plus grand ! ». La moitié gauche est grisée, la moitié droite reste colorée.",
                 "paragraphs": [
-                  "On cherche un nombre caché entre 1 et 100. À chaque essai, on coupe la plage en deux et on garde la moitié où il se cache.",
-                  "En maths, on écrit : la dichotomie coupe [a ; b] en son milieu m, puis garde la moitié aux bornes de laquelle f(x) − k change de signe. Chaque coupe divise l’encadrement par deux."
+                  "On cherche un nombre caché entre 1 et 100. À chaque essai, on coupe la plage en deux et on garde la moitié où il se cache."
                 ],
                 "items": [
                   "La ficelle de 1 à 100 → l’intervalle de départ [a ; b]",
                   "Les ciseaux au milieu → le milieu m = (a + b)/2",
                   "La réponse « plus grand ! » → le signe de f(m) − k",
                   "La moitié restée colorée → le nouvel encadrement"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : la dichotomie coupe [a ; b] en son milieu m, puis garde la moitié aux bornes de laquelle f(x) − k change de signe. Chaque coupe divise l’encadrement par deux."
               }
             },
             "metadonnees": {
@@ -2816,8 +2816,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : justifier, puis encadrer",
+                    "kind": "piege",
+                    "title": "Justifier, puis encadrer",
                     "text": "Pièges : annoncer une solution sans regarder les variations ; donner la borne du mauvais côté ; garder la mauvaise moitié.",
                     "steps": [
                       "Citer la stricte monotonie et les valeurs aux bornes.",
@@ -3139,7 +3139,7 @@
               "renderer": "grid",
               "props": {
                 "title": "Fiche mémo : dérivées composées et fonctions économiques",
-                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "subtitle": "Chaque carte part d’une question et donne la méthode et son piège.",
                 "items": [
                   {
                     "title": "Produit",
@@ -3185,12 +3185,6 @@
                     "title": "Tableur",
                     "description": "Comment écrire 1 000/(1 + 9e^(−0,3t)) ?",
                     "back": "=1000/(1+9*EXP(-0,3*A2)) : EXP pour l’exponentielle, le signe moins dans l’exposant, des parenthèses autour du dénominateur."
-                  },
-                  {
-                    "title": "Référentiel du BTS CG",
-                    "description": "Le programme de mathématiques et l’épreuve E3.",
-                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
-                    "external": true
                   }
                 ],
                 "imprimable": true
@@ -3292,15 +3286,15 @@
                 "image": "/assets/cours/b2-07/v1/velo-sur-la-colline.webp",
                 "imageAlt": "Une colline vue de côté et trois fois le même enfant à vélo : il monte en pédalant fort, flèche verte +, roule à plat au sommet, trait bleu 0, puis descend, flèche rouge −. Sous chaque roue, un petit segment suit la pente.",
                 "paragraphs": [
-                  "Le vélo monte la colline, roule à plat tout en haut, puis redescend.",
-                  "En maths, on écrit : f′(a) est la pente de la courbe de f au point d’abscisse a, celle de sa tangente. f(a) dit où l’on est ; f′(a) dit de combien on monte, juste là."
+                  "Le vélo monte la colline, roule à plat tout en haut, puis redescend."
                 ],
                 "items": [
                   "Le segment sous la roue → la tangente au point d’abscisse a",
                   "La montée, flèche verte + → f′(a) > 0",
                   "Le plat du sommet, trait bleu 0 → f′(a) = 0",
                   "La descente, flèche rouge − → f′(a) < 0"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f′(a) est la pente de la courbe de f au point d’abscisse a, celle de sa tangente. f(a) dit où l’on est ; f′(a) dit de combien on monte, juste là."
               }
             },
             "metadonnees": {
@@ -3312,7 +3306,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « L’altitude du vélo, est-ce f(a) ou f′(a) ? » f(a) ; la pente sous la roue, c’est f′(a).",
+        "notes": "• Question : « L’altitude du vélo, est-ce f(a) ou f′(a) ? » f(a) ; la pente sous la roue, c’est f′(a).",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3338,14 +3332,14 @@
                 "image": "/assets/cours/b2-07/v1/exposant-qui-saute.webp",
                 "imageAlt": "Un grand x debout sur un plongeoir : le petit 2 de son exposant saute et atterrit devant lui, on lit 2x. À côté, un caillou marqué 7 sur un sol plat, avec l’étiquette pente 0.",
                 "paragraphs": [
-                  "Le petit 2 en haut du x saute du plongeoir et atterrit devant lui. Le caillou 7, posé sur un sol plat, ne monte jamais.",
-                  "En maths, on écrit : (xⁿ)′ = n xⁿ⁻¹ ; (k)′ = 0 ; (k × u)′ = k × u′ ; (u + v)′ = u′ + v′. Ce sont les briques de toutes les dérivées de ce cours."
+                  "Le petit 2 en haut du x saute du plongeoir et atterrit devant lui. Le caillou 7, posé sur un sol plat, ne monte jamais."
                 ],
                 "items": [
                   "Le 2 qui saute devant le x → l’exposant, qui descend en coefficient",
                   "Le x resté seul sur le plongeoir → l’exposant diminué de un",
                   "Le caillou 7 sur le sol plat → une constante, de dérivée nulle"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : (xⁿ)′ = n xⁿ⁻¹ ; (k)′ = 0 ; (k × u)′ = k × u′ ; (u + v)′ = u′ + v′. Ce sont les briques de toutes les dérivées de ce cours."
               }
             },
             "metadonnees": {
@@ -3357,7 +3351,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Que vaut la dérivée de x³ ? » 3x² : le 3 saute devant, l’exposant perd un.",
+        "notes": "• Question : « Que vaut la dérivée de x³ ? » 3x² : le 3 saute devant, l’exposant perd un.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3383,14 +3377,14 @@
                 "image": "/assets/cours/b2-07/v1/boule-de-neige.webp",
                 "imageAlt": "Une pente enneigée : on pousse une boule de neige qui roule en grossissant, petite, moyenne, puis très grosse. Derrière chaque boule, des traits de vitesse de plus en plus longs.",
                 "paragraphs": [
-                  "La boule de neige roule dans la pente : plus elle est grosse, plus elle ramasse de neige à chaque tour.",
-                  "En maths, on écrit : (a e^(kx))′ = a k e^(kx) : on multiplie par k, l’exposant reste. Comme e^(kx) > 0, le signe de la dérivée est celui de a × k."
+                  "La boule de neige roule dans la pente : plus elle est grosse, plus elle ramasse de neige à chaque tour."
                 ],
                 "items": [
                   "La taille de la boule → la valeur a e^(kx)",
                   "La neige ramassée à chaque tour → la dérivée a k e^(kx)",
                   "Les traits de vitesse, plus longs derrière la plus grosse → la dérivée, proportionnelle à la valeur"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : (a e^(kx))′ = a k e^(kx) : on multiplie par k, l’exposant reste. Comme e^(kx) > 0, le signe de la dérivée est celui de a × k."
               }
             },
             "metadonnees": {
@@ -3402,7 +3396,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Quel est le signe de la dérivée de 40e^(−0,5x) ? » Négatif : 40 × (−0,5) < 0.",
+        "notes": "• Question : « Quel est le signe de la dérivée de 40e^(−0,5x) ? » Négatif : 40 × (−0,5) < 0.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3446,7 +3440,7 @@
             ]
           }
         },
-        "notes": "• Récapitulatif du cours 7 : deux votes non notés, une question après l’autre, sans débat entre elles.\n• Avant la révélation, faire dériver 5x³ − 2x + 7 au tableau à main levée : 15x² − 2, le 3 saute devant.\n• La révélation s’ouvre après la question 2 : revenir sur l’écran d’image de chaque erreur, la boule de neige, puis le sommet.\n• Papier : vote à main levée sur chaque question.",
+        "notes": "• Avant la révélation, faire dériver 5x³ − 2x + 7 au tableau à main levée : 15x² − 2, le 3 saute devant.\n• À la révélation, revenir sur l’écran d’image de chaque erreur : la boule de neige, puis le sommet.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3524,14 +3518,14 @@
                 "image": "/assets/cours/b2-07/v1/panneaux-de-la-route.webp",
                 "imageAlt": "Une route de montagne et une voiture. Au bord de la route, un panneau vert marqué + annonce la montée, un panneau rouge marqué − annonce la descente. Un petit repère d’altitude suit la voiture.",
                 "paragraphs": [
-                  "Au bord de la route de montagne, un panneau vert annonce la montée, un panneau rouge la descente.",
-                  "En maths, on écrit : f′ > 0 sur un intervalle : f y est croissante ; f′ < 0 : f y est décroissante. C’est le signe de f′ qu’on lit, pas celui de f."
+                  "Au bord de la route de montagne, un panneau vert annonce la montée, un panneau rouge la descente."
                 ],
                 "items": [
                   "Le panneau vert + → f′ > 0, f croissante",
                   "Le panneau rouge − → f′ < 0, f décroissante",
                   "L’altitude de la voiture → f(x), que le signe de f′ ne donne pas"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f′ > 0 sur un intervalle : f y est croissante ; f′ < 0 : f y est décroissante. C’est le signe de f′ qu’on lit, pas celui de f."
               }
             },
             "metadonnees": {
@@ -3543,7 +3537,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Une fonction positive peut-elle décroître ? » Oui : c’est le signe de f′ qui compte.",
+        "notes": "• Question : « Une fonction positive peut-elle décroître ? » Oui : c’est le signe de f′ qui compte.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3569,14 +3563,14 @@
                 "image": "/assets/cours/b2-07/v1/sommet-de-la-colline.webp",
                 "imageAlt": "Le cycliste au sommet de la colline, entre la montée et la descente, à côté d’un drapeau marqué sommet. Plus loin, un replat barré où la route continue de monter.",
                 "paragraphs": [
-                  "Le vélo s’arrête au sommet, entre la montée et la descente. Plus loin, sur un replat, la route reprend sa montée.",
-                  "En maths, on écrit : f′ s’annule en a en passant de + à − : f(a) est un maximum ; de − à + : un minimum. Le x du sommet n’est pas sa hauteur f(a)."
+                  "Le vélo s’arrête au sommet, entre la montée et la descente. Plus loin, sur un replat, la route reprend sa montée."
                 ],
                 "items": [
                   "Le drapeau « sommet » → un maximum, f′ passe de + à −",
                   "Le replat barré → f′ = 0 sans changement de signe : pas d’extremum",
                   "La hauteur du drapeau → la valeur du maximum, f(a)"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f′ s’annule en a en passant de + à − : f(a) est un maximum ; de − à + : un minimum. Le x du sommet n’est pas sa hauteur f(a)."
               }
             },
             "metadonnees": {
@@ -3588,7 +3582,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Transition : « La dérivée du cours 7 est en place. Place au dossier du jour. »",
+        "notes": "• Transition : « La dérivée du cours 7 est en place. Place au dossier du jour. »",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3725,15 +3719,15 @@
                 "image": "/assets/cours/b2-08/v1/potager-qui-s-agrandit.webp",
                 "imageAlt": "Un potager rectangulaire vu de dessus. Une jardinière recule la clôture du côté long d’un pas, un jardinier celle du côté court. La surface gagnée est faite de deux bandes colorées, l’une verte le long du côté court, l’autre orange le long du côté long, et d’un minuscule coin gris.",
                 "paragraphs": [
-                  "Le potager s’allonge et s’élargit en même temps : la surface gagnée est faite de deux bandes, et d’un coin si petit qu’on le néglige.",
-                  "En maths, on écrit : (uv)′ = u′v + uv′ : la longueur u qui grandit, fois la largeur v, plus la longueur u, fois la largeur qui grandit. Pas u′ × v′, le petit coin."
+                  "Le potager s’allonge et s’élargit en même temps : la surface gagnée est faite de deux bandes, et d’un coin si petit qu’on le néglige."
                 ],
                 "items": [
                   "La longueur du potager → u",
                   "La largeur du potager → v",
                   "La bande verte et la bande orange → u′v et uv′, à ajouter",
                   "Le minuscule coin gris → u′ × v′, qui n’est pas la dérivée"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : (uv)′ = u′v + uv′ : la longueur u qui grandit, fois la largeur v, plus la longueur u, fois la largeur qui grandit. Pas u′ × v′, le petit coin."
               }
             },
             "metadonnees": {
@@ -3745,7 +3739,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Que gagne-t-on en surface, si seule la longueur grandit ? » Une bande : u′v.",
+        "notes": "• Question : « Que gagne-t-on en surface, si seule la longueur grandit ? » Une bande : u′v.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3786,8 +3780,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges du produit et du quotient",
+                    "kind": "piege",
+                    "title": "Les pièges du produit et du quotient",
                     "text": "Pièges : multiplier les dérivées, u′ × v′ ; écrire uv′ − u′v au numérateur ; oublier le carré du dénominateur.",
                     "steps": [
                       "Écrire u, v, u′ et v′ sur quatre lignes.",
@@ -3807,7 +3801,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Faire écrire u, v, u′, v′ sur quatre lignes avant toute formule.",
+        "notes": "• Faire écrire u, v, u′, v′ sur quatre lignes avant toute formule.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3861,7 +3855,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur l’étape 2 : deux termes ajoutés, jamais u′ × v′.\n• Transition : « À vous : exercice 1. »",
+        "notes": "• S’arrêter sur l’étape 2 : deux termes ajoutés, jamais u′ × v′.\n• Transition : « À vous : exercice 1. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3959,7 +3953,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire u, v, u′, v′ pour chaque fonction avant la calculatrice.\n• Pièges : u′ × v′ ; le numérateur du quotient à l’envers ; le carré du dénominateur oublié ; f(a) au lieu de f′(a).\n• Papier : exercice 1 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : « Et quand l’exponentielle contient une fonction ? Un vote pour le deviner. »",
+        "notes": "• Réflexion : écrire u, v, u′, v′ pour chaque fonction avant la calculatrice.\n• Pièges : u′ × v′ ; le numérateur du quotient à l’envers ; le carré du dénominateur oublié ; f(a) au lieu de f′(a).\n• Papier : exercice 1 du livret.\n• Transition : « Et quand l’exponentielle contient une fonction ? Un vote pour le deviner. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4125,7 +4119,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » du second cycle de la notion 1 : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4203,14 +4197,14 @@
                 "image": "/assets/cours/b2-08/v1/deux-engrenages.webp",
                 "imageAlt": "Une manivelle fait tourner une petite roue dentée marquée u, qui entraîne une grande roue dentée marquée e. Un petit drapeau sur chaque roue montre combien elle a tourné.",
                 "paragraphs": [
-                  "La manivelle fait tourner la petite roue, qui fait tourner la grande : pour savoir à quelle vitesse tourne la grande roue, il faut aussi la vitesse de la petite.",
-                  "En maths, on écrit : (e^u)′ = u′e^u et (ln u)′ = u′/u, pour u > 0. On dérive la grande roue, puis on multiplie par u′, la vitesse de la petite."
+                  "La manivelle fait tourner la petite roue, qui fait tourner la grande : pour savoir à quelle vitesse tourne la grande roue, il faut aussi la vitesse de la petite."
                 ],
                 "items": [
                   "La petite roue marquée u → la fonction u, à l’intérieur",
                   "La grande roue marquée e → e^u ou ln u, à l’extérieur",
                   "La vitesse de la petite roue → u′, le facteur à ne pas oublier"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : (e^u)′ = u′e^u et (ln u)′ = u′/u, pour u > 0. On dérive la grande roue, puis on multiplie par u′, la vitesse de la petite."
               }
             },
             "metadonnees": {
@@ -4222,7 +4216,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Si la petite roue ne tourne pas, que fait la grande ? » Rien : sans u′, pas de dérivée.",
+        "notes": "• Question : « Si la petite roue ne tourne pas, que fait la grande ? » Rien : sans u′, pas de dérivée.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4267,8 +4261,8 @@
                     "text": "Quand l’expression est longue, un logiciel de calcul formel (GeoGebra, Xcas) donne la dérivée. On vérifie sa sortie à la main en une valeur simple. Pour (2x + 1)/(x² + 1), il affiche (−2x² − 2x + 2)/(x² + 1)² ; en x = 0, la formule du quotient donne (2 × 1 − 1 × 0)/1 = 2, et la sortie aussi."
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges de e^u et ln u",
+                    "kind": "piege",
+                    "title": "Les pièges de e^u et ln u",
                     "text": "Pièges : oublier u′ ; écrire 1/u pour (ln u)′ ; recopier une sortie de logiciel sans la vérifier.",
                     "steps": [
                       "Écrire u et u′.",
@@ -4288,7 +4282,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Montrer une sortie de calcul formel au vidéoprojecteur, puis la vérifier en une valeur simple.",
+        "notes": "• Montrer une sortie de calcul formel au vidéoprojecteur, puis la vérifier en une valeur simple.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4388,7 +4382,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire u et u′ avant tout calcul ; pour la sortie du logiciel, la vérifier en x = 0.\n• Pièges : u′ oublié ; f(a) au lieu de f′(a) ; un extremum conclu dès que f′ s’annule.\n• Papier : exercice 2 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : jalon 1, puis pause de 15 minutes.",
+        "notes": "• Réflexion : écrire u et u′ avant tout calcul ; pour la sortie du logiciel, la vérifier en x = 0.\n• Pièges : u′ oublié ; f(a) au lieu de f′(a) ; un extremum conclu dès que f′ s’annule.\n• Papier : exercice 2 du livret.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4521,7 +4515,7 @@
             }
           }
         },
-        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre l’écran du potager après la pause.\n• Pause de 15 minutes, hors durée programmée.",
+        "notes": "• Si plus de 30 % « Perdu » : reprendre l’écran du potager après la pause.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4565,7 +4559,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de la notion 2 : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -5319,8 +5313,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : nommer le bon coût",
+                    "kind": "piege",
+                    "title": "Nommer le bon coût",
                     "text": "Pièges : prendre C′(q) pour le coût moyen ; chercher le minimum du coût moyen là où le coût marginal est minimal ; donner q pour le coût.",
                     "steps": [
                       "Coût d’une unité en moyenne : diviser par q.",
@@ -5340,7 +5334,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Relier aux deux graphiques : la pente de la tangente, puis le croisement des deux courbes.",
+        "notes": "• Relier aux deux graphiques : la pente de la tangente, puis le croisement des deux courbes.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -5394,7 +5388,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur l’étape 3 : le minimum se justifie par le changement de signe.\n• Transition : « À vous : exercice 3. »",
+        "notes": "• S’arrêter sur l’étape 3 : le minimum se justifie par le changement de signe.\n• Transition : « À vous : exercice 3. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -5470,7 +5464,7 @@
           ]
         },
         "renvoi": "B2-08-A2-01-DOSSIER",
-        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : écrire C′(q) et CM(q) avant de calculer.\n• Pièges : coût moyen et coût marginal confondus ; q donné pour le coût.\n• Papier : exercice 3 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : « Du coût au prix : un vote sur la recette et l’équilibre. »",
+        "notes": "• Réflexion : écrire C′(q) et CM(q) avant de calculer.\n• Pièges : coût moyen et coût marginal confondus ; q donné pour le coût.\n• Papier : exercice 3 du livret.\n• Transition : « Du coût au prix : un vote sur la recette et l’équilibre. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -5591,7 +5585,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » du second cycle de la notion 2 : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -5765,8 +5759,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges du marché",
+                    "kind": "piege",
+                    "title": "Les pièges du marché",
                     "text": "Pièges : prendre la quantité pour la recette ; diviser au lieu de passer par ln ; ajouter les k au lieu de les soustraire en regroupant les e.",
                     "steps": [
                       "Écrire R(p) = p × D(p), puis la dériver comme un produit.",
@@ -5789,7 +5783,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Relier au graphique : le croisement est la solution de D(p) = O(p).",
+        "notes": "• Relier au graphique : le croisement est la solution de D(p) = O(p).",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -5865,7 +5859,7 @@
           ]
         },
         "renvoi": "B2-08-A2-01-DOSSIER",
-        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : écrire l’équation d’équilibre et R(p) avant la calculatrice.\n• Pièges : les k ajoutés au lieu d’être soustraits ; u′ × v′ ; la quantité prise pour la recette ; le prix donné pour la recette.\n• Papier : exercice 4 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : jalon 2, puis pause de 15 minutes.",
+        "notes": "• Réflexion : écrire l’équation d’équilibre et R(p) avant la calculatrice.\n• Pièges : les k ajoutés au lieu d’être soustraits ; u′ × v′ ; la quantité prise pour la recette ; le prix donné pour la recette.\n• Papier : exercice 4 du livret.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -5969,7 +5963,7 @@
             }
           }
         },
-        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre le graphique du coût moyen après la pause.\n• Pause de 15 minutes, hors durée programmée.",
+        "notes": "• Si plus de 30 % « Perdu » : reprendre le graphique du coût moyen après la pause.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -6013,7 +6007,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de la notion 3 : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -6842,15 +6836,15 @@
                 "image": "/assets/cours/b2-08/v1/nombre-secret.webp",
                 "imageAlt": "Deux amis jouent au nombre secret. Une ficelle graduée de 1 à 100 est tendue entre deux poteaux ; l’une coupe la ficelle en son milieu, à 50, avec des ciseaux ; l’autre répond « plus grand ! ». La moitié gauche est grisée, la moitié droite reste colorée.",
                 "paragraphs": [
-                  "On cherche un nombre caché entre 1 et 100. À chaque essai, on coupe la plage en deux et on garde la moitié où il se cache.",
-                  "En maths, on écrit : la dichotomie coupe [a ; b] en son milieu m, puis garde la moitié aux bornes de laquelle f(x) − k change de signe. Chaque coupe divise l’encadrement par deux."
+                  "On cherche un nombre caché entre 1 et 100. À chaque essai, on coupe la plage en deux et on garde la moitié où il se cache."
                 ],
                 "items": [
                   "La ficelle de 1 à 100 → l’intervalle de départ [a ; b]",
                   "Les ciseaux au milieu → le milieu m = (a + b)/2",
                   "La réponse « plus grand ! » → le signe de f(m) − k",
                   "La moitié restée colorée → le nouvel encadrement"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : la dichotomie coupe [a ; b] en son milieu m, puis garde la moitié aux bornes de laquelle f(x) − k change de signe. Chaque coupe divise l’encadrement par deux."
               }
             },
             "metadonnees": {
@@ -6862,7 +6856,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Combien de coupes pour passer de 100 nombres à un seul ? » Sept, car 2⁷ = 128.",
+        "notes": "• Question : « Combien de coupes pour passer de 100 nombres à un seul ? » Sept, car 2⁷ = 128.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -6907,8 +6901,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : justifier, puis encadrer",
+                    "kind": "piege",
+                    "title": "Justifier, puis encadrer",
                     "text": "Pièges : annoncer une solution sans regarder les variations ; donner la borne du mauvais côté ; garder la mauvaise moitié.",
                     "steps": [
                       "Citer la stricte monotonie et les valeurs aux bornes.",
@@ -6928,7 +6922,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Faire justifier « une seule solution » par les trois mots : strictement monotone, k entre les valeurs aux bornes.",
+        "notes": "• Faire justifier « une seule solution » par les trois mots : strictement monotone, k entre les valeurs aux bornes.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -6982,7 +6976,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur chaque choix de moitié : on garde celle aux bornes de laquelle L(t) − 700 change de signe.\n• Transition : « À vous : exercice 5. »",
+        "notes": "• S’arrêter sur chaque choix de moitié : on garde celle aux bornes de laquelle L(t) − 700 change de signe.\n• Transition : « À vous : exercice 5. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -7077,7 +7071,7 @@
           ]
         },
         "renvoi": "B2-08-A2-01-DOSSIER",
-        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : écrire les variations de N et les valeurs aux bornes avant de calculer.\n• Pièges : compter les solutions sans les variations ; garder la mauvaise moitié ; la valeur par excès au lieu de la valeur par défaut.\n• Papier : exercice 5 du livret, calculatrice en mode table.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : « Le balayage, maintenant au tableur : exercice 6. »",
+        "notes": "• Réflexion : écrire les variations de N et les valeurs aux bornes avant de calculer.\n• Pièges : compter les solutions sans les variations ; garder la mauvaise moitié ; la valeur par excès au lieu de la valeur par défaut.\n• Papier : exercice 5 du livret, calculatrice en mode table.\n• Transition : « Le balayage, maintenant au tableur : exercice 6. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -7292,7 +7286,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : écrire sur papier la formule de B2, parenthèses du dénominateur comprises.\n• Erreurs à chercher : EXP(0,5*A2) sans le signe moins ; les parenthèses du dénominateur oubliées.\n• Papier : formule écrite sur la copie, puis les valeurs à la calculatrice en mode table.\n• Projeter la feuille d’un poste volontaire : N passe 2 500 entre les lignes de 9,9 et de 10.\n• Transition : jalon 3.",
+        "notes": "• Réflexion : écrire sur papier la formule de B2, parenthèses du dénominateur comprises.\n• Erreurs à chercher : EXP(0,5*A2) sans le signe moins ; les parenthèses du dénominateur oubliées.\n• Papier : formule écrite sur la copie, puis les valeurs à la calculatrice en mode table.\n• Projeter la feuille d’un poste volontaire : N passe 2 500 entre les lignes de 9,9 et de 10.\n• Transition : jalon 3.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [],
@@ -7476,7 +7470,7 @@
             }
           }
         },
-        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre l’exemple guidé couper en deux.",
+        "notes": "• Si plus de 30 % « Perdu » : reprendre l’exemple guidé couper en deux.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -7508,7 +7502,7 @@
             }
           }
         },
-        "notes": "• 5 min individuelles, puis projeter la carte de maîtrise.\n• Tous reçoivent les deux questions obligatoires (dérivée d’un produit, nombre de solutions de f(x) = k), en plus de leurs points faibles.",
+        "notes": "• Tous reçoivent les deux questions obligatoires (dérivée d’un produit, nombre de solutions de f(x) = k), en plus de leurs points faibles.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -7833,7 +7827,7 @@
               "renderer": "grid",
               "props": {
                 "title": "Fiche mémo : dérivées composées et fonctions économiques",
-                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "subtitle": "Chaque carte part d’une question et donne la méthode et son piège.",
                 "items": [
                   {
                     "title": "Produit",
@@ -7879,12 +7873,6 @@
                     "title": "Tableur",
                     "description": "Comment écrire 1 000/(1 + 9e^(−0,3t)) ?",
                     "back": "=1000/(1+9*EXP(-0,3*A2)) : EXP pour l’exponentielle, le signe moins dans l’exposant, des parenthèses autour du dénominateur."
-                  },
-                  {
-                    "title": "Référentiel du BTS CG",
-                    "description": "Le programme de mathématiques et l’épreuve E3.",
-                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
-                    "external": true
                   }
                 ],
                 "imprimable": true
@@ -7910,7 +7898,7 @@
             }
           }
         },
-        "notes": "• 90 s de lecture ; la fiche s’imprime pour le classeur de CCF.",
+        "notes": "",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -7986,15 +7974,15 @@
                 "image": "/assets/cours/b2-07/v1/velo-sur-la-colline.webp",
                 "imageAlt": "Une colline vue de côté et trois fois le même enfant à vélo : il monte en pédalant fort, flèche verte +, roule à plat au sommet, trait bleu 0, puis descend, flèche rouge −. Sous chaque roue, un petit segment suit la pente.",
                 "paragraphs": [
-                  "Le vélo monte la colline, roule à plat tout en haut, puis redescend.",
-                  "En maths, on écrit : f′(a) est la pente de la courbe de f au point d’abscisse a, celle de sa tangente. f(a) dit où l’on est ; f′(a) dit de combien on monte, juste là."
+                  "Le vélo monte la colline, roule à plat tout en haut, puis redescend."
                 ],
                 "items": [
                   "Le segment sous la roue → la tangente au point d’abscisse a",
                   "La montée, flèche verte + → f′(a) > 0",
                   "Le plat du sommet, trait bleu 0 → f′(a) = 0",
                   "La descente, flèche rouge − → f′(a) < 0"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f′(a) est la pente de la courbe de f au point d’abscisse a, celle de sa tangente. f(a) dit où l’on est ; f′(a) dit de combien on monte, juste là."
               }
             },
             "metadonnees": {
@@ -8025,14 +8013,14 @@
                 "image": "/assets/cours/b2-07/v1/exposant-qui-saute.webp",
                 "imageAlt": "Un grand x debout sur un plongeoir : le petit 2 de son exposant saute et atterrit devant lui, on lit 2x. À côté, un caillou marqué 7 sur un sol plat, avec l’étiquette pente 0.",
                 "paragraphs": [
-                  "Le petit 2 en haut du x saute du plongeoir et atterrit devant lui. Le caillou 7, posé sur un sol plat, ne monte jamais.",
-                  "En maths, on écrit : (xⁿ)′ = n xⁿ⁻¹ ; (k)′ = 0 ; (k × u)′ = k × u′ ; (u + v)′ = u′ + v′. Ce sont les briques de toutes les dérivées de ce cours."
+                  "Le petit 2 en haut du x saute du plongeoir et atterrit devant lui. Le caillou 7, posé sur un sol plat, ne monte jamais."
                 ],
                 "items": [
                   "Le 2 qui saute devant le x → l’exposant, qui descend en coefficient",
                   "Le x resté seul sur le plongeoir → l’exposant diminué de un",
                   "Le caillou 7 sur le sol plat → une constante, de dérivée nulle"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : (xⁿ)′ = n xⁿ⁻¹ ; (k)′ = 0 ; (k × u)′ = k × u′ ; (u + v)′ = u′ + v′. Ce sont les briques de toutes les dérivées de ce cours."
               }
             },
             "metadonnees": {
@@ -8063,14 +8051,14 @@
                 "image": "/assets/cours/b2-07/v1/boule-de-neige.webp",
                 "imageAlt": "Une pente enneigée : on pousse une boule de neige qui roule en grossissant, petite, moyenne, puis très grosse. Derrière chaque boule, des traits de vitesse de plus en plus longs.",
                 "paragraphs": [
-                  "La boule de neige roule dans la pente : plus elle est grosse, plus elle ramasse de neige à chaque tour.",
-                  "En maths, on écrit : (a e^(kx))′ = a k e^(kx) : on multiplie par k, l’exposant reste. Comme e^(kx) > 0, le signe de la dérivée est celui de a × k."
+                  "La boule de neige roule dans la pente : plus elle est grosse, plus elle ramasse de neige à chaque tour."
                 ],
                 "items": [
                   "La taille de la boule → la valeur a e^(kx)",
                   "La neige ramassée à chaque tour → la dérivée a k e^(kx)",
                   "Les traits de vitesse, plus longs derrière la plus grosse → la dérivée, proportionnelle à la valeur"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : (a e^(kx))′ = a k e^(kx) : on multiplie par k, l’exposant reste. Comme e^(kx) > 0, le signe de la dérivée est celui de a × k."
               }
             },
             "metadonnees": {
@@ -8109,14 +8097,14 @@
                 "image": "/assets/cours/b2-07/v1/panneaux-de-la-route.webp",
                 "imageAlt": "Une route de montagne et une voiture. Au bord de la route, un panneau vert marqué + annonce la montée, un panneau rouge marqué − annonce la descente. Un petit repère d’altitude suit la voiture.",
                 "paragraphs": [
-                  "Au bord de la route de montagne, un panneau vert annonce la montée, un panneau rouge la descente.",
-                  "En maths, on écrit : f′ > 0 sur un intervalle : f y est croissante ; f′ < 0 : f y est décroissante. C’est le signe de f′ qu’on lit, pas celui de f."
+                  "Au bord de la route de montagne, un panneau vert annonce la montée, un panneau rouge la descente."
                 ],
                 "items": [
                   "Le panneau vert + → f′ > 0, f croissante",
                   "Le panneau rouge − → f′ < 0, f décroissante",
                   "L’altitude de la voiture → f(x), que le signe de f′ ne donne pas"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f′ > 0 sur un intervalle : f y est croissante ; f′ < 0 : f y est décroissante. C’est le signe de f′ qu’on lit, pas celui de f."
               }
             },
             "metadonnees": {
@@ -8147,14 +8135,14 @@
                 "image": "/assets/cours/b2-07/v1/sommet-de-la-colline.webp",
                 "imageAlt": "Le cycliste au sommet de la colline, entre la montée et la descente, à côté d’un drapeau marqué sommet. Plus loin, un replat barré où la route continue de monter.",
                 "paragraphs": [
-                  "Le vélo s’arrête au sommet, entre la montée et la descente. Plus loin, sur un replat, la route reprend sa montée.",
-                  "En maths, on écrit : f′ s’annule en a en passant de + à − : f(a) est un maximum ; de − à + : un minimum. Le x du sommet n’est pas sa hauteur f(a)."
+                  "Le vélo s’arrête au sommet, entre la montée et la descente. Plus loin, sur un replat, la route reprend sa montée."
                 ],
                 "items": [
                   "Le drapeau « sommet » → un maximum, f′ passe de + à −",
                   "Le replat barré → f′ = 0 sans changement de signe : pas d’extremum",
                   "La hauteur du drapeau → la valeur du maximum, f(a)"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f′ s’annule en a en passant de + à − : f(a) est un maximum ; de − à + : un minimum. Le x du sommet n’est pas sa hauteur f(a)."
               }
             },
             "metadonnees": {
@@ -8250,15 +8238,15 @@
                 "image": "/assets/cours/b2-08/v1/potager-qui-s-agrandit.webp",
                 "imageAlt": "Un potager rectangulaire vu de dessus. Une jardinière recule la clôture du côté long d’un pas, un jardinier celle du côté court. La surface gagnée est faite de deux bandes colorées, l’une verte le long du côté court, l’autre orange le long du côté long, et d’un minuscule coin gris.",
                 "paragraphs": [
-                  "Le potager s’allonge et s’élargit en même temps : la surface gagnée est faite de deux bandes, et d’un coin si petit qu’on le néglige.",
-                  "En maths, on écrit : (uv)′ = u′v + uv′ : la longueur u qui grandit, fois la largeur v, plus la longueur u, fois la largeur qui grandit. Pas u′ × v′, le petit coin."
+                  "Le potager s’allonge et s’élargit en même temps : la surface gagnée est faite de deux bandes, et d’un coin si petit qu’on le néglige."
                 ],
                 "items": [
                   "La longueur du potager → u",
                   "La largeur du potager → v",
                   "La bande verte et la bande orange → u′v et uv′, à ajouter",
                   "Le minuscule coin gris → u′ × v′, qui n’est pas la dérivée"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : (uv)′ = u′v + uv′ : la longueur u qui grandit, fois la largeur v, plus la longueur u, fois la largeur qui grandit. Pas u′ × v′, le petit coin."
               }
             },
             "metadonnees": {
@@ -8304,8 +8292,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges du produit et du quotient",
+                    "kind": "piege",
+                    "title": "Les pièges du produit et du quotient",
                     "text": "Pièges : multiplier les dérivées, u′ × v′ ; écrire uv′ − u′v au numérateur ; oublier le carré du dénominateur.",
                     "steps": [
                       "Écrire u, v, u′ et v′ sur quatre lignes.",
@@ -8368,14 +8356,14 @@
                 "image": "/assets/cours/b2-08/v1/deux-engrenages.webp",
                 "imageAlt": "Une manivelle fait tourner une petite roue dentée marquée u, qui entraîne une grande roue dentée marquée e. Un petit drapeau sur chaque roue montre combien elle a tourné.",
                 "paragraphs": [
-                  "La manivelle fait tourner la petite roue, qui fait tourner la grande : pour savoir à quelle vitesse tourne la grande roue, il faut aussi la vitesse de la petite.",
-                  "En maths, on écrit : (e^u)′ = u′e^u et (ln u)′ = u′/u, pour u > 0. On dérive la grande roue, puis on multiplie par u′, la vitesse de la petite."
+                  "La manivelle fait tourner la petite roue, qui fait tourner la grande : pour savoir à quelle vitesse tourne la grande roue, il faut aussi la vitesse de la petite."
                 ],
                 "items": [
                   "La petite roue marquée u → la fonction u, à l’intérieur",
                   "La grande roue marquée e → e^u ou ln u, à l’extérieur",
                   "La vitesse de la petite roue → u′, le facteur à ne pas oublier"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : (e^u)′ = u′e^u et (ln u)′ = u′/u, pour u > 0. On dérive la grande roue, puis on multiplie par u′, la vitesse de la petite."
               }
             },
             "metadonnees": {
@@ -8425,8 +8413,8 @@
                     "text": "Quand l’expression est longue, un logiciel de calcul formel (GeoGebra, Xcas) donne la dérivée. On vérifie sa sortie à la main en une valeur simple. Pour (2x + 1)/(x² + 1), il affiche (−2x² − 2x + 2)/(x² + 1)² ; en x = 0, la formule du quotient donne (2 × 1 − 1 × 0)/1 = 2, et la sortie aussi."
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges de e^u et ln u",
+                    "kind": "piege",
+                    "title": "Les pièges de e^u et ln u",
                     "text": "Pièges : oublier u′ ; écrire 1/u pour (ln u)′ ; recopier une sortie de logiciel sans la vérifier.",
                     "steps": [
                       "Écrire u et u′.",
@@ -9151,8 +9139,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : nommer le bon coût",
+                    "kind": "piege",
+                    "title": "Nommer le bon coût",
                     "text": "Pièges : prendre C′(q) pour le coût moyen ; chercher le minimum du coût moyen là où le coût marginal est minimal ; donner q pour le coût.",
                     "steps": [
                       "Coût d’une unité en moyenne : diviser par q.",
@@ -9304,8 +9292,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges du marché",
+                    "kind": "piege",
+                    "title": "Les pièges du marché",
                     "text": "Pièges : prendre la quantité pour la recette ; diviser au lieu de passer par ln ; ajouter les k au lieu de les soustraire en regroupant les e.",
                     "steps": [
                       "Écrire R(p) = p × D(p), puis la dériver comme un produit.",
@@ -10108,15 +10096,15 @@
                 "image": "/assets/cours/b2-08/v1/nombre-secret.webp",
                 "imageAlt": "Deux amis jouent au nombre secret. Une ficelle graduée de 1 à 100 est tendue entre deux poteaux ; l’une coupe la ficelle en son milieu, à 50, avec des ciseaux ; l’autre répond « plus grand ! ». La moitié gauche est grisée, la moitié droite reste colorée.",
                 "paragraphs": [
-                  "On cherche un nombre caché entre 1 et 100. À chaque essai, on coupe la plage en deux et on garde la moitié où il se cache.",
-                  "En maths, on écrit : la dichotomie coupe [a ; b] en son milieu m, puis garde la moitié aux bornes de laquelle f(x) − k change de signe. Chaque coupe divise l’encadrement par deux."
+                  "On cherche un nombre caché entre 1 et 100. À chaque essai, on coupe la plage en deux et on garde la moitié où il se cache."
                 ],
                 "items": [
                   "La ficelle de 1 à 100 → l’intervalle de départ [a ; b]",
                   "Les ciseaux au milieu → le milieu m = (a + b)/2",
                   "La réponse « plus grand ! » → le signe de f(m) − k",
                   "La moitié restée colorée → le nouvel encadrement"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : la dichotomie coupe [a ; b] en son milieu m, puis garde la moitié aux bornes de laquelle f(x) − k change de signe. Chaque coupe divise l’encadrement par deux."
               }
             },
             "metadonnees": {
@@ -10166,8 +10154,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : justifier, puis encadrer",
+                    "kind": "piege",
+                    "title": "Justifier, puis encadrer",
                     "text": "Pièges : annoncer une solution sans regarder les variations ; donner la borne du mauvais côté ; garder la mauvaise moitié.",
                     "steps": [
                       "Citer la stricte monotonie et les valeurs aux bornes.",
@@ -10243,7 +10231,7 @@
               "renderer": "grid",
               "props": {
                 "title": "Fiche mémo : dérivées composées et fonctions économiques",
-                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "subtitle": "Chaque carte part d’une question et donne la méthode et son piège.",
                 "items": [
                   {
                     "title": "Produit",
@@ -10289,12 +10277,6 @@
                     "title": "Tableur",
                     "description": "Comment écrire 1 000/(1 + 9e^(−0,3t)) ?",
                     "back": "=1000/(1+9*EXP(-0,3*A2)) : EXP pour l’exponentielle, le signe moins dans l’exposant, des parenthèses autour du dénominateur."
-                  },
-                  {
-                    "title": "Référentiel du BTS CG",
-                    "description": "Le programme de mathématiques et l’épreuve E3.",
-                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
-                    "external": true
                   }
                 ],
                 "imprimable": true

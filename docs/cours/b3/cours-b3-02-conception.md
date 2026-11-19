@@ -150,8 +150,8 @@ Horaires indicatifs : acte 1 de 8 h 30 à 9 h 27, acte 2 de 9 h 42 à 10 h 39, a
 **Réfléchir** (vote non noté de 2 minutes sur une cellule du fichier) → **Comprendre** (une à trois
 pages de 2 minutes) → **S’exercer** (exercice noté, corrigé sur place, consigne en étapes
 numérotées). Un exemple guidé `fp-worked` précède l’exercice 3, dont le geste (une recherche puis
-une somme sous conditions) est le plus long. Chaque exercice annonce
-`• Temps : réflexion N min · travail M min · correction K min`.
+une somme sous conditions) est le plus long. La durée de chaque exercice additionne réflexion, travail et correction ; les notes formateur
+ne la répètent pas.
 
 ### 2.3 La page de formules
 

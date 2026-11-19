@@ -69,7 +69,6 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['source-de-publipostage'],
       notes: moteur.puces(
-        'Temps « réfléchir » du publipostage : vote non noté, 1 min de vote et 1 min de révélation.',
         'Révélation : ouvrir le classeur des contacts ; chaque ligne sera une lettre, chaque colonne un champ.',
       ),
     },
@@ -184,7 +183,6 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 12,
       concepts: ['source-de-publipostage'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 11),
         'Réflexion : faire ouvrir le classeur des contacts dans Excel, le lire, puis le fermer : Word ne le lie pas tant qu’Excel le tient ouvert sur certains postes.',
         'Pièges : décocher la case des en-têtes ; compter la ligne d’en-tête ; lier un autre classeur que celui du jour.',
       ),
@@ -220,7 +218,6 @@ export const ACTE_1: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Règles 1 et 2, dites à la correction : « Une lettre type, une liste, une fusion » ; « La liste se tient dans le tableur, une ligne par destinataire, une colonne par champ, en-têtes en première ligne. »',
         'Transition : « La lettre a sa liste ; plaçons-y le nom du client : un vote. »',
       ],
@@ -243,7 +240,6 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['champ-de-fusion'],
       notes: moteur.puces(
-        'Temps « réfléchir » des champs : vote non noté, 1 min de vote et 1 min de révélation.',
         'Révélation : taper les chevrons au clavier, puis Aperçu des résultats ; le texte ne change pas.',
       ),
     },
@@ -365,7 +361,6 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['champ-de-fusion'],
       notes: moteur.puces(
-        moteur.REPONSES_SOUS_CHAQUE_ETAPE,
         'Chacun le fait dans Lettre_clients.docx : ce bloc ouvre l’exercice 2.',
       ),
       proprietes: {
@@ -433,7 +428,6 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 13,
       concepts: ['champ-de-fusion'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 12),
         'Réflexion : faire repérer dans la lettre ce qui change d’un client à l’autre avant de taper.',
         'Pièges : chevrons tapés ; montant sans format ; nom de l’agence tapé au lieu du champ.',
       ),
@@ -481,7 +475,6 @@ export const ACTE_1: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Règle 3, dite à la correction : « Ce qui change d’une lettre à l’autre s’insère par un champ, jamais à la main. »',
         'Transition : « Tapé, champ ou règle ? Un tri. »',
       ],
@@ -506,7 +499,6 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 10,
       concepts: ['champ-de-fusion', 'regle-de-fusion'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 9),
         'Réflexion : pour chaque passage, une question : est-il le même dans toutes les lettres, vient-il d’une colonne, ou dépend-il d’une condition ?',
       ),
       proprietes: {
@@ -596,7 +588,6 @@ export const ACTE_1: moteur.Acte = [
       minutes: 2,
       notes: [
         'Corriger case par case : demander, pour chaque passage, s’il change d’une lettre à l’autre et selon quoi.',
-        moteur.PAUSE_HORS_DUREE,
       ],
     },
     [

@@ -2,7 +2,7 @@
 
 > Cahier des charges du cours B2-03 au gabarit v3 (`docs/cours/cours-gabarit-v3.md`) : une séance de
 > 140 minutes de travail et deux pauses de 15 minutes, trois notions traitées chacune par un cycle
-> réfléchir → comprendre → s'exercer, puis une mini-situation CCF. Ce document ne contient aucun code
+> réfléchir → comprendre → s'exercer, puis une mini-situation. Ce document ne contient aucun code
 > exécutable ; toute divergence d'implémentation est un défaut de l'implémentation. Les tests
 > `b2-03.cours.spec.ts` relisent ce document : § 3.1, titres publics du § 3, § 5.9, § 8.2.
 
@@ -75,7 +75,7 @@ papier. Séance de 140 minutes de travail, pause de 15 minutes après l'acte 1 e
 | 1    | Ouverture, puis combiner des conditions | N1     |      36 |
 | 2    | Nier une règle                          | N2     |      33 |
 | 3    | Tous, au moins un                       | N3     |      23 |
-| 4    | Mini-situation CCF et clôture           | —      |      48 |
+| 4    | Mini-situation et clôture               | —      |      48 |
 
 Pause 1 (15 min) après le jalon A1-12 ; pause 2 (15 min) après le jalon A3-07. Les pauses ne sont
 pas des écrans : le formateur les annonce, la durée programmée n'en tient pas compte.
@@ -89,9 +89,8 @@ trace écrite porte une définition en langage courant (une méthode pour la pag
 exemple pour débuter hors du fichier (remise d'une boutique, prime d'ancienneté, équipe de vente) ;
 la page des prédicats garde en plus sa méthode pour nier une phrase quantifiée.
 
-Chaque exercice annonce ses temps dans les notes formateur, sous la forme
-`• Temps : réflexion N min · travail N min · correction N min`, dont la somme est la durée de
-l'écran. La correction se dévoile sur l'écran de l'exercice (`correctionSurPlace`).
+La durée de chaque exercice additionne réflexion, travail et correction ; les notes formateur
+ne la répètent pas. La correction se dévoile sur l'écran de l'exercice (`correctionSurPlace`).
 
 ### 2.3 Règles de structure
 
@@ -320,11 +319,11 @@ Rythme : 111 minutes interactives, 29 d'exposition, exposition continue de 6 min
 - Titre public : « Jalon 3 : quantifier »
 - Puis pause de 15 minutes.
 
-### 3.5 Acte 4 — Mini-situation CCF et clôture (44 min)
+### 3.5 Acte 4 — Mini-situation et clôture (44 min)
 
 #### A4-01 · `B2-03-A4-01-SITUATION-FACTURES` — 3 min · v2 `table` · catalogue
 
-- Titre public : « Mini-situation CCF : contrôler les comptes clients »
+- Titre public : « Mini-situation : contrôler les comptes clients »
 - Les seize factures avec les lettres de colonnes A à G ; barème sur 10. Mention « Données fictives ».
 
 #### A4-02 · `B2-03-A4-02-TABLEUR-CONTROLE` — 17 min · `fp-sheet` · séance

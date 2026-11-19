@@ -111,12 +111,11 @@ Chaque notion suit : **Réfléchir** (mission, réflexion écrite ou vote non no
 (trace écrite en deux pages v2 `lesson` de 2 minutes, chacune précédée de ses illustrations d'une
 minute, puis exemple guidé `fp-worked` corrigé étape par étape sur son propre écran) → **S'exercer** (exercices notés, corrigés sur place). Chaque page de
 trace écrite porte trois blocs : une définition en langage courant qui dit à quoi sert la notion pour
-la gamme Sillage, un exemple pour débuter hors du dossier et une méthode ou un encadré « Au CCF »
+la gamme Sillage, un exemple pour débuter hors du dossier et une méthode ou un encadré « Les pièges »
 qui nomme les pièges.
 
-Chaque exercice annonce ses temps dans les notes formateur, sous la forme
-`• Temps : réflexion N min · travail N min · correction N min`, dont la somme est la durée de
-l'écran. La correction se dévoile sur l'écran de l'exercice (`correctionSurPlace`).
+La durée de chaque exercice additionne réflexion, travail et correction ; les notes formateur
+ne la répètent pas. La correction se dévoile sur l'écran de l'exercice (`correctionSurPlace`).
 
 ### 2.4 Règles de structure
 
@@ -259,7 +258,7 @@ Rythme : 103 minutes interactives, 32 d'exposition, exposition continue de 8 min
 
 - Titre public : « Cours : les modèles a e^(kx) et le tableur »
 - Page 2 sur 2 : a valeur en 0, chaque unité multiplie par e^k, taux e^k − 1 ; sens selon le signe
-  de k ; au tableur, `EXP` et les paramètres figés par `$` ; au CCF, lire a et k avant de calculer.
+  de k ; au tableur, `EXP` et les paramètres figés par `$` ; les pièges : lire a et k avant de calculer.
 
 #### A1-09 · `B2-06-A1-09-EXEMPLE-ABONNES` — 6 min · `fp-worked` · séance
 
@@ -334,7 +333,7 @@ Rythme : 103 minutes interactives, 32 d'exposition, exposition continue de 8 min
 
 - Titre public : « Cours : résoudre qⁿ ≥ s avec ln »
 - Page 2 sur 2 : appliquer ln, qui garde le sens ; diviser par ln q, qui change le sens si q < 1 ;
-  premier entier solution ; même méthode pour a e^(kx) ≥ s ; au tableur, `LN` ; au CCF, rédiger
+  premier entier solution ; même méthode pour a e^(kx) ≥ s ; au tableur, `LN` ; les pièges : rédiger
   chaque étape.
 
 #### A2-04 · `B2-06-A2-04-EXEMPLE-DOUBLEMENT` — 6 min · `fp-worked` · séance
@@ -406,7 +405,7 @@ Rythme : 103 minutes interactives, 32 d'exposition, exposition continue de 8 min
 
 - Titre public : « Cours : ajuster par z = ln y »
 - Page 2 sur 2 : calculer z = ln y, ajuster z = αx + β par les moindres carrés, revenir à
-  y = e^β × e^(αx) ; au tableur, `LN`, `PENTE`, `ORDONNEE.ORIGINE`, `EXP` ; au CCF, le changement
+  y = e^β × e^(αx) ; au tableur, `LN`, `PENTE`, `ORDONNEE.ORIGINE`, `EXP` ; les pièges : le changement
   de variable est donné.
 
 #### A3-05 · `B2-06-A3-05-EXEMPLE-AJUSTEMENT` — 6 min · `fp-worked` · séance

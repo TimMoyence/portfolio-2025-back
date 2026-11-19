@@ -24,7 +24,6 @@ const COMPRENDRE: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['ia-analyste'],
       notes: moteur.puces(
-        'Temps « réfléchir » de l’IA : vote non noté, 2 min de vote et 1 min de révélation.',
         'Révélation : le 10 est la moyenne des délais ; votre médiane de l’exercice 4 vaut moins. Ni la croire, ni la jeter : comparer et lire la méthode.',
       ),
     },

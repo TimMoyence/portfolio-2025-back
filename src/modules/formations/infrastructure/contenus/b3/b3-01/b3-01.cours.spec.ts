@@ -1467,21 +1467,21 @@ describe('B3-01 — retours de la relecture du 11/10', () => {
 
 describe('B3-01 — temps de travail multiplié par 1,5, défis réduits', () => {
   it.each([
-    ['B3-01-A1-07-TRI-COLONNES', 3],
-    ['B3-01-A1-08-ATELIER-GRANULARITE', 3],
-    ['B3-01-A1-13-TRI-ANOMALIES', 6],
-    ['B3-01-A1-14-ATELIER-NETTOYAGE', 12],
-    ['B3-01-A2-04-ATELIER-RECHERCHE', 9],
-    ['B3-01-A2-07-ATELIER-DELAIS-MARGE', 9],
-    ['B3-01-A2-11-ATELIER-TCD', 12],
-    ['B3-01-A3-05-ATELIER-GRAPHIQUES', 9],
-    ['B3-01-A3-09-ATELIER-DASHBOARD', 12],
-    ['B3-01-A3-10-RECOMMANDATIONS', 6],
+    ['B3-01-A1-07-TRI-COLONNES', 3, 1],
+    ['B3-01-A1-08-ATELIER-GRANULARITE', 3, 1],
+    ['B3-01-A1-13-TRI-ANOMALIES', 6, 1],
+    ['B3-01-A1-14-ATELIER-NETTOYAGE', 12, 2],
+    ['B3-01-A2-04-ATELIER-RECHERCHE', 9, 2],
+    ['B3-01-A2-07-ATELIER-DELAIS-MARGE', 9, 2],
+    ['B3-01-A2-11-ATELIER-TCD', 12, 2],
+    ['B3-01-A3-05-ATELIER-GRAPHIQUES', 9, 1],
+    ['B3-01-A3-09-ATELIER-DASHBOARD', 12, 2],
+    ['B3-01-A3-10-RECOMMANDATIONS', 6, 2],
   ])(
-    '%s · annonce %i min de travail après une minute de réflexion',
-    (screenId, travail) => {
-      expect(texteDe(screenId)).toContain(
-        `réflexion 1 min · travail ${travail} min`,
+    '%s · dure une minute de réflexion, %i min de travail et %i min de correction',
+    (screenId, travail, correction) => {
+      expect(fiche.ecranDuContenu(COURS_B3_01, screenId).dureeMinutes).toBe(
+        1 + travail + correction,
       );
     },
   );

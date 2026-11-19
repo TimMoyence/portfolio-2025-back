@@ -37,6 +37,22 @@ import {
   VITESSE_EN_JUIN,
 } from './b2-07.donnees';
 import * as moteur from '../../briques';
+import { type FonctionDerivable, tangenteEn, tracer } from './b2-07.courbes';
+
+const COLLINE: FonctionDerivable = {
+  f: (x) => -x * x + 6 * x,
+  derivee: (x) => -2 * x + 6,
+};
+
+const CAPITAL: FonctionDerivable = {
+  f: (x) => 1000 * Math.exp(0.02 * x),
+  derivee: (x) => 20 * Math.exp(0.02 * x),
+};
+
+const PARABOLE: FonctionDerivable = {
+  f: (x) => -2 * x * x + 40 * x + 5,
+  derivee: (x) => -4 * x + 40,
+};
 
 const GRAVURE_DE_L_ACCROCHE = moteur.gravureDuDomainePublic({
   id: 'M15',
@@ -73,8 +89,8 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 1,
       concepts: ['fonction-derivee', 'optimisation'],
       notes: moteur.puces(
-        'Annoncer le plan : douze minutes pour comprendre enfin le cours 6 et la boucle, puis trois notions, chacune en trois temps (réfléchir, comprendre, s’exercer), et la fiche mémo.',
-        'Annoncer les deux pauses de 15 minutes, après l’acte 2 et après l’acte 3.',
+        'Le titre complet de la page affichée : « Nouvelle méthode pour les maximums et les minimums, ainsi que pour les tangentes ». Le tout premier texte publié sur les dérivées, en 1684, annonce déjà le programme du jour.',
+        'Newton avait trouvé la même méthode vers 1665, sans la publier. En 1712, la Royal Society, qu’il préside, lui donne la priorité dans un rapport qu’il a rédigé lui-même. On reconnaît aujourd’hui deux découvertes indépendantes.',
       ),
     },
     'hero',
@@ -108,7 +124,7 @@ const ACTE_1: moteur.Acte = [
         ['La hauteur atteinte', 'uₙ, ou f(x)'],
       ],
     },
-    'Question : « Ajoute-t-on ou multiplie-t-on ? » On multiplie : c’est pour cela que la courbe se redresse.',
+    'Intérêts simples : on ajoute chaque année le même montant. Intérêts composés : on multiplie. 1 000 € à 5 % pendant 10 ans donnent 1 500 € d’un côté, environ 1 628,89 € de l’autre.',
   ),
   pourComprendre(
     {
@@ -122,15 +138,21 @@ const ACTE_1: moteur.Acte = [
         'Deux ballons de même taille au départ, marqués a. À gauche, un enfant gonfle le sien, qui grossit, k > 0. À droite, l’autre ballon se dégonfle, k < 0.',
       scene:
         'Deux ballons partent de la même taille : l’un se gonfle à la pompe, l’autre se dégonfle.',
-      regle:
-        'f(x) = a e^(kx) et f(0) = a, car e⁰ = 1. Coefficient e^k, taux e^k − 1 : pour 1 000e^(0,02x), + 2,02 % par unité, pas 2 %.',
+      regle: [
+        'f(x) = a e^(kx).',
+        'a est la valeur de départ : f(0) = a × e⁰ = a × 1 = a.',
+        'k règle le sens : k > 0, f croît ; k < 0, f décroît.',
+        'e^k est le coefficient multiplicateur d’une unité à la suivante.',
+        'Pour 1 000e^(0,02x) : a = 1 000 et e^0,02 ≈ 1,0202, soit + 2,02 % par unité, pas + 2 %.',
+      ].join('\n'),
       correspondances: [
         ['La taille commune au départ, marquée a', 'a = f(0)'],
         ['Le ballon qu’on gonfle, k > 0', 'f croissante'],
         ['Le ballon qui se dégonfle, k < 0', 'f décroissante'],
       ],
     },
-    'Question : « Que lit-on en x = 0 ? » La valeur de départ a.',
+    'En 1683, Jacob Bernoulli place 1 € à 100 % et capitalise de plus en plus souvent : 2 € une fois l’an, environ 2,61 € chaque mois, e ≈ 2,72 € à chaque instant. Le nombre e est né d’un problème d’intérêts.',
+    '1 000e^(0,02x), c’est 2 % capitalisés en continu, soit 2,02 % par unité : l’écart entre taux nominal et taux effectif.',
   ),
   pourComprendre(
     {
@@ -153,7 +175,8 @@ const ACTE_1: moteur.Acte = [
         ['La carte 5 qui ressort', 'y = eˣ'],
       ],
     },
-    'Question : « × 4 se défait par ÷ 4. Comment défaire eˣ ? » Par ln.',
+    'Si la calculatrice affiche 0,699, c’est la touche log, en base 10. ln 5 vaut 1,609.',
+    '« Népérien » rend hommage à John Napier (Neper), qui publie en 1614 les premières tables de logarithmes : elles changent les multiplications en additions.',
   ),
   pourComprendre(
     {
@@ -178,7 +201,8 @@ const ACTE_1: moteur.Acte = [
         ],
       ],
     },
-    'Question : « 5,68 semaines : on répond 5 ou 6 ? » 6, l’entier juste au-dessus.',
+    'Le piège arrive avec un résultat comme 5,2 : l’arrondi habituel donne 5, le seuil demande 6. Pour un seuil, on prend toujours l’entier du dessus.',
+    'Doubler un capital placé à 5 % : ln 2 ÷ ln 1,05 ≈ 14,2, donc 15 ans. Les banquiers ont un raccourci, la règle de 72 (72 ÷ 5 = 14,4), déjà chez Luca Pacioli en 1494, dans l’ouvrage qui imprime pour la première fois la comptabilité en partie double.',
   ),
   moteur.voteQuiOuvre(
     {
@@ -186,11 +210,7 @@ const ACTE_1: moteur.Acte = [
       titre: 'Vote : l’exponentielle et ln, deux questions',
       dureeMinutes: 4,
       concepts: ['fonction-exponentielle', 'logarithme-neperien'],
-      notes: moteur.puces(
-        'Récapitulatif du cours 6 : deux votes non notés.',
-        'Revenir sur l’écran d’image de chaque erreur : le départ et la vitesse, puis le bouton retour.',
-        ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
-      ),
+      notes: '',
     },
     [
       moteur.vote(
@@ -234,7 +254,7 @@ const ACTE_1: moteur.Acte = [
         ['L’eau dans le verre', 'la valeur u, mise à jour à chaque tour'],
       ],
     },
-    'Question : « Que compte n ? » Le nombre de tours, donc le rang atteint.',
+    '« Algorithme » vient d’al-Khwarizmi, mathématicien de Bagdad au IXe siècle. Le titre de son livre a aussi donné « algèbre », d’« al-jabr ».',
   ),
   pourComprendre(
     {
@@ -248,8 +268,12 @@ const ACTE_1: moteur.Acte = [
         'L’enfant devant le grand verre marqué d’un trait rouge plein. Il pense « pas encore… » et continue de verser. À côté, l’eau atteint le trait : il pose la cuillère, « fini ! ».',
       scene:
         'Tant que l’eau n’atteint pas le trait rouge « plein », on verse encore. Dès qu’elle l’atteint, on s’arrête.',
-      regle:
-        'objectif u ≥ 1 000, boucle « Tant que u < 1 000 » ; pour descendre sous 500, « Tant que u ≥ 500 ». Après « Tant que », on écrit le contraire de l’objectif ; à la fin, Afficher n.',
+      regle: [
+        'objectif u ≥ 1 000, boucle « Tant que u < 1 000 » ; pour descendre sous 500, « Tant que u ≥ 500 ».',
+        'Après « Tant que », on écrit le contraire de l’objectif ; à la fin, Afficher n.',
+        'La plante de la fenêtre : u ← 1 ; n ← 0 ; Tant que u < 10 : n ← n + 1, u ← u × 1,5 ; Afficher n, soit 6.',
+        'C’est le rang que donne ln : ln 10 ÷ ln 1,5 ≈ 5,68, arrondi au-dessus.',
+      ].join('\n'),
       correspondances: [
         ['Le trait rouge « plein »', 'le seuil, ici 1 000'],
         [
@@ -262,32 +286,7 @@ const ACTE_1: moteur.Acte = [
         ],
       ],
     },
-    'Question : « On veut dépasser 1 000. Que met-on après Tant que ? » u < 1 000, pas encore atteint.',
-  ),
-  pourComprendre(
-    {
-      screenId: 'B2-07-A1-09-ENFANT-DEUX-CHEMINS',
-      titre: 'Deux chemins, le même rang',
-      concepts: ['algorithme-de-seuil', 'resolution-par-logarithme'],
-    },
-    {
-      fichier: 'deux-chemins.webp',
-      imageAlt:
-        'Une cabane en haut d’une colline. À gauche, des empreintes de pas numérotées de 1 à 6 mènent à la porte. À droite, un enfant fait un grand saut marqué ln et atterrit sur la même marche 6.',
-      scene:
-        'Deux chemins mènent à la même cabane : l’un à petits pas numérotés, l’autre en un seul grand saut.',
-      regle:
-        'la boucle sur 1,5ⁿ affiche 6 ; ln 10 ÷ ln 1,5 ≈ 5,68, arrondi au-dessus, donne aussi 6. Les deux méthodes trouvent le même premier rang.',
-      correspondances: [
-        [
-          'Les pas numérotés de 1 à 6',
-          'la boucle « Tant que », rang après rang',
-        ],
-        ['Le grand saut marqué ln', 'le calcul par ln, d’un coup'],
-        ['La marche 6', 'le premier rang qui dépasse le seuil'],
-      ],
-    },
-    'Transition : « Le cours 6 est en place. Place à la question du jour : le prix du cabas Escale. »',
+    'Avec « Tant que u > 1 000 » et u qui part de 1, la boucle ne tourne jamais et affiche n = 0. Une réponse 0 trahit une condition inversée.',
   ),
 ];
 
@@ -300,8 +299,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['fonction-derivee', 'optimisation'],
       notes: moteur.puces(
-        '1 min de lecture silencieuse ; ne rien calculer.',
-        'Faire dire les questions d’Hélène : quel prix, et que change la capacité de l’atelier ?',
+        '360 − 12x se lit en clients : chaque euro de plus sur l’étiquette fait perdre 12 cabas par semaine. À 30 €, plus personne n’achète.',
       ),
     },
     'table',
@@ -345,13 +343,7 @@ const ACTE_2: moteur.Acte = [
     brique: 'fp-pro',
     dureeMinutes: 6,
     concepts: ['fonction-derivee', 'optimisation'],
-    notes: moteur.puces(
-      'Lecture à voix haute du courriel (1 min), puis 4 min d’écriture individuelle et 1 min de mise en commun au pupitre.',
-      'Question 1 : faire dire qu’un prix trop haut fait fuir les clients ; le bénéfice monte puis redescend.',
-      'Question 2 : faire émerger l’idée de pente, montée ou descente ; c’est la dérivée.',
-      'Question 3 : laisser ouvert ; c’est l’acte 4.',
-      'Papier : trois lignes d’écriture dans le livret.',
-    ),
+    notes: '',
     proprietes: {
       metier:
         'Assistant·e de gestion — Atelier Rivage (voilerie artisanale, 14 salariés, La Rochelle)',
@@ -394,35 +386,69 @@ const ACTE_2: moteur.Acte = [
       regle:
         'f′(a) est la pente de la courbe de f au point d’abscisse a, celle de sa tangente : elle dit de combien f monte, juste là.',
     },
-    'Question : « Que vaut la pente tout en haut ? » 0 : la route est plate.',
+    '« Tangente » vient du latin tangere, toucher : c’est la droite qui touche la courbe.',
+    'Le panneau routier « 10 % » est déjà une pente : 10 m de dénivelé pour 100 m d’avancée, soit 0,1. Les jambes du cycliste sentent la pente, pas l’altitude.',
   ),
-  pourComprendre(
+  moteur.ecranV2(
     {
-      screenId: 'B2-07-A2-04-ENFANT-RECETTE',
-      titre: 'La recette des puissances',
+      screenId: 'B2-07-A2-04-COURBE-PENTES',
+      titre: 'La pente, point par point',
+      diffusion: 'catalogue',
+      dureeMinutes: 2,
       concepts: ['fonction-derivee'],
+      notes: moteur.puces(
+        'En x = 1, la courbe est à 5 de haut et sa pente vaut 4. Au sommet, elle est à 9 de haut et sa pente vaut 0. Hauteur et pente sont deux nombres différents.',
+      ),
     },
+    'courbe',
     {
-      fichier: 'exposant-qui-saute.webp',
-      imageAlt:
-        'Un grand x debout sur un plongeoir : le petit 2 de son exposant saute et atterrit devant lui, on lit 2x. À côté, un caillou marqué 7 sur un sol plat, avec l’étiquette pente 0.',
-      scene:
-        'Le petit 2 en haut du x saute du plongeoir et atterrit devant lui : on lit 2x. Le caillou 7, posé sur un sol plat, ne monte jamais.',
-      regle:
-        '(x²)′ = 2x ; (x³)′ = 3x² ; (x)′ = 1 ; (k)′ = 0 ; (k × u)′ = k × u′ ; (u + v)′ = u′ + v′.',
-      correspondances: [
-        [
-          'Le 2 qui saute devant le x',
-          'l’exposant, qui descend en coefficient',
-        ],
-        [
-          'Le x resté seul sur le plongeoir',
-          'l’exposant diminué de un : x¹, soit x',
-        ],
-        ['Le caillou 7 sur le sol plat', 'une constante, de dérivée nulle'],
+      title: 'La pente, point par point',
+      figure: {
+        formula: 'f(x) = −x² + 6x',
+        xLabel: 'x',
+        yLabel: 'f(x)',
+        xRange: [0, 6],
+        yRange: [0, 10],
+        points: tracer(COLLINE, [0, 6], 0.25),
+        description:
+          'La courbe de f(x) = −x² + 6x : une colline qui part de 0, monte jusqu’à 9 en x = 3, puis redescend à 0 en x = 6.',
+      },
+      steps: [
+        {
+          title: 'Une colline',
+          text: 'f(x) = −x² + 6x monte de x = 0 à x = 3, puis redescend jusqu’à x = 6.\nEn chaque point, on pose une règle qui touche la courbe sans la couper : la tangente.\nSa pente dit de combien la courbe monte, juste là.',
+        },
+        {
+          title: 'En x = 1',
+          text: 'La tangente monte de 4 quand x avance de 1.\nPente 4 : la courbe monte vite.',
+          tangent: tangenteEn(COLLINE, 1, 'pente 4'),
+        },
+        {
+          title: 'En x = 2',
+          text: 'Pente 2 : la courbe monte encore, moins vite.',
+          tangent: tangenteEn(COLLINE, 2, 'pente 2'),
+        },
+        {
+          title: 'En x = 3',
+          text: 'La tangente est à plat : pente 0.\nC’est le sommet : la courbe ne monte plus et ne descend pas encore.',
+          tangent: tangenteEn(COLLINE, 3, 'pente 0'),
+        },
+        {
+          title: 'En x = 4',
+          text: 'Pente −2 : la courbe descend.',
+          tangent: tangenteEn(COLLINE, 4, 'pente −2'),
+        },
+        {
+          title: 'En x = 5',
+          text: 'Pente −4 : elle descend de plus en plus vite.',
+          tangent: tangenteEn(COLLINE, 5, 'pente −4'),
+        },
+        {
+          title: 'La dérivée',
+          text: 'x : 1, 2, 3, 4, 5\npente : 4, 2, 0, −2, −4\nQuand x avance de 1, la pente baisse de 2 : pente = −2x + 6.\nCette formule s’appelle la dérivée de f : f′(x) = −2x + 6.\nElle dit, sans dessiner, si f monte (f′ > 0), s’arrête (f′ = 0) ou descend (f′ < 0).',
+        },
       ],
     },
-    'Question : « Que vaut la dérivée de 7 ? » 0, le caillou ne monte pas.',
   ),
   moteur.ecranV2(
     {
@@ -432,26 +458,31 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['fonction-derivee'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
-        'Relier au B2-02 : la pente d’une droite est la même partout ; celle d’une courbe change d’un point à l’autre.',
-        'Faire dériver à voix haute chaque terme de l’exemple.',
+        'La notation f′ et le mot « fonction dérivée » viennent de Lagrange, en 1797. Leibniz écrivait dy/dx : une toute petite montée divisée par une toute petite avancée.',
+        'Une dérivée a pour unité celle de f par unité de x : B′ se lit en euros de bénéfice par euro de prix, V′ en sacs par mois.',
       ),
     },
     'lesson',
     {
-      title: 'La dérivée : la pente de la courbe en chaque point',
+      title: 'La dérivée, pente de la courbe',
       blocks: [
         {
           kind: 'definition',
           title: 'Nombre dérivé et fonction dérivée',
-          text: 'Le nombre dérivé f′(a) est la pente de la courbe de f au point d’abscisse a : le coefficient directeur de sa tangente. La fonction dérivée f′ donne cette pente pour chaque x. Elle dira à Hélène si le bénéfice monte ou descend quand le prix bouge.',
-          formula:
-            '(k)′ = 0 · (x)′ = 1 · (x²)′ = 2x · (x³)′ = 3x² · (k × u)′ = k × u′ · (u + v)′ = u′ + v′',
+          text: 'Le nombre dérivé f′(a) est la pente de la tangente à la courbe de f au point d’abscisse a.\nLa fonction dérivée f′ donne cette pente pour chaque x.\nElle sert à savoir où f monte et où elle descend : elle dira à Hélène si le bénéfice monte ou descend quand le prix bouge.',
+          formula: [
+            '(k)′ = 0',
+            '(x)′ = 1',
+            '(x²)′ = 2x',
+            '(x³)′ = 3x²',
+            '(k × u)′ = k × u′',
+            '(u + v)′ = u′ + v′',
+          ].join('\n'),
         },
         {
           kind: 'example',
           title: 'Pour débuter : f(x) = −2x² + 40x + 5',
-          text: 'L’exemple de l’encadré du devoir maison.',
+          text: 'Une fonction de degré 2, dérivée terme à terme.',
           steps: [
             'Dériver terme à terme : (−2x²)′ = −2 × 2x = −4x ; (40x)′ = 40 ; (5)′ = 0.',
             'f′(x) = −4x + 40.',
@@ -459,8 +490,8 @@ const ACTE_2: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : dériver sans se tromper',
+          kind: 'piege',
+          title: 'Dériver sans se tromper',
           text: 'Pièges : dériver 3x² en 3x en oubliant de faire descendre l’exposant ; garder le nombre seul dans la dérivée ; calculer f(a) quand on demande f′(a).',
           steps: [
             'Écrire la dérivée de chaque terme, l’un après l’autre.',
@@ -480,7 +511,9 @@ const ACTE_2: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['fonction-derivee'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: moteur.puces(
+        'En gestion, K′ s’appelle le coût marginal : ce que coûte le mètre de plus. K′(2) = 3 l’annonce, et le vrai écart K(3) − K(2) = 38 − 34 = 4 € en est proche.',
+      ),
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -520,13 +553,7 @@ const ACTE_2: moteur.Acte = [
         etayage: 0,
       },
     },
-    {
-      minutes: 2,
-      notes: [
-        'S’arrêter sur l’exposant qui descend (étape 1) et sur la différence entre K(2) et K′(2) (étape 4).',
-        'Transition : « À vous : exercice 1. »',
-      ],
-    },
+    moteur.CORRECTION_DE_DEUX_MINUTES,
   ),
   moteur.corrigeSurPlace(
     {
@@ -537,10 +564,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['fonction-derivee'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
-        'Réflexion : pour chaque fonction, écrire la dérivée de chaque terme avant de calculer.',
-        'Pièges : 3x² dérivé en 3x ; le nombre seul gardé ; f(a) calculé au lieu de f′(a).',
-        'Papier : exercice 1 du livret.',
+        'La calculatrice dérive en un point (TI : math, puis nDeriv( ; Casio : OPTN, CALC, d/dx). Elle confirme g′(3) = 18, mais ne donne jamais la formule de g′.',
       ),
       proprietes: {
         renvoi: RENVOI_AU_DOSSIER,
@@ -592,13 +616,7 @@ const ACTE_2: moteur.Acte = [
         ],
       },
     },
-    {
-      minutes: 2,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
-        'Transition : « Et la dérivée d’une exponentielle ? Un vote pour la deviner. »',
-      ],
-    },
+    moteur.CORRECTION_DE_DEUX_MINUTES,
     [
       [
         'b2-07-a2-carre',
@@ -625,8 +643,7 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 4,
       concepts: ['fonction-derivee', 'fonction-exponentielle'],
       notes: moteur.puces(
-        'Temps « réfléchir » de la dérivée de l’exponentielle : votes non notés.',
-        ...moteur.NOTES_DU_VOTE_A_DEUX_QUESTIONS,
+        'Avec 2ˣ, la dérivée vaut environ 0,69 fois la valeur ; avec 3ˣ, environ 1,10 fois. Entre les deux, un seul nombre donne exactement 1 fois : e ≈ 2,718. C’est pour cela qu’on l’a choisi.',
       ),
     },
     [
@@ -676,7 +693,7 @@ const ACTE_2: moteur.Acte = [
         ],
       ],
     },
-    'Question : « Quel est le signe de la dérivée de 50e^(−0,2x) ? » Négatif : 50 × (−0,2) < 0.',
+    'Une exponentielle grandit d’autant plus vite qu’elle est grosse : c’est l’« effet boule de neige » d’une dette dont on ne paie pas les intérêts.',
   ),
   moteur.ecranV2(
     {
@@ -685,21 +702,32 @@ const ACTE_2: moteur.Acte = [
       diffusion: 'catalogue',
       dureeMinutes: 2,
       concepts: ['fonction-derivee', 'fonction-exponentielle'],
-      notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
-        'Relier au B2-06 : « k > 0 croissante, k < 0 décroissante » se démontre maintenant par le signe de la dérivée.',
-      ),
+      notes: '',
     },
     'lesson',
     {
-      title: 'Dériver a e^(kx) : la recette de l’exponentielle',
+      title: 'Dériver a e^(kx)',
+      figure: {
+        formula: 'f(x) = 1 000e^(0,02x)',
+        xLabel: 'x',
+        yLabel: 'f(x)',
+        xRange: [0, 50],
+        yRange: [0, 3000],
+        points: tracer(CAPITAL, [0, 50], 5),
+        tangents: [tangenteEn(CAPITAL, 0, 'pente 20 en x = 0')],
+        description:
+          'La courbe de f(x) = 1 000e^(0,02x) part de 1 000 en x = 0 et monte de plus en plus vite ; sa tangente en x = 0 a pour pente 20.',
+      },
       blocks: [
         {
           kind: 'property',
           title: 'La dérivée de e^(kx)',
-          text: 'Dériver e^(kx), c’est multiplier par k : l’exponentielle reste la même. Comme e^(kx) est toujours positif, le signe de la dérivée de a e^(kx) est celui de a × k : on retrouve le sens de variation du B2-06.',
-          formula:
-            '(eˣ)′ = eˣ · (e^(kx))′ = k e^(kx) · (a e^(kx))′ = a k e^(kx)',
+          text: 'Dériver e^(kx), c’est multiplier par k : l’exponentielle reste la même.\nComme e^(kx) est toujours positif, le signe de la dérivée de a e^(kx) est celui de a × k : on retrouve le sens de variation du B2-06.',
+          formula: [
+            '(eˣ)′ = eˣ',
+            '(e^(kx))′ = k e^(kx)',
+            '(a e^(kx))′ = a k e^(kx)',
+          ].join('\n'),
         },
         {
           kind: 'example',
@@ -712,8 +740,8 @@ const ACTE_2: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : les pièges de l’exponentielle',
+          kind: 'piege',
+          title: 'Les pièges de l’exponentielle',
           text: 'Pièges : oublier de multiplier par k ; dériver e^(kx) comme une puissance de x ; perdre le signe moins de k.',
           steps: [
             'Repérer a et k.',
@@ -733,10 +761,8 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['fonction-derivee', 'fonction-exponentielle'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
-        'Réflexion : écrire a et k de chaque modèle, puis a × k, avant la calculatrice.',
-        'Pièges : la dérivée sans k ; le signe de k perdu ; la valeur prise pour la pente.',
-        'Papier : exercice 2 du livret.',
+        'V′(5) ≈ 32,40, c’est 6 % de V(5) ≈ 539,94 : la vitesse reste toujours égale à 6 % des ventes du moment.',
+        'Le revers : V double en ln 2 ÷ 0,06 ≈ 11,6 mois, un peu moins d’un an.',
       ),
       proprietes: {
         intitule: 'Exercice 2 — La vitesse des ventes du B2-06',
@@ -792,7 +818,7 @@ const ACTE_2: moteur.Acte = [
         ],
       },
     },
-    moteur.CORRECTION_AVANT_LA_PREMIERE_PAUSE,
+    moteur.CORRECTION_DE_DEUX_MINUTES,
     [
       [
         'b2-07-a2-derivee-ventes',
@@ -812,20 +838,6 @@ const ACTE_2: moteur.Acte = [
       ],
     ],
   ),
-  moteur.pulsation(
-    {
-      screenId: 'B2-07-A2-12-JALON',
-      titre: 'Jalon 1 : la dérivée',
-      concepts: ['fonction-derivee'],
-    },
-    {
-      id: 'b2-07-a2-jalon',
-      invite:
-        'Je sais dire que f′(a) est une pente et calculer la dérivée d’un polynôme et de a e^(kx).',
-    },
-    'Si plus de 30 % « Perdu » : reprendre l’écran de la recette des puissances après la pause.',
-    moteur.PAUSE_HORS_DUREE,
-  ),
 ];
 
 const ACTE_3: moteur.Acte = [
@@ -835,7 +847,9 @@ const ACTE_3: moteur.Acte = [
       titre: 'Vote : que dit le signe de la pente ?',
       dureeMinutes: 4,
       concepts: ['variations-d-une-fonction', 'fonction-derivee'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(2),
+      notes: moteur.puces(
+        'Passer le prix de 15 € à 16 € fait monter le bénéfice de 1 260 € à 1 344 €, soit + 84 €. La pente B′(15) = 96 annonçait la bonne direction, pas le montant exact.',
+      ),
     },
     [
       moteur.vote(
@@ -879,7 +893,7 @@ const ACTE_3: moteur.Acte = [
         ],
       ],
     },
-    'Question : « Une voiture peut-elle descendre en restant à 1 000 m d’altitude ? » Oui : descendre ne veut pas dire être en bas.',
+    'Un chiffre d’affaires en baisse peut rester le plus gros du secteur : la tendance n’est pas le niveau.',
   ),
   pourComprendre(
     {
@@ -911,7 +925,6 @@ const ACTE_3: moteur.Acte = [
         ],
       ],
     },
-    'Question : « Quelles altitudes écrit-on sur la carte ? » Celles du départ, du sommet et de l’arrivée.',
   ),
   moteur.ecranV2(
     {
@@ -921,8 +934,8 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['variations-d-une-fonction', 'fonction-derivee'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
-        'Relier au B2-06 : diviser par un nombre négatif change le sens, comme avec ln q quand q < 1.',
+        'Contrôle immédiat du sens : x = 0 dans −4x + 40 ≥ 0 donne 40 ≥ 0, vrai. La solution doit donc contenir 0 : x ≤ 10 le contient, x ≥ 10 non.',
+        'Diviser par un négatif renverse l’ordre : 2 < 3, mais −2 > −3.',
       ),
     },
     'lesson',
@@ -933,7 +946,7 @@ const ACTE_3: moteur.Acte = [
           kind: 'property',
           title: 'Signe de la dérivée et sens de variation',
           text: 'Si f′(x) > 0 sur un intervalle, f est croissante sur cet intervalle ; si f′(x) < 0, f est décroissante. Le tableau de variation range ces informations : x, signe de f′, flèches et valeurs de f.',
-          formula: 'f′ > 0 ⇒ f ↗ · f′ < 0 ⇒ f ↘',
+          formula: ['f′ > 0 ⇒ f ↗', 'f′ < 0 ⇒ f ↘'].join('\n'),
         },
         {
           kind: 'method',
@@ -948,7 +961,7 @@ const ACTE_3: moteur.Acte = [
         {
           kind: 'example',
           title: 'Pour débuter : f′(x) = −4x + 40 sur [0 ; 15]',
-          text: 'La dérivée de l’encadré du devoir maison.',
+          text: 'Le signe d’une dérivée affine donne le sens de variation de f.',
           steps: [
             '−4x + 40 ≥ 0 ⇔ −4x ≥ −40 ⇔ x ≤ 10 : on divise par −4, le sens change.',
             'f′ ≥ 0 sur [0 ; 10], f′ ≤ 0 sur [10 ; 15].',
@@ -956,8 +969,8 @@ const ACTE_3: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : ne pas confondre les signes',
+          kind: 'piege',
+          title: 'Ne pas confondre les signes',
           text: 'Pièges : lire le sens de f dans le signe de f ; garder le sens de l’inégalité en divisant par un nombre négatif ; oublier les valeurs de f dans le tableau.',
         },
       ],
@@ -971,13 +984,14 @@ const ACTE_3: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['variations-d-une-fonction', 'fonction-derivee'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: moteur.puces(
+        'Pour vérifier le signe, on teste une valeur par zone : f′(0) = 60 > 0, f′(3) = −12 < 0, f′(6) = 24 > 0. C’est bien + puis − puis +.',
+      ),
       proprietes: {
         modalite: 'solo',
         exemple: {
           id: 'b2-07-a3-exemple-variations',
-          enonce:
-            'f(x) = 2x³ − 21x² + 60x sur [0 ; 7], comme à l’exercice ★ du devoir maison.',
+          enonce: 'f(x) = 2x³ − 21x² + 60x sur [0 ; 7].',
           etapes: [
             {
               id: 'derivee',
@@ -1012,13 +1026,7 @@ const ACTE_3: moteur.Acte = [
         etayage: 0,
       },
     },
-    {
-      minutes: 2,
-      notes: [
-        'S’arrêter sur le tableau de signes (étape 2) et sur les valeurs écrites sous les flèches (étape 4).',
-        'Transition : « À vous, sur le bénéfice du cabas : exercice 3. »',
-      ],
-    },
+    moteur.CORRECTION_DE_DEUX_MINUTES,
   ),
   moteur.corrigeSurPlace(
     {
@@ -1028,12 +1036,7 @@ const ACTE_3: moteur.Acte = [
       brique: 'questionnaire',
       dureeMinutes: 8,
       concepts: ['variations-d-une-fonction'],
-      notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
-        'Réflexion : résoudre B′(x) ≥ 0 sur papier, en surveillant le signe de −24.',
-        'Pièges : le sens gardé en divisant par −24 ; le signe de B pris pour son sens ; B′ calculé au lieu de B.',
-        'Papier : exercice 3 du livret.',
-      ),
+      notes: '',
       proprietes: {
         renvoi: RENVOI_AU_DOSSIER,
         intitule: 'Exercice 3 — Le signe de B′ et les variations',
@@ -1081,7 +1084,7 @@ const ACTE_3: moteur.Acte = [
         ],
       },
     },
-    moteur.CORRECTION_AVANT_LA_SECONDE_PAUSE,
+    moteur.CORRECTION_DE_DEUX_MINUTES,
     [
       [
         'b2-07-a3-signe',
@@ -1101,20 +1104,6 @@ const ACTE_3: moteur.Acte = [
       ],
     ],
   ),
-  moteur.pulsation(
-    {
-      screenId: 'B2-07-A3-07-JALON',
-      titre: 'Jalon 2 : signe et variations',
-      concepts: ['variations-d-une-fonction'],
-    },
-    {
-      id: 'b2-07-a3-jalon',
-      invite:
-        'Je sais étudier le signe de f′(x) et dresser le tableau de variation de f.',
-    },
-    'Si plus de 30 % « Perdu » : reprendre l’exemple f′(x) = −4x + 40 de la trace écrite après la pause.',
-    moteur.PAUSE_HORS_DUREE,
-  ),
 ];
 
 const ACTE_4: moteur.Acte = [
@@ -1126,10 +1115,7 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 5,
       concepts: ['optimisation'],
       notes: moteur.puces(
-        'Temps « réfléchir » de la notion 3 : 3 min d’écriture individuelle, puis lire trois réponses au pupitre.',
-        'Ne rien trancher : la trace écrite suivante répond.',
-        'Relance : « Si on ne peut pas aller jusqu’au sommet, où est le point le plus haut qu’on peut atteindre ? »',
-        'Papier : cadre de réponse du livret.',
+        'À 19 €, 132 clients voudraient un cabas et l’atelier n’en coud que 120. Douze repartent déçus, et les 120 autres auraient accepté de payer un peu plus.',
       ),
     },
     'reflection',
@@ -1176,7 +1162,8 @@ const ACTE_4: moteur.Acte = [
         ['La hauteur du drapeau', 'la valeur du maximum, f(a)'],
       ],
     },
-    'Question : « f′ vaut 0 sur le replat : est-ce un sommet ? » Non, f′ ne change pas de signe.',
+    'Dès les années 1630, Fermat trouve les maximums en cherchant où une petite variation de x ne change presque plus la valeur. C’est l’idée de f′ = 0, une génération avant Newton et Leibniz.',
+    'Le contre-exemple à retenir : x³ a une dérivée nulle en 0 (3 × 0² = 0), et pourtant elle monte toujours.',
   ),
   pourComprendre(
     {
@@ -1204,7 +1191,6 @@ const ACTE_4: moteur.Acte = [
         ],
       ],
     },
-    'Question : « Où est le point le plus haut qu’il peut atteindre ? » Contre la barrière, au bord.',
   ),
   moteur.ecranV2(
     {
@@ -1213,21 +1199,32 @@ const ACTE_4: moteur.Acte = [
       diffusion: 'catalogue',
       dureeMinutes: 2,
       concepts: ['optimisation'],
-      notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
-        'Faire répéter les quatre étapes de l’encadré du devoir maison.',
-      ),
+      notes: '',
     },
     'lesson',
     {
-      title: 'Extremum et optimum : le sommet ou le bord',
+      title: 'Le sommet ou le bord',
+      figure: {
+        formula: 'f(x) = −2x² + 40x + 5',
+        xLabel: 'x',
+        yLabel: 'f(x)',
+        xRange: [0, 15],
+        yRange: [0, 220],
+        points: tracer(PARABOLE, [0, 15], 0.5),
+        tangents: [tangenteEn(PARABOLE, 10, 'sommet : f(10) = 205')],
+        zone: { from: 12, to: 15, label: 'contrainte x ≥ 12' },
+        description:
+          'La parabole de f(x) = −2x² + 40x + 5 sur [0 ; 15] : son sommet, tangente à plat, est en x = 10 ; la zone permise x ≥ 12 commence après le sommet, où f descend.',
+      },
       blocks: [
         {
           kind: 'definition',
           title: 'Extremum et changement de signe',
-          text: 'Si f′ s’annule en a en passant de + à −, f admet un maximum local en a ; de − à + , un minimum local. Le maximum sur un intervalle est la plus grande des valeurs de f aux bornes et aux maximums locaux.',
-          formula:
-            'f′ : + puis − en a ⇒ maximum f(a) · f′ : − puis + en a ⇒ minimum f(a)',
+          text: 'Si f′ s’annule en a en passant de + à −, f admet un maximum local en a ; de − à +, un minimum local.\nLe maximum sur un intervalle est la plus grande des valeurs de f aux bornes et aux maximums locaux.',
+          formula: [
+            'f′ : + puis − en a ⇒ maximum f(a)',
+            'f′ : − puis + en a ⇒ minimum f(a)',
+          ].join('\n'),
         },
         {
           kind: 'method',
@@ -1250,8 +1247,8 @@ const ACTE_4: moteur.Acte = [
           ],
         },
         {
-          kind: 'exam',
-          title: 'Au CCF : conclure par le x et la valeur',
+          kind: 'piege',
+          title: 'Conclure par le x et la valeur',
           text: 'Pièges : annoncer un extremum dès que f′ s’annule ; oublier les bornes ; garder l’optimum hors des valeurs permises ; donner x à la place de f(x). Phrase attendue : « Le bénéfice est maximal pour x = …, il vaut alors … € ».',
         },
       ],
@@ -1265,7 +1262,9 @@ const ACTE_4: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['optimisation'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: moteur.puces(
+        'Un maximum local, c’est la meilleure boutique du quartier, pas forcément de la ville : on regarde toujours les bornes.',
+      ),
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1306,13 +1305,7 @@ const ACTE_4: moteur.Acte = [
         etayage: 0,
       },
     },
-    {
-      minutes: 2,
-      notes: [
-        'S’arrêter sur la borne qui bat le sommet (étape 3).',
-        'Transition : « À vous, sur le prix du cabas : exercice 4. »',
-      ],
-    },
+    moteur.CORRECTION_DE_DEUX_MINUTES,
   ),
   moteur.corrigeSurPlace(
     {
@@ -1323,10 +1316,9 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['optimisation'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
-        'Réflexion : écrire le tableau de variation de B sur [12 ; 28], puis la contrainte de capacité en inéquation.',
-        'Pièges : donner 19 au lieu de B(19) ; garder 19 € sous contrainte ; prendre l’autre borne.',
-        'Papier : exercice 4 du livret.',
+        'Contrôle sans dérivée : B s’annule à 8 €, où la marge est nulle, et à 30 €, où il n’y a plus de clients. Le sommet est au milieu : (8 + 30) ÷ 2 = 19.',
+        'Le chiffre d’affaires x(360 − 12x) culmine à 15 € (2 700 €), le bénéfice à 19 €. Viser les ventes ou viser le bénéfice ne donne pas le même prix.',
+        'La capacité coûte 1 452 − 1 440 = 12 € par semaine, environ 624 € par an : le chiffre à comparer au coût d’une couturière de plus.',
       ),
       proprietes: {
         renvoi: RENVOI_AU_DOSSIER,
@@ -1377,13 +1369,7 @@ const ACTE_4: moteur.Acte = [
         ],
       },
     },
-    {
-      minutes: 2,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
-        'Transition : « Vérifions au tableur : exercice 5. »',
-      ],
-    },
+    moteur.CORRECTION_DE_DEUX_MINUTES,
     [
       [
         'b2-07-a4-maximum',
@@ -1412,10 +1398,7 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['tableur', 'fonction-derivee'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
-        'Réflexion : écrire sur papier les formules de B2 et de C2.',
-        'Erreurs à chercher : =-12*A2+456 pour B′ ; la constante −2 880 gardée en colonne C ; la formule de B recopiée en C.',
-        'Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.',
+        'Piège d’Excel au bureau : =-2^2 donne 4, parce que le moins s’applique avant le carré. =-A2^2 rend donc +A2² ; on écrit -12*A2^2 ou -(A2^2).',
       ),
       proprietes: {
         modalite: 'solo',
@@ -1425,13 +1408,7 @@ const ACTE_4: moteur.Acte = [
         ],
       },
     },
-    {
-      minutes: 2,
-      notes: [
-        'Projeter la feuille d’un poste volontaire : B′ passe de 48 à 0 puis à −48, le sommet est sur la ligne de 19 €.',
-        'Transition : « Une exponentielle à optimiser : exercice 6. »',
-      ],
-    },
+    moteur.CORRECTION_DE_DEUX_MINUTES,
     [
       [
         'B2 à B9',
@@ -1452,10 +1429,8 @@ const ACTE_4: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['optimisation', 'fonction-derivee'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
-        'Réflexion : écrire C′(x), puis l’équation C′(x) = 0 avant la calculatrice.',
-        'Pièges : la dérivée sans k ; le signe de k perdu ; diviser sans ln ; le sens gardé en divisant par −0,1.',
-        'Papier : exercice 6 du livret.',
+        'C’est le schéma de la formule de Wilson en gestion des stocks (Harris, 1913) : un coût qui monte, un coût qui baisse, et l’optimum là où leurs pentes se compensent.',
+        'En pratique, on révise toutes les 14 semaines : C(14) ≈ 1 193,19 €, à peine 5 centimes de plus que le minimum. Près d’un optimum la courbe est plate, et arrondir ne coûte presque rien.',
       ),
       proprietes: {
         intitule: 'Exercice 6 — Espacer les révisions de la surjeteuse',
@@ -1506,13 +1481,7 @@ const ACTE_4: moteur.Acte = [
         ],
       },
     },
-    {
-      minutes: 2,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
-        'Transition : jalon 3.',
-      ],
-    },
+    moteur.CORRECTION_DE_DEUX_MINUTES,
     [
       [
         'b2-07-a4-derivee-cout',
@@ -1531,19 +1500,6 @@ const ACTE_4: moteur.Acte = [
         'C(13,86) ≈ 693 + 500 ≈ 1 193 €, moins que C(2) ≈ 1 737 € et C(30) ≈ 1 600 € aux bornes. 13,86 est la durée, pas le coût ; 0 est la pente au minimum.',
       ],
     ],
-  ),
-  moteur.pulsation(
-    {
-      screenId: 'B2-07-A4-09-JALON',
-      titre: 'Jalon 3 : l’optimum',
-      concepts: ['optimisation'],
-    },
-    {
-      id: 'b2-07-a4-jalon',
-      invite:
-        'Je sais trouver un maximum ou un minimum sur un intervalle, et sous une contrainte.',
-    },
-    'Si plus de 30 % « Perdu » : reprendre l’exemple guidé sommet ou bord.',
   ),
 ];
 
@@ -1574,9 +1530,7 @@ const ILLUSTRATIONS = [
   ['M4', 'plante-et-fenetre.webp', 'Quand touchera-t-on la fenêtre ?'],
   ['M5', 'verre-cuillere.webp', 'La boucle répète'],
   ['M6', 'pas-encore-plein.webp', 'Tant que veut dire pas encore'],
-  ['M7', 'deux-chemins.webp', 'Deux chemins, le même rang'],
   ['M8', 'velo-sur-la-colline.webp', 'La pente sous le vélo'],
-  ['M9', 'exposant-qui-saute.webp', 'La recette des puissances'],
   ['M10', 'boule-de-neige.webp', 'La boule de neige'],
   ['M11', 'panneaux-de-la-route.webp', 'Le panneau de la route'],
   ['M12', 'carte-du-trajet.webp', 'La carte du trajet'],

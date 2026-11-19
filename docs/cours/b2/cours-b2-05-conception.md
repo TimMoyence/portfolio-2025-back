@@ -2,7 +2,7 @@
 
 > Cahier des charges du cours B2-05 au gabarit v3 (`docs/cours/cours-gabarit-v3.md`) : une séance de
 > 3 h 30 dont 30 minutes de pause, ouverte par le rappel du B2-01 et du B2-04, puis trois notions
-> traitées chacune par un cycle réfléchir → comprendre → s'exercer, et une mini-situation CCF. Ce
+> traitées chacune par un cycle réfléchir → comprendre → s'exercer, et une mini-situation. Ce
 > document ne contient aucun code exécutable ; toute divergence d'implémentation est un défaut de
 > l'implémentation. Les tests `b2-05.cours.spec.ts` relisent ce document : § 3.1, titres publics du
 > § 3, § 5.9, § 8.2.
@@ -90,7 +90,7 @@ l'acte 3.
 | 1    | Rappel des cours, puis placer un capital | N1     |      49 |
 | 2    | Placer chaque année                      | N2     |      39 |
 | 3    | Emprunter et rembourser                  | N3     |      47 |
-| 4    | Mini-situation CCF et clôture            | —      |      45 |
+| 4    | Mini-situation et clôture                | —      |      45 |
 
 Pause 1 (15 min) après le jalon A1-12 ; pause 2 (15 min) après le jalon A3-09. Les pauses ne sont
 pas des écrans : le formateur les annonce, la durée programmée n'en tient pas compte.
@@ -111,12 +111,11 @@ N2 une seule page de 2 minutes, chacune précédée d'1 minute sur l'illustratio
 formules une par ligne ; un exemple pour débuter hors du dossier (livret, emprunt d'un particulier) ;
 une méthode en trois ou quatre lignes courtes, titrée par un moyen mnémotechnique (« × 1,03, jamais
 × 0,03 », « Futur : ×, présent : ÷ », « × (1 + t), puis + a », « Les intérêts d'abord, le reste
-rembourse », « VPM : le capital avec un signe moins »). Pas d'encadré « Au CCF » dans les traces
+rembourse », « VPM : le capital avec un signe moins »). Pas d'encadré « Les pièges » dans les traces
 écrites : les pièges sont travaillés dans les exercices et leurs corrections.
 
-Chaque exercice annonce ses temps dans les notes formateur, sous la forme
-`• Temps : réflexion N min · travail N min · correction N min`, dont la somme est la durée de
-l'écran. La correction se dévoile sur l'écran de l'exercice (`correctionSurPlace`).
+La durée de chaque exercice additionne réflexion, travail et correction ; les notes formateur
+ne la répètent pas. La correction se dévoile sur l'écran de l'exercice (`correctionSurPlace`).
 
 ### 2.4 Règles de structure
 
@@ -252,7 +251,7 @@ Rythme : 150 minutes interactives, 30 d'exposition, exposition continue de 6 min
 - Titre public : « Cours : valeur actuelle et tableur »
 - Page 2 sur 2 : définition « Futur : ×, présent : ÷ » en deux lignes, C₀ = Cₙ ÷ (1 + t)ⁿ (lien
   B2-01, évolution réciproque), capitaliser et actualiser une formule par ligne ; la méthode au
-  tableur, taux figé par `$`. Sans encadré « Au CCF ».
+  tableur, taux figé par `$`. Sans encadré « Les pièges ».
 
 #### A1-09 · `B2-05-A1-09-EXEMPLE-PLACEMENT` — 6 min · `fp-worked` · séance
 
@@ -380,7 +379,7 @@ Rythme : 150 minutes interactives, 30 d'exposition, exposition continue de 6 min
 
 - Titre public : « Cours : coût du crédit et tableur »
 - Page 2 sur 2 : coût du crédit en deux lignes, n × a − C ; méthode « VPM : le capital avec un
-  signe moins », intérêts recopiés, coût. Sans encadré « Au CCF ».
+  signe moins », intérêts recopiés, coût. Sans encadré « Les pièges ».
 
 #### A3-05 · `B2-05-A3-05-EXEMPLE-EMPRUNT` — 6 min · `fp-worked` · séance
 

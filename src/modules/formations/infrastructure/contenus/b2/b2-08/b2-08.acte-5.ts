@@ -168,7 +168,6 @@ export const ACTE_5: moteur.Acte = [
         description: 'Comment écrire 1 000/(1 + 9e^(−0,3t)) ?',
         back: '=1000/(1+9*EXP(-0,3*A2)) : EXP pour l’exponentielle, le signe moins dans l’exposant, des parenthèses autour du dénominateur.',
       },
-      moteur.REFERENTIEL_DU_BTS_CG,
     ],
   ),
 ];

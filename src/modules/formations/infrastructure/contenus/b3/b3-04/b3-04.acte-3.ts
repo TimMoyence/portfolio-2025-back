@@ -40,7 +40,6 @@ const ENVOYER: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['e-mailing'],
       notes: moteur.puces(
-        'Temps « réfléchir » de l’envoi : vote non noté, 1 min de vote et 1 min de révélation.',
         'Révélation : un courriel en copie à cinquante clients leur montre les adresses des quarante-neuf autres.',
       ),
     },
@@ -155,7 +154,6 @@ const ENVOYER: moteur.Acte = [
       dureeMinutes: 12,
       concepts: ['e-mailing'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 11),
         'Réflexion : faire dire, avant tout envoi, à qui partiront les courriels ; jamais au classeur des contacts, dont aucune ligne n’a d’adresse.',
         'Chemin 1 sur les postes Windows à Outlook classique configuré ; tous les autres prennent le chemin 2. Passer dans les rangs avant le clic sur OK.',
       ),
@@ -189,7 +187,6 @@ const ENVOYER: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Règle 6, redite : « Un destinataire ne reçoit que sa lettre. »',
         'Transition : « Ouvrez votre boîte : le courriel reçu. »',
       ],
@@ -246,7 +243,6 @@ const FAIRE_ECRIRE: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['ia-redactrice', 'champ-de-fusion'],
       notes: moteur.puces(
-        'Temps « réfléchir » de l’IA : vote non noté, 1 min de vote et 1 min de révélation.',
         'Révélation : coller une lettre à crochets dans la lettre type, puis Aperçu ; les crochets restent.',
       ),
     },
@@ -325,7 +321,6 @@ const FAIRE_ECRIRE: moteur.Acte = [
       dureeMinutes: 9,
       concepts: ['ia-redactrice', 'champ-de-fusion'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 7),
         'Réflexion : faire ouvrir le classeur des contacts à côté ; chaque crochet se compare à ses en-têtes.',
         'La lettre est écrite pour ce cours : le dire.',
       ),

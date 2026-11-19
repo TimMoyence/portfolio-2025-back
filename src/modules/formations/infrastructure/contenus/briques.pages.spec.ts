@@ -2,10 +2,24 @@ import {
   defiDeConsigne,
   pageDessinee,
   paragraphe,
+  puces,
   strategie,
   type PageDeSerie,
   type PageDeWord,
 } from './briques';
+
+describe('puces', () => {
+  it('met une puce devant chaque ligne et saute les lignes vides', () => {
+    expect(puces('Leibniz, 1684.', '', 'Newton, 1665.')).toBe(
+      '• Leibniz, 1684.\n• Newton, 1665.',
+    );
+  });
+
+  it('rend une note vide quand aucune ligne n’apporte rien', () => {
+    expect(puces()).toBe('');
+    expect(puces('', '')).toBe('');
+  });
+});
 
 const PAGE: PageDeSerie = {
   syntaxe: 'Accueil › Gras.',

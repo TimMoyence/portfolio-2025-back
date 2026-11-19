@@ -1,11 +1,11 @@
 {
   "graine": 0,
-  "empreinte": "e263cf762ed149b7a8d90ea739ed3679c1c62bd0c856d704700c14db0695f02e",
+  "empreinte": "400d448b20e0a14e4b485af4947eb3911bb7cf9a73e297378a38720b936191d8",
   "sujet": {
     "id": "b2-07-derivee-optimisation",
     "titre": "Dérivée et optimisation",
     "niveau": "B2",
-    "duree": 135,
+    "duree": 132,
     "concepts": [
       "fonction-derivee",
       "variations-d-une-fonction",
@@ -67,15 +67,15 @@
                 "image": "/assets/cours/b2-07/v1/plante-qui-multiplie.webp",
                 "imageAlt": "Quatre pots alignés, semaine 0 à semaine 3 : la même plante devient chaque semaine une fois et demie plus haute, si bien que les écarts de hauteur grandissent. Entre deux pots, une flèche marquée × 1,5.",
                 "paragraphs": [
-                  "Chaque semaine, la plante devient une fois et demie plus haute que la semaine d’avant : plus elle est grande, plus elle gagne de centimètres.",
-                  "En maths, on écrit : uₙ = u₀ × qⁿ au B2-04, f(x) = a e^(kx) au B2-06. À chaque pas, on multiplie par le même nombre ; on n’ajoute pas la même quantité. Pour e^0,4, on calcule l’exposant d’abord, puis la touche eˣ."
+                  "Chaque semaine, la plante devient une fois et demie plus haute que la semaine d’avant : plus elle est grande, plus elle gagne de centimètres."
                 ],
                 "items": [
                   "La plante du pot « semaine 0 » → la valeur de départ u₀, ou a",
                   "Le numéro de la semaine → le rang n, ou x",
                   "La flèche × 1,5 → la raison q, ou e^k",
                   "La hauteur atteinte → uₙ, ou f(x)"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : uₙ = u₀ × qⁿ au B2-04, f(x) = a e^(kx) au B2-06. À chaque pas, on multiplie par le même nombre ; on n’ajoute pas la même quantité. Pour e^0,4, on calcule l’exposant d’abord, puis la touche eˣ."
               }
             },
             "metadonnees": {
@@ -106,14 +106,14 @@
                 "image": "/assets/cours/b2-07/v1/deux-ballons.webp",
                 "imageAlt": "Deux ballons de même taille au départ, marqués a. À gauche, un enfant gonfle le sien, qui grossit, k > 0. À droite, l’autre ballon se dégonfle, k < 0.",
                 "paragraphs": [
-                  "Deux ballons partent de la même taille : l’un se gonfle à la pompe, l’autre se dégonfle.",
-                  "En maths, on écrit : f(x) = a e^(kx) et f(0) = a, car e⁰ = 1. Coefficient e^k, taux e^k − 1 : pour 1 000e^(0,02x), + 2,02 % par unité, pas 2 %."
+                  "Deux ballons partent de la même taille : l’un se gonfle à la pompe, l’autre se dégonfle."
                 ],
                 "items": [
                   "La taille commune au départ, marquée a → a = f(0)",
                   "Le ballon qu’on gonfle, k > 0 → f croissante",
                   "Le ballon qui se dégonfle, k < 0 → f décroissante"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f(x) = a e^(kx).\na est la valeur de départ : f(0) = a × e⁰ = a × 1 = a.\nk règle le sens : k > 0, f croît ; k < 0, f décroît.\ne^k est le coefficient multiplicateur d’une unité à la suivante.\nPour 1 000e^(0,02x) : a = 1 000 et e^0,02 ≈ 1,0202, soit + 2,02 % par unité, pas + 2 %."
               }
             },
             "metadonnees": {
@@ -144,15 +144,15 @@
                 "image": "/assets/cours/b2-07/v1/bouton-retour.webp",
                 "imageAlt": "Une machine en bois : la carte 1,609 entre, la carte 5 ressort par la flèche eˣ. Dessous, une flèche repart de 5 vers 1,609 en passant par un gros bouton ln, qu’un enfant appuie.",
                 "paragraphs": [
-                  "La machine transforme 1,609 en 5 ; son bouton retour fait le chemin inverse et rend 1,609.",
-                  "En maths, on écrit : eˣ = y ⇔ x = ln y, pour y > 0. ln défait l’exponentielle comme ÷ défait × : ln 5 ≈ 1,609, touche ln, pas log."
+                  "La machine transforme 1,609 en 5 ; son bouton retour fait le chemin inverse et rend 1,609."
                 ],
                 "items": [
                   "La flèche eˣ de la machine → la fonction exponentielle",
                   "Le bouton ln → la fonction logarithme népérien",
                   "La carte 1,609 qui entre → l’exposant x",
                   "La carte 5 qui ressort → y = eˣ"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : eˣ = y ⇔ x = ln y, pour y > 0. ln défait l’exponentielle comme ÷ défait × : ln 5 ≈ 1,609, touche ln, pas log."
               }
             },
             "metadonnees": {
@@ -183,14 +183,14 @@
                 "image": "/assets/cours/b2-07/v1/plante-et-fenetre.webp",
                 "imageAlt": "Une plante grimpante monte vers le rebord d’une fenêtre, marqué d’un trait rouge 10. Le long de la tige, des traits numérotés de 0 à 6 marquent les semaines ; l’enfant montre le trait 6, la semaine où la tige atteint le rebord.",
                 "paragraphs": [
-                  "La plante monte vers le rebord de la fenêtre. Plutôt que de mesurer chaque semaine, on calcule d’un coup la semaine où elle l’atteint.",
-                  "En maths, on écrit : 1,5ⁿ ≥ 10 ⇔ n ≥ ln 10 ÷ ln 1,5 ≈ 5,68, donc n = 6 : on garde l’entier juste au-dessus. Si q < 1, ln q < 0 et diviser par ln q change le sens de l’inégalité."
+                  "La plante monte vers le rebord de la fenêtre. Plutôt que de mesurer chaque semaine, on calcule d’un coup la semaine où elle l’atteint."
                 ],
                 "items": [
                   "Le rebord de la fenêtre, trait 10 → le seuil",
                   "La hauteur de la plante → qⁿ, ici 1,5ⁿ",
                   "Le trait 6, que montre le doigt → le plus petit entier n tel que qⁿ ≥ seuil"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : 1,5ⁿ ≥ 10 ⇔ n ≥ ln 10 ÷ ln 1,5 ≈ 5,68, donc n = 6 : on garde l’entier juste au-dessus. Si q < 1, ln q < 0 et diviser par ln q change le sens de l’inégalité."
               }
             },
             "metadonnees": {
@@ -258,14 +258,14 @@
                 "image": "/assets/cours/b2-07/v1/verre-cuillere.webp",
                 "imageAlt": "Un enfant verse de l’eau dans un grand verre à moitié plein avec une cuillère, et compte sur ses doigts : trois doigts levés. Une flèche circulaire autour de la cuillère, et l’étiquette n = 3.",
                 "paragraphs": [
-                  "On verse de l’eau dans le verre, encore et encore, en comptant les tours sur ses doigts : trois doigts levés, n = 3.",
-                  "En maths, on écrit : à chaque tour, n ← n + 1 puis u ← u × q. Une boucle refait les mêmes instructions ; le compteur dit combien de fois."
+                  "On verse de l’eau dans le verre, encore et encore, en comptant les tours sur ses doigts : trois doigts levés, n = 3."
                 ],
                 "items": [
                   "La flèche qui tourne autour de la cuillère → la boucle, qui refait les mêmes instructions",
                   "Les doigts levés, n = 3 → le compteur n, le rang atteint",
                   "L’eau dans le verre → la valeur u, mise à jour à chaque tour"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : à chaque tour, n ← n + 1 puis u ← u × q. Une boucle refait les mêmes instructions ; le compteur dit combien de fois."
               }
             },
             "metadonnees": {
@@ -296,56 +296,18 @@
                 "image": "/assets/cours/b2-07/v1/pas-encore-plein.webp",
                 "imageAlt": "L’enfant devant le grand verre marqué d’un trait rouge plein. Il pense « pas encore… » et continue de verser. À côté, l’eau atteint le trait : il pose la cuillère, « fini ! ».",
                 "paragraphs": [
-                  "Tant que l’eau n’atteint pas le trait rouge « plein », on verse encore. Dès qu’elle l’atteint, on s’arrête.",
-                  "En maths, on écrit : objectif u ≥ 1 000, boucle « Tant que u < 1 000 » ; pour descendre sous 500, « Tant que u ≥ 500 ». Après « Tant que », on écrit le contraire de l’objectif ; à la fin, Afficher n."
+                  "Tant que l’eau n’atteint pas le trait rouge « plein », on verse encore. Dès qu’elle l’atteint, on s’arrête."
                 ],
                 "items": [
                   "Le trait rouge « plein » → le seuil, ici 1 000",
                   "La pensée « pas encore… » → la condition u < 1 000, vraie tant qu’on n’a pas fini",
                   "« Fini ! », la cuillère posée → la sortie de la boucle, puis Afficher n"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : objectif u ≥ 1 000, boucle « Tant que u < 1 000 » ; pour descendre sous 500, « Tant que u ≥ 500 ».\nAprès « Tant que », on écrit le contraire de l’objectif ; à la fin, Afficher n.\nLa plante de la fenêtre : u ← 1 ; n ← 0 ; Tant que u < 10 : n ← n + 1, u ← u × 1,5 ; Afficher n, soit 6.\nC’est le rang que donne ln : ln 10 ÷ ln 1,5 ≈ 5,68, arrondi au-dessus."
               }
             },
             "metadonnees": {
               "concepts": ["algorithme-de-seuil"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
-        "id": "B2-07-A1-09-ENFANT-DEUX-CHEMINS",
-        "type": "fp-story",
-        "titre": "Deux chemins, le même rang",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-07-A1-09-ENFANT-DEUX-CHEMINS",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-07-A1-09-ENFANT-DEUX-CHEMINS",
-              "renderer": "image-left",
-              "props": {
-                "title": "Deux chemins, le même rang",
-                "image": "/assets/cours/b2-07/v1/deux-chemins.webp",
-                "imageAlt": "Une cabane en haut d’une colline. À gauche, des empreintes de pas numérotées de 1 à 6 mènent à la porte. À droite, un enfant fait un grand saut marqué ln et atterrit sur la même marche 6.",
-                "paragraphs": [
-                  "Deux chemins mènent à la même cabane : l’un à petits pas numérotés, l’autre en un seul grand saut.",
-                  "En maths, on écrit : la boucle sur 1,5ⁿ affiche 6 ; ln 10 ÷ ln 1,5 ≈ 5,68, arrondi au-dessus, donne aussi 6. Les deux méthodes trouvent le même premier rang."
-                ],
-                "items": [
-                  "Les pas numérotés de 1 à 6 → la boucle « Tant que », rang après rang",
-                  "Le grand saut marqué ln → le calcul par ln, d’un coup",
-                  "La marche 6 → le premier rang qui dépasse le seuil"
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["algorithme-de-seuil", "resolution-par-logarithme"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -473,15 +435,15 @@
                 "image": "/assets/cours/b2-07/v1/velo-sur-la-colline.webp",
                 "imageAlt": "Une colline vue de côté et trois fois le même enfant à vélo : il monte en pédalant fort, flèche verte +, roule à plat au sommet, trait bleu 0, puis descend, flèche rouge −. Sous chaque roue, un petit segment suit la pente.",
                 "paragraphs": [
-                  "Le vélo monte la colline, roule à plat tout en haut, puis redescend.",
-                  "En maths, on écrit : f′(a) est la pente de la courbe de f au point d’abscisse a, celle de sa tangente : elle dit de combien f monte, juste là."
+                  "Le vélo monte la colline, roule à plat tout en haut, puis redescend."
                 ],
                 "items": [
                   "Le segment sous la roue → la tangente au point d’abscisse a",
                   "La montée, flèche verte + → f′(a) > 0",
                   "Le plat du sommet, trait bleu 0 → f′(a) = 0",
                   "La descente, flèche rouge − → f′(a) < 0"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f′(a) est la pente de la courbe de f au point d’abscisse a, celle de sa tangente : elle dit de combien f monte, juste là."
               }
             },
             "metadonnees": {
@@ -495,37 +457,196 @@
         }
       },
       {
-        "id": "B2-07-A2-04-ENFANT-RECETTE",
+        "id": "B2-07-A2-04-COURBE-PENTES",
         "type": "fp-story",
-        "titre": "La recette des puissances",
-        "duree": 1,
+        "titre": "La pente, point par point",
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
-            "id": "B2-07-A2-04-ENFANT-RECETTE",
+            "id": "B2-07-A2-04-COURBE-PENTES",
             "presentation": {
               "version": 2,
-              "screenId": "B2-07-A2-04-ENFANT-RECETTE",
-              "renderer": "image-left",
+              "screenId": "B2-07-A2-04-COURBE-PENTES",
+              "renderer": "courbe",
               "props": {
-                "title": "La recette des puissances",
-                "image": "/assets/cours/b2-07/v1/exposant-qui-saute.webp",
-                "imageAlt": "Un grand x debout sur un plongeoir : le petit 2 de son exposant saute et atterrit devant lui, on lit 2x. À côté, un caillou marqué 7 sur un sol plat, avec l’étiquette pente 0.",
-                "paragraphs": [
-                  "Le petit 2 en haut du x saute du plongeoir et atterrit devant lui : on lit 2x. Le caillou 7, posé sur un sol plat, ne monte jamais.",
-                  "En maths, on écrit : (x²)′ = 2x ; (x³)′ = 3x² ; (x)′ = 1 ; (k)′ = 0 ; (k × u)′ = k × u′ ; (u + v)′ = u′ + v′."
-                ],
-                "items": [
-                  "Le 2 qui saute devant le x → l’exposant, qui descend en coefficient",
-                  "Le x resté seul sur le plongeoir → l’exposant diminué de un : x¹, soit x",
-                  "Le caillou 7 sur le sol plat → une constante, de dérivée nulle"
+                "title": "La pente, point par point",
+                "figure": {
+                  "formula": "f(x) = −x² + 6x",
+                  "xLabel": "x",
+                  "yLabel": "f(x)",
+                  "xRange": [0, 6],
+                  "yRange": [0, 10],
+                  "points": [
+                    {
+                      "x": 0,
+                      "y": 0
+                    },
+                    {
+                      "x": 0.25,
+                      "y": 1.44
+                    },
+                    {
+                      "x": 0.5,
+                      "y": 2.75
+                    },
+                    {
+                      "x": 0.75,
+                      "y": 3.94
+                    },
+                    {
+                      "x": 1,
+                      "y": 5
+                    },
+                    {
+                      "x": 1.25,
+                      "y": 5.94
+                    },
+                    {
+                      "x": 1.5,
+                      "y": 6.75
+                    },
+                    {
+                      "x": 1.75,
+                      "y": 7.44
+                    },
+                    {
+                      "x": 2,
+                      "y": 8
+                    },
+                    {
+                      "x": 2.25,
+                      "y": 8.44
+                    },
+                    {
+                      "x": 2.5,
+                      "y": 8.75
+                    },
+                    {
+                      "x": 2.75,
+                      "y": 8.94
+                    },
+                    {
+                      "x": 3,
+                      "y": 9
+                    },
+                    {
+                      "x": 3.25,
+                      "y": 8.94
+                    },
+                    {
+                      "x": 3.5,
+                      "y": 8.75
+                    },
+                    {
+                      "x": 3.75,
+                      "y": 8.44
+                    },
+                    {
+                      "x": 4,
+                      "y": 8
+                    },
+                    {
+                      "x": 4.25,
+                      "y": 7.44
+                    },
+                    {
+                      "x": 4.5,
+                      "y": 6.75
+                    },
+                    {
+                      "x": 4.75,
+                      "y": 5.94
+                    },
+                    {
+                      "x": 5,
+                      "y": 5
+                    },
+                    {
+                      "x": 5.25,
+                      "y": 3.94
+                    },
+                    {
+                      "x": 5.5,
+                      "y": 2.75
+                    },
+                    {
+                      "x": 5.75,
+                      "y": 1.44
+                    },
+                    {
+                      "x": 6,
+                      "y": 0
+                    }
+                  ],
+                  "description": "La courbe de f(x) = −x² + 6x : une colline qui part de 0, monte jusqu’à 9 en x = 3, puis redescend à 0 en x = 6."
+                },
+                "steps": [
+                  {
+                    "title": "Une colline",
+                    "text": "f(x) = −x² + 6x monte de x = 0 à x = 3, puis redescend jusqu’à x = 6.\nEn chaque point, on pose une règle qui touche la courbe sans la couper : la tangente.\nSa pente dit de combien la courbe monte, juste là."
+                  },
+                  {
+                    "title": "En x = 1",
+                    "text": "La tangente monte de 4 quand x avance de 1.\nPente 4 : la courbe monte vite.",
+                    "tangent": {
+                      "x": 1,
+                      "y": 5,
+                      "slope": 4,
+                      "label": "pente 4"
+                    }
+                  },
+                  {
+                    "title": "En x = 2",
+                    "text": "Pente 2 : la courbe monte encore, moins vite.",
+                    "tangent": {
+                      "x": 2,
+                      "y": 8,
+                      "slope": 2,
+                      "label": "pente 2"
+                    }
+                  },
+                  {
+                    "title": "En x = 3",
+                    "text": "La tangente est à plat : pente 0.\nC’est le sommet : la courbe ne monte plus et ne descend pas encore.",
+                    "tangent": {
+                      "x": 3,
+                      "y": 9,
+                      "slope": 0,
+                      "label": "pente 0"
+                    }
+                  },
+                  {
+                    "title": "En x = 4",
+                    "text": "Pente −2 : la courbe descend.",
+                    "tangent": {
+                      "x": 4,
+                      "y": 8,
+                      "slope": -2,
+                      "label": "pente −2"
+                    }
+                  },
+                  {
+                    "title": "En x = 5",
+                    "text": "Pente −4 : elle descend de plus en plus vite.",
+                    "tangent": {
+                      "x": 5,
+                      "y": 5,
+                      "slope": -4,
+                      "label": "pente −4"
+                    }
+                  },
+                  {
+                    "title": "La dérivée",
+                    "text": "x : 1, 2, 3, 4, 5\npente : 4, 2, 0, −2, −4\nQuand x avance de 1, la pente baisse de 2 : pente = −2x + 6.\nCette formule s’appelle la dérivée de f : f′(x) = −2x + 6.\nElle dit, sans dessiner, si f monte (f′ > 0), s’arrête (f′ = 0) ou descend (f′ < 0)."
+                  }
                 ]
               }
             },
             "metadonnees": {
               "concepts": ["fonction-derivee"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -546,18 +667,18 @@
               "screenId": "B2-07-A2-05-COURS-DERIVEE",
               "renderer": "lesson",
               "props": {
-                "title": "La dérivée : la pente de la courbe en chaque point",
+                "title": "La dérivée, pente de la courbe",
                 "blocks": [
                   {
                     "kind": "definition",
                     "title": "Nombre dérivé et fonction dérivée",
-                    "text": "Le nombre dérivé f′(a) est la pente de la courbe de f au point d’abscisse a : le coefficient directeur de sa tangente. La fonction dérivée f′ donne cette pente pour chaque x. Elle dira à Hélène si le bénéfice monte ou descend quand le prix bouge.",
-                    "formula": "(k)′ = 0 · (x)′ = 1 · (x²)′ = 2x · (x³)′ = 3x² · (k × u)′ = k × u′ · (u + v)′ = u′ + v′"
+                    "text": "Le nombre dérivé f′(a) est la pente de la tangente à la courbe de f au point d’abscisse a.\nLa fonction dérivée f′ donne cette pente pour chaque x.\nElle sert à savoir où f monte et où elle descend : elle dira à Hélène si le bénéfice monte ou descend quand le prix bouge.",
+                    "formula": "(k)′ = 0\n(x)′ = 1\n(x²)′ = 2x\n(x³)′ = 3x²\n(k × u)′ = k × u′\n(u + v)′ = u′ + v′"
                   },
                   {
                     "kind": "example",
                     "title": "Pour débuter : f(x) = −2x² + 40x + 5",
-                    "text": "L’exemple de l’encadré du devoir maison.",
+                    "text": "Une fonction de degré 2, dérivée terme à terme.",
                     "steps": [
                       "Dériver terme à terme : (−2x²)′ = −2 × 2x = −4x ; (40x)′ = 40 ; (5)′ = 0.",
                       "f′(x) = −4x + 40.",
@@ -565,8 +686,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : dériver sans se tromper",
+                    "kind": "piege",
+                    "title": "Dériver sans se tromper",
                     "text": "Pièges : dériver 3x² en 3x en oubliant de faire descendre l’exposant ; garder le nombre seul dans la dérivée ; calculer f(a) quand on demande f′(a).",
                     "steps": [
                       "Écrire la dérivée de chaque terme, l’un après l’autre.",
@@ -782,14 +903,14 @@
                 "image": "/assets/cours/b2-07/v1/boule-de-neige.webp",
                 "imageAlt": "Une pente enneigée : un enfant pousse une boule de neige qui roule en grossissant, petite, moyenne, puis très grosse. Derrière chaque boule, des traits de vitesse de plus en plus longs.",
                 "paragraphs": [
-                  "La boule de neige roule dans la pente : plus elle est grosse, plus elle ramasse de neige à chaque tour.",
-                  "En maths, on écrit : (e^(kx))′ = k e^(kx), donc (a e^(kx))′ = a k e^(kx) : la vitesse de croissance est k fois la valeur. Comme e^(kx) > 0, le signe de la dérivée est celui de a × k."
+                  "La boule de neige roule dans la pente : plus elle est grosse, plus elle ramasse de neige à chaque tour."
                 ],
                 "items": [
                   "La taille de la boule → la valeur a e^(kx)",
                   "La neige ramassée à chaque tour → la dérivée a k e^(kx)",
                   "Les traits de vitesse, plus longs derrière la plus grosse → la dérivée, proportionnelle à la valeur"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : (e^(kx))′ = k e^(kx), donc (a e^(kx))′ = a k e^(kx) : la vitesse de croissance est k fois la valeur. Comme e^(kx) > 0, le signe de la dérivée est celui de a × k."
               }
             },
             "metadonnees": {
@@ -816,13 +937,13 @@
               "screenId": "B2-07-A2-10-COURS-DERIVEE-EXP",
               "renderer": "lesson",
               "props": {
-                "title": "Dériver a e^(kx) : la recette de l’exponentielle",
+                "title": "Dériver a e^(kx)",
                 "blocks": [
                   {
                     "kind": "property",
                     "title": "La dérivée de e^(kx)",
-                    "text": "Dériver e^(kx), c’est multiplier par k : l’exponentielle reste la même. Comme e^(kx) est toujours positif, le signe de la dérivée de a e^(kx) est celui de a × k : on retrouve le sens de variation du B2-06.",
-                    "formula": "(eˣ)′ = eˣ · (e^(kx))′ = k e^(kx) · (a e^(kx))′ = a k e^(kx)"
+                    "text": "Dériver e^(kx), c’est multiplier par k : l’exponentielle reste la même.\nComme e^(kx) est toujours positif, le signe de la dérivée de a e^(kx) est celui de a × k : on retrouve le sens de variation du B2-06.",
+                    "formula": "(eˣ)′ = eˣ\n(e^(kx))′ = k e^(kx)\n(a e^(kx))′ = a k e^(kx)"
                   },
                   {
                     "kind": "example",
@@ -835,8 +956,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges de l’exponentielle",
+                    "kind": "piege",
+                    "title": "Les pièges de l’exponentielle",
                     "text": "Pièges : oublier de multiplier par k ; dériver e^(kx) comme une puissance de x ; perdre le signe moins de k.",
                     "steps": [
                       "Repérer a et k.",
@@ -844,7 +965,69 @@
                       "Conclure sur le signe avec celui de a × k."
                     ]
                   }
-                ]
+                ],
+                "figure": {
+                  "formula": "f(x) = 1 000e^(0,02x)",
+                  "xLabel": "x",
+                  "yLabel": "f(x)",
+                  "xRange": [0, 50],
+                  "yRange": [0, 3000],
+                  "points": [
+                    {
+                      "x": 0,
+                      "y": 1000
+                    },
+                    {
+                      "x": 5,
+                      "y": 1105.17
+                    },
+                    {
+                      "x": 10,
+                      "y": 1221.4
+                    },
+                    {
+                      "x": 15,
+                      "y": 1349.86
+                    },
+                    {
+                      "x": 20,
+                      "y": 1491.82
+                    },
+                    {
+                      "x": 25,
+                      "y": 1648.72
+                    },
+                    {
+                      "x": 30,
+                      "y": 1822.12
+                    },
+                    {
+                      "x": 35,
+                      "y": 2013.75
+                    },
+                    {
+                      "x": 40,
+                      "y": 2225.54
+                    },
+                    {
+                      "x": 45,
+                      "y": 2459.6
+                    },
+                    {
+                      "x": 50,
+                      "y": 2718.28
+                    }
+                  ],
+                  "tangents": [
+                    {
+                      "x": 0,
+                      "y": 1000,
+                      "slope": 20,
+                      "label": "pente 20 en x = 0"
+                    }
+                  ],
+                  "description": "La courbe de f(x) = 1 000e^(0,02x) part de 1 000 en x = 0 et monte de plus en plus vite ; sa tangente en x = 0 a pour pente 20."
+                }
               }
             },
             "metadonnees": {
@@ -949,26 +1132,6 @@
         }
       },
       {
-        "id": "B2-07-A2-12-JALON",
-        "type": "fp-pulse",
-        "titre": "Jalon 1 : la dérivée",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "sondage": {
-            "id": "b2-07-a2-jalon",
-            "invite": "Je sais dire que f′(a) est une pente et calculer la dérivée d’un polynôme et de a e^(kx).",
-            "metadonnees": {
-              "concepts": ["fonction-derivee"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
         "id": "B2-07-A3-01-VOTE-SIGNE",
         "type": "fp-vote",
         "titre": "Vote : que dit le signe de la pente ?",
@@ -1023,14 +1186,14 @@
                 "image": "/assets/cours/b2-07/v1/panneaux-de-la-route.webp",
                 "imageAlt": "Une route de montagne qui monte puis descend. Avant la montée, un panneau vert avec une flèche montante et le signe + ; avant la descente, un panneau rouge avec une flèche descendante et le signe −. Une petite voiture jaune suit la route.",
                 "paragraphs": [
-                  "Au bord de la route, un panneau annonce une montée ou une descente. Il ne dit pas à quelle altitude roule la voiture.",
-                  "En maths, on écrit : f′ > 0 sur un intervalle ⇒ f croissante sur cet intervalle ; f′ < 0 ⇒ f décroissante. Le signe de f′ donne le sens ; le signe de f n’en dit rien."
+                  "Au bord de la route, un panneau annonce une montée ou une descente. Il ne dit pas à quelle altitude roule la voiture."
                 ],
                 "items": [
                   "Le panneau vert + → f′ > 0 : f croissante",
                   "Le panneau rouge − → f′ < 0 : f décroissante",
                   "L’altitude de la voiture → la valeur f(x), que le signe de f′ ne donne pas"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f′ > 0 sur un intervalle ⇒ f croissante sur cet intervalle ; f′ < 0 ⇒ f décroissante. Le signe de f′ donne le sens ; le signe de f n’en dit rien."
               }
             },
             "metadonnees": {
@@ -1061,15 +1224,15 @@
                 "image": "/assets/cours/b2-07/v1/carte-du-trajet.webp",
                 "imageAlt": "Une carte de balade dessinée par un enfant : le sentier part du départ, monte jusqu’à un sommet marqué d’un drapeau, puis descend vers l’arrivée. Au-dessus, de grandes flèches montante puis descendante ; sous chaque point clé, une étiquette d’altitude à remplir.",
                 "paragraphs": [
-                  "Avant la balade, on dessine la carte : où le sentier monte, où il descend, et l’altitude des points clés.",
-                  "En maths, on écrit : le tableau de variation résume f en trois lignes : une ligne x, une ligne du signe de f′, une ligne de flèches ↗ ↘ avec les valeurs de f aux bornes et là où le sens change."
+                  "Avant la balade, on dessine la carte : où le sentier monte, où il descend, et l’altitude des points clés."
                 ],
                 "items": [
                   "Les panneaux départ et arrivée → les bornes de l’intervalle, sur la ligne x",
                   "La flèche verte, puis la flèche rouge → la ligne des variations, ↗ puis ↘",
                   "Le drapeau du sommet → la valeur de x où f′ change de signe",
                   "Les étiquettes « Altitude : ___ » → les valeurs de f à écrire au bout des flèches"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : le tableau de variation résume f en trois lignes : une ligne x, une ligne du signe de f′, une ligne de flèches ↗ ↘ avec les valeurs de f aux bornes et là où le sens change."
               }
             },
             "metadonnees": {
@@ -1102,7 +1265,7 @@
                     "kind": "property",
                     "title": "Signe de la dérivée et sens de variation",
                     "text": "Si f′(x) > 0 sur un intervalle, f est croissante sur cet intervalle ; si f′(x) < 0, f est décroissante. Le tableau de variation range ces informations : x, signe de f′, flèches et valeurs de f.",
-                    "formula": "f′ > 0 ⇒ f ↗ · f′ < 0 ⇒ f ↘"
+                    "formula": "f′ > 0 ⇒ f ↗\nf′ < 0 ⇒ f ↘"
                   },
                   {
                     "kind": "method",
@@ -1117,7 +1280,7 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : f′(x) = −4x + 40 sur [0 ; 15]",
-                    "text": "La dérivée de l’encadré du devoir maison.",
+                    "text": "Le signe d’une dérivée affine donne le sens de variation de f.",
                     "steps": [
                       "−4x + 40 ≥ 0 ⇔ −4x ≥ −40 ⇔ x ≤ 10 : on divise par −4, le sens change.",
                       "f′ ≥ 0 sur [0 ; 10], f′ ≤ 0 sur [10 ; 15].",
@@ -1125,8 +1288,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : ne pas confondre les signes",
+                    "kind": "piege",
+                    "title": "Ne pas confondre les signes",
                     "text": "Pièges : lire le sens de f dans le signe de f ; garder le sens de l’inégalité en divisant par un nombre négatif ; oublier les valeurs de f dans le tableau."
                   }
                 ]
@@ -1151,7 +1314,7 @@
         "donnees": {
           "exemple": {
             "id": "b2-07-a3-exemple-variations",
-            "enonce": "f(x) = 2x³ − 21x² + 60x sur [0 ; 7], comme à l’exercice ★ du devoir maison.",
+            "enonce": "f(x) = 2x³ − 21x² + 60x sur [0 ; 7].",
             "etapes": [
               {
                 "id": "derivee",
@@ -1278,26 +1441,6 @@
         "renvoi": "B2-07-A2-01-DOSSIER"
       },
       {
-        "id": "B2-07-A3-07-JALON",
-        "type": "fp-pulse",
-        "titre": "Jalon 2 : signe et variations",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "sondage": {
-            "id": "b2-07-a3-jalon",
-            "invite": "Je sais étudier le signe de f′(x) et dresser le tableau de variation de f.",
-            "metadonnees": {
-              "concepts": ["variations-d-une-fonction"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
         "id": "B2-07-A4-01-REFLEXION-CAPACITE",
         "type": "fp-story",
         "titre": "Réfléchir : le sommet est-il atteignable ?",
@@ -1349,14 +1492,14 @@
                 "image": "/assets/cours/b2-07/v1/sommet-de-la-colline.webp",
                 "imageAlt": "L’enfant à vélo s’arrête au sommet arrondi d’une colline, un drapeau planté, étiquette sommet. Plus loin, une autre route monte, fait un petit replat, puis continue de monter ; sur le replat, un panneau barré pas un sommet.",
                 "paragraphs": [
-                  "Le vélo arrive en haut de la colline : il a fini de monter et va redescendre. Plus loin, la route fait un replat, puis remonte.",
-                  "En maths, on écrit : si f′ s’annule en a en passant de + à −, f(a) est un maximum ; de − à + : un minimum ; sans changement de signe, pas d’extremum."
+                  "Le vélo arrive en haut de la colline : il a fini de monter et va redescendre. Plus loin, la route fait un replat, puis remonte."
                 ],
                 "items": [
                   "Le drapeau « sommet » → un maximum : f′ passe de + à −",
                   "Le replat barré « pas un sommet » → f′ = 0 sans changement de signe : pas d’extremum",
                   "La hauteur du drapeau → la valeur du maximum, f(a)"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : si f′ s’annule en a en passant de + à −, f(a) est un maximum ; de − à + : un minimum ; sans changement de signe, pas d’extremum."
               }
             },
             "metadonnees": {
@@ -1387,14 +1530,14 @@
                 "image": "/assets/cours/b2-07/v1/barriere-sur-le-chemin.webp",
                 "imageAlt": "Une colline avec un drapeau au sommet. Sur le chemin qui monte, une barrière blanche et rouge ferme le passage avant le sommet. L’enfant, arrêté contre la barrière, lève les bras près de l’étiquette ici.",
                 "paragraphs": [
-                  "Une barrière ferme le chemin avant le sommet : le point le plus haut qu’on peut atteindre est contre la barrière, « ici ».",
-                  "En maths, on écrit : sur un intervalle, on compare les valeurs de f aux bornes et aux extremums. Sous contrainte, l’optimum peut être une borne."
+                  "Une barrière ferme le chemin avant le sommet : le point le plus haut qu’on peut atteindre est contre la barrière, « ici »."
                 ],
                 "items": [
                   "La barrière → une borne de l’intervalle, fixée par une contrainte",
                   "Le drapeau hors d’atteinte → l’extremum situé hors de l’intervalle permis",
                   "« Ici », contre la barrière → l’optimum sous contrainte, atteint à la borne"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : sur un intervalle, on compare les valeurs de f aux bornes et aux extremums. Sous contrainte, l’optimum peut être une borne."
               }
             },
             "metadonnees": {
@@ -1421,13 +1564,13 @@
               "screenId": "B2-07-A4-04-COURS-OPTIMUM",
               "renderer": "lesson",
               "props": {
-                "title": "Extremum et optimum : le sommet ou le bord",
+                "title": "Le sommet ou le bord",
                 "blocks": [
                   {
                     "kind": "definition",
                     "title": "Extremum et changement de signe",
-                    "text": "Si f′ s’annule en a en passant de + à −, f admet un maximum local en a ; de − à + , un minimum local. Le maximum sur un intervalle est la plus grande des valeurs de f aux bornes et aux maximums locaux.",
-                    "formula": "f′ : + puis − en a ⇒ maximum f(a) · f′ : − puis + en a ⇒ minimum f(a)"
+                    "text": "Si f′ s’annule en a en passant de + à −, f admet un maximum local en a ; de − à +, un minimum local.\nLe maximum sur un intervalle est la plus grande des valeurs de f aux bornes et aux maximums locaux.",
+                    "formula": "f′ : + puis − en a ⇒ maximum f(a)\nf′ : − puis + en a ⇒ minimum f(a)"
                   },
                   {
                     "kind": "method",
@@ -1450,11 +1593,158 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : conclure par le x et la valeur",
+                    "kind": "piege",
+                    "title": "Conclure par le x et la valeur",
                     "text": "Pièges : annoncer un extremum dès que f′ s’annule ; oublier les bornes ; garder l’optimum hors des valeurs permises ; donner x à la place de f(x). Phrase attendue : « Le bénéfice est maximal pour x = …, il vaut alors … € »."
                   }
-                ]
+                ],
+                "figure": {
+                  "formula": "f(x) = −2x² + 40x + 5",
+                  "xLabel": "x",
+                  "yLabel": "f(x)",
+                  "xRange": [0, 15],
+                  "yRange": [0, 220],
+                  "points": [
+                    {
+                      "x": 0,
+                      "y": 5
+                    },
+                    {
+                      "x": 0.5,
+                      "y": 24.5
+                    },
+                    {
+                      "x": 1,
+                      "y": 43
+                    },
+                    {
+                      "x": 1.5,
+                      "y": 60.5
+                    },
+                    {
+                      "x": 2,
+                      "y": 77
+                    },
+                    {
+                      "x": 2.5,
+                      "y": 92.5
+                    },
+                    {
+                      "x": 3,
+                      "y": 107
+                    },
+                    {
+                      "x": 3.5,
+                      "y": 120.5
+                    },
+                    {
+                      "x": 4,
+                      "y": 133
+                    },
+                    {
+                      "x": 4.5,
+                      "y": 144.5
+                    },
+                    {
+                      "x": 5,
+                      "y": 155
+                    },
+                    {
+                      "x": 5.5,
+                      "y": 164.5
+                    },
+                    {
+                      "x": 6,
+                      "y": 173
+                    },
+                    {
+                      "x": 6.5,
+                      "y": 180.5
+                    },
+                    {
+                      "x": 7,
+                      "y": 187
+                    },
+                    {
+                      "x": 7.5,
+                      "y": 192.5
+                    },
+                    {
+                      "x": 8,
+                      "y": 197
+                    },
+                    {
+                      "x": 8.5,
+                      "y": 200.5
+                    },
+                    {
+                      "x": 9,
+                      "y": 203
+                    },
+                    {
+                      "x": 9.5,
+                      "y": 204.5
+                    },
+                    {
+                      "x": 10,
+                      "y": 205
+                    },
+                    {
+                      "x": 10.5,
+                      "y": 204.5
+                    },
+                    {
+                      "x": 11,
+                      "y": 203
+                    },
+                    {
+                      "x": 11.5,
+                      "y": 200.5
+                    },
+                    {
+                      "x": 12,
+                      "y": 197
+                    },
+                    {
+                      "x": 12.5,
+                      "y": 192.5
+                    },
+                    {
+                      "x": 13,
+                      "y": 187
+                    },
+                    {
+                      "x": 13.5,
+                      "y": 180.5
+                    },
+                    {
+                      "x": 14,
+                      "y": 173
+                    },
+                    {
+                      "x": 14.5,
+                      "y": 164.5
+                    },
+                    {
+                      "x": 15,
+                      "y": 155
+                    }
+                  ],
+                  "tangents": [
+                    {
+                      "x": 10,
+                      "y": 205,
+                      "slope": 0,
+                      "label": "sommet : f(10) = 205"
+                    }
+                  ],
+                  "zone": {
+                    "from": 12,
+                    "to": 15,
+                    "label": "contrainte x ≥ 12"
+                  },
+                  "description": "La parabole de f(x) = −2x² + 40x + 5 sur [0 ; 15] : son sommet, tangente à plat, est en x = 10 ; la zone permise x ≥ 12 commence après le sommet, où f descend."
+                }
               }
             },
             "metadonnees": {
@@ -1788,26 +2078,6 @@
         }
       },
       {
-        "id": "B2-07-A4-09-JALON",
-        "type": "fp-pulse",
-        "titre": "Jalon 3 : l’optimum",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "sondage": {
-            "id": "b2-07-a4-jalon",
-            "invite": "Je sais trouver un maximum ou un minimum sur un intervalle, et sous une contrainte.",
-            "metadonnees": {
-              "concepts": ["optimisation"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
         "id": "B2-07-A5-01-RAPPEL",
         "type": "fp-spaced",
         "titre": "Rappel : de mémoire, sans vos notes",
@@ -1851,7 +2121,7 @@
               "renderer": "grid",
               "props": {
                 "title": "Fiche mémo : dérivée et optimisation",
-                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "subtitle": "Chaque carte part d’une question et donne la méthode et son piège.",
                 "items": [
                   {
                     "title": "Nombre dérivé",
@@ -1889,7 +2159,7 @@
                     "back": "Comparer les valeurs aux bornes et aux extremums. Sous contrainte, l’optimum peut être une borne."
                   },
                   {
-                    "title": "Rédiger au CCF",
+                    "title": "Rédiger la réponse",
                     "description": "Quelles quatre étapes ?",
                     "back": "1. Calculer f′(x).\n2. Résoudre f′(x) = 0.\n3. Étudier le signe de f′(x).\n4. Dresser le tableau de variation et conclure par le x et la valeur."
                   },
@@ -1897,12 +2167,6 @@
                     "title": "Tableur",
                     "description": "Comment écrire un carré ?",
                     "back": "Avec ^ : =3*A2^2-5*A2+7 calcule 3x² − 5x + 7 pour x en A2, puis se recopie vers le bas. La colonne de la dérivée change de signe au sommet."
-                  },
-                  {
-                    "title": "Référentiel du BTS CG",
-                    "description": "Le programme de mathématiques et l’épreuve E3.",
-                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
-                    "external": true
                   }
                 ],
                 "imprimable": true
@@ -1928,7 +2192,7 @@
     "id": "b2-07-derivee-optimisation",
     "titre": "Dérivée et optimisation",
     "niveau": "B2",
-    "duree": 135,
+    "duree": 132,
     "concepts": [
       "fonction-derivee",
       "variations-d-une-fonction",
@@ -1971,7 +2235,7 @@
             }
           }
         },
-        "notes": "• Annoncer le plan : douze minutes pour comprendre enfin le cours 6 et la boucle, puis trois notions, chacune en trois temps (réfléchir, comprendre, s’exercer), et la fiche mémo.\n• Annoncer les deux pauses de 15 minutes, après l’acte 2 et après l’acte 3.",
+        "notes": "• Le titre complet de la page affichée : « Nouvelle méthode pour les maximums et les minimums, ainsi que pour les tangentes ». Le tout premier texte publié sur les dérivées, en 1684, annonce déjà le programme du jour.\n• Newton avait trouvé la même méthode vers 1665, sans la publier. En 1712, la Royal Society, qu’il préside, lui donne la priorité dans un rapport qu’il a rédigé lui-même. On reconnaît aujourd’hui deux découvertes indépendantes.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -1997,15 +2261,15 @@
                 "image": "/assets/cours/b2-07/v1/plante-qui-multiplie.webp",
                 "imageAlt": "Quatre pots alignés, semaine 0 à semaine 3 : la même plante devient chaque semaine une fois et demie plus haute, si bien que les écarts de hauteur grandissent. Entre deux pots, une flèche marquée × 1,5.",
                 "paragraphs": [
-                  "Chaque semaine, la plante devient une fois et demie plus haute que la semaine d’avant : plus elle est grande, plus elle gagne de centimètres.",
-                  "En maths, on écrit : uₙ = u₀ × qⁿ au B2-04, f(x) = a e^(kx) au B2-06. À chaque pas, on multiplie par le même nombre ; on n’ajoute pas la même quantité. Pour e^0,4, on calcule l’exposant d’abord, puis la touche eˣ."
+                  "Chaque semaine, la plante devient une fois et demie plus haute que la semaine d’avant : plus elle est grande, plus elle gagne de centimètres."
                 ],
                 "items": [
                   "La plante du pot « semaine 0 » → la valeur de départ u₀, ou a",
                   "Le numéro de la semaine → le rang n, ou x",
                   "La flèche × 1,5 → la raison q, ou e^k",
                   "La hauteur atteinte → uₙ, ou f(x)"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : uₙ = u₀ × qⁿ au B2-04, f(x) = a e^(kx) au B2-06. À chaque pas, on multiplie par le même nombre ; on n’ajoute pas la même quantité. Pour e^0,4, on calcule l’exposant d’abord, puis la touche eˣ."
               }
             },
             "metadonnees": {
@@ -2017,7 +2281,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Ajoute-t-on ou multiplie-t-on ? » On multiplie : c’est pour cela que la courbe se redresse.",
+        "notes": "• Intérêts simples : on ajoute chaque année le même montant. Intérêts composés : on multiplie. 1 000 € à 5 % pendant 10 ans donnent 1 500 € d’un côté, environ 1 628,89 € de l’autre.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2043,14 +2307,14 @@
                 "image": "/assets/cours/b2-07/v1/deux-ballons.webp",
                 "imageAlt": "Deux ballons de même taille au départ, marqués a. À gauche, un enfant gonfle le sien, qui grossit, k > 0. À droite, l’autre ballon se dégonfle, k < 0.",
                 "paragraphs": [
-                  "Deux ballons partent de la même taille : l’un se gonfle à la pompe, l’autre se dégonfle.",
-                  "En maths, on écrit : f(x) = a e^(kx) et f(0) = a, car e⁰ = 1. Coefficient e^k, taux e^k − 1 : pour 1 000e^(0,02x), + 2,02 % par unité, pas 2 %."
+                  "Deux ballons partent de la même taille : l’un se gonfle à la pompe, l’autre se dégonfle."
                 ],
                 "items": [
                   "La taille commune au départ, marquée a → a = f(0)",
                   "Le ballon qu’on gonfle, k > 0 → f croissante",
                   "Le ballon qui se dégonfle, k < 0 → f décroissante"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f(x) = a e^(kx).\na est la valeur de départ : f(0) = a × e⁰ = a × 1 = a.\nk règle le sens : k > 0, f croît ; k < 0, f décroît.\ne^k est le coefficient multiplicateur d’une unité à la suivante.\nPour 1 000e^(0,02x) : a = 1 000 et e^0,02 ≈ 1,0202, soit + 2,02 % par unité, pas + 2 %."
               }
             },
             "metadonnees": {
@@ -2062,7 +2326,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Que lit-on en x = 0 ? » La valeur de départ a.",
+        "notes": "• En 1683, Jacob Bernoulli place 1 € à 100 % et capitalise de plus en plus souvent : 2 € une fois l’an, environ 2,61 € chaque mois, e ≈ 2,72 € à chaque instant. Le nombre e est né d’un problème d’intérêts.\n• 1 000e^(0,02x), c’est 2 % capitalisés en continu, soit 2,02 % par unité : l’écart entre taux nominal et taux effectif.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2088,15 +2352,15 @@
                 "image": "/assets/cours/b2-07/v1/bouton-retour.webp",
                 "imageAlt": "Une machine en bois : la carte 1,609 entre, la carte 5 ressort par la flèche eˣ. Dessous, une flèche repart de 5 vers 1,609 en passant par un gros bouton ln, qu’un enfant appuie.",
                 "paragraphs": [
-                  "La machine transforme 1,609 en 5 ; son bouton retour fait le chemin inverse et rend 1,609.",
-                  "En maths, on écrit : eˣ = y ⇔ x = ln y, pour y > 0. ln défait l’exponentielle comme ÷ défait × : ln 5 ≈ 1,609, touche ln, pas log."
+                  "La machine transforme 1,609 en 5 ; son bouton retour fait le chemin inverse et rend 1,609."
                 ],
                 "items": [
                   "La flèche eˣ de la machine → la fonction exponentielle",
                   "Le bouton ln → la fonction logarithme népérien",
                   "La carte 1,609 qui entre → l’exposant x",
                   "La carte 5 qui ressort → y = eˣ"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : eˣ = y ⇔ x = ln y, pour y > 0. ln défait l’exponentielle comme ÷ défait × : ln 5 ≈ 1,609, touche ln, pas log."
               }
             },
             "metadonnees": {
@@ -2108,7 +2372,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « × 4 se défait par ÷ 4. Comment défaire eˣ ? » Par ln.",
+        "notes": "• Si la calculatrice affiche 0,699, c’est la touche log, en base 10. ln 5 vaut 1,609.\n• « Népérien » rend hommage à John Napier (Neper), qui publie en 1614 les premières tables de logarithmes : elles changent les multiplications en additions.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2134,14 +2398,14 @@
                 "image": "/assets/cours/b2-07/v1/plante-et-fenetre.webp",
                 "imageAlt": "Une plante grimpante monte vers le rebord d’une fenêtre, marqué d’un trait rouge 10. Le long de la tige, des traits numérotés de 0 à 6 marquent les semaines ; l’enfant montre le trait 6, la semaine où la tige atteint le rebord.",
                 "paragraphs": [
-                  "La plante monte vers le rebord de la fenêtre. Plutôt que de mesurer chaque semaine, on calcule d’un coup la semaine où elle l’atteint.",
-                  "En maths, on écrit : 1,5ⁿ ≥ 10 ⇔ n ≥ ln 10 ÷ ln 1,5 ≈ 5,68, donc n = 6 : on garde l’entier juste au-dessus. Si q < 1, ln q < 0 et diviser par ln q change le sens de l’inégalité."
+                  "La plante monte vers le rebord de la fenêtre. Plutôt que de mesurer chaque semaine, on calcule d’un coup la semaine où elle l’atteint."
                 ],
                 "items": [
                   "Le rebord de la fenêtre, trait 10 → le seuil",
                   "La hauteur de la plante → qⁿ, ici 1,5ⁿ",
                   "Le trait 6, que montre le doigt → le plus petit entier n tel que qⁿ ≥ seuil"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : 1,5ⁿ ≥ 10 ⇔ n ≥ ln 10 ÷ ln 1,5 ≈ 5,68, donc n = 6 : on garde l’entier juste au-dessus. Si q < 1, ln q < 0 et diviser par ln q change le sens de l’inégalité."
               }
             },
             "metadonnees": {
@@ -2153,7 +2417,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « 5,68 semaines : on répond 5 ou 6 ? » 6, l’entier juste au-dessus.",
+        "notes": "• Le piège arrive avec un résultat comme 5,2 : l’arrondi habituel donne 5, le seuil demande 6. Pour un seuil, on prend toujours l’entier du dessus.\n• Doubler un capital placé à 5 % : ln 2 ÷ ln 1,05 ≈ 14,2, donc 15 ans. Les banquiers ont un raccourci, la règle de 72 (72 ÷ 5 = 14,4), déjà chez Luca Pacioli en 1494, dans l’ouvrage qui imprime pour la première fois la comptabilité en partie double.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2197,7 +2461,7 @@
             ]
           }
         },
-        "notes": "• Récapitulatif du cours 6 : deux votes non notés.\n• Revenir sur l’écran d’image de chaque erreur : le départ et la vitesse, puis le bouton retour.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2275,14 +2539,14 @@
                 "image": "/assets/cours/b2-07/v1/verre-cuillere.webp",
                 "imageAlt": "Un enfant verse de l’eau dans un grand verre à moitié plein avec une cuillère, et compte sur ses doigts : trois doigts levés. Une flèche circulaire autour de la cuillère, et l’étiquette n = 3.",
                 "paragraphs": [
-                  "On verse de l’eau dans le verre, encore et encore, en comptant les tours sur ses doigts : trois doigts levés, n = 3.",
-                  "En maths, on écrit : à chaque tour, n ← n + 1 puis u ← u × q. Une boucle refait les mêmes instructions ; le compteur dit combien de fois."
+                  "On verse de l’eau dans le verre, encore et encore, en comptant les tours sur ses doigts : trois doigts levés, n = 3."
                 ],
                 "items": [
                   "La flèche qui tourne autour de la cuillère → la boucle, qui refait les mêmes instructions",
                   "Les doigts levés, n = 3 → le compteur n, le rang atteint",
                   "L’eau dans le verre → la valeur u, mise à jour à chaque tour"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : à chaque tour, n ← n + 1 puis u ← u × q. Une boucle refait les mêmes instructions ; le compteur dit combien de fois."
               }
             },
             "metadonnees": {
@@ -2294,7 +2558,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Que compte n ? » Le nombre de tours, donc le rang atteint.",
+        "notes": "• « Algorithme » vient d’al-Khwarizmi, mathématicien de Bagdad au IXe siècle. Le titre de son livre a aussi donné « algèbre », d’« al-jabr ».",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2320,14 +2584,14 @@
                 "image": "/assets/cours/b2-07/v1/pas-encore-plein.webp",
                 "imageAlt": "L’enfant devant le grand verre marqué d’un trait rouge plein. Il pense « pas encore… » et continue de verser. À côté, l’eau atteint le trait : il pose la cuillère, « fini ! ».",
                 "paragraphs": [
-                  "Tant que l’eau n’atteint pas le trait rouge « plein », on verse encore. Dès qu’elle l’atteint, on s’arrête.",
-                  "En maths, on écrit : objectif u ≥ 1 000, boucle « Tant que u < 1 000 » ; pour descendre sous 500, « Tant que u ≥ 500 ». Après « Tant que », on écrit le contraire de l’objectif ; à la fin, Afficher n."
+                  "Tant que l’eau n’atteint pas le trait rouge « plein », on verse encore. Dès qu’elle l’atteint, on s’arrête."
                 ],
                 "items": [
                   "Le trait rouge « plein » → le seuil, ici 1 000",
                   "La pensée « pas encore… » → la condition u < 1 000, vraie tant qu’on n’a pas fini",
                   "« Fini ! », la cuillère posée → la sortie de la boucle, puis Afficher n"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : objectif u ≥ 1 000, boucle « Tant que u < 1 000 » ; pour descendre sous 500, « Tant que u ≥ 500 ».\nAprès « Tant que », on écrit le contraire de l’objectif ; à la fin, Afficher n.\nLa plante de la fenêtre : u ← 1 ; n ← 0 ; Tant que u < 10 : n ← n + 1, u ← u × 1,5 ; Afficher n, soit 6.\nC’est le rang que donne ln : ln 10 ÷ ln 1,5 ≈ 5,68, arrondi au-dessus."
               }
             },
             "metadonnees": {
@@ -2339,52 +2603,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « On veut dépasser 1 000. Que met-on après Tant que ? » u < 1 000, pas encore atteint.",
-        "diffusion": "catalogue",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null,
-        "reflexion": null
-      },
-      {
-        "id": "B2-07-A1-09-ENFANT-DEUX-CHEMINS",
-        "type": "fp-story",
-        "titre": "Deux chemins, le même rang",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-07-A1-09-ENFANT-DEUX-CHEMINS",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-07-A1-09-ENFANT-DEUX-CHEMINS",
-              "renderer": "image-left",
-              "props": {
-                "title": "Deux chemins, le même rang",
-                "image": "/assets/cours/b2-07/v1/deux-chemins.webp",
-                "imageAlt": "Une cabane en haut d’une colline. À gauche, des empreintes de pas numérotées de 1 à 6 mènent à la porte. À droite, un enfant fait un grand saut marqué ln et atterrit sur la même marche 6.",
-                "paragraphs": [
-                  "Deux chemins mènent à la même cabane : l’un à petits pas numérotés, l’autre en un seul grand saut.",
-                  "En maths, on écrit : la boucle sur 1,5ⁿ affiche 6 ; ln 10 ÷ ln 1,5 ≈ 5,68, arrondi au-dessus, donne aussi 6. Les deux méthodes trouvent le même premier rang."
-                ],
-                "items": [
-                  "Les pas numérotés de 1 à 6 → la boucle « Tant que », rang après rang",
-                  "Le grand saut marqué ln → le calcul par ln, d’un coup",
-                  "La marche 6 → le premier rang qui dépasse le seuil"
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["algorithme-de-seuil", "resolution-par-logarithme"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Transition : « Le cours 6 est en place. Place à la question du jour : le prix du cabas Escale. »",
+        "notes": "• Avec « Tant que u > 1 000 » et u qui part de 1, la boucle ne tourne jamais et affiche n = 0. Une réponse 0 trahit une condition inversée.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2452,7 +2671,7 @@
             }
           }
         },
-        "notes": "• 1 min de lecture silencieuse ; ne rien calculer.\n• Faire dire les questions d’Hélène : quel prix, et que change la capacité de l’atelier ?",
+        "notes": "• 360 − 12x se lit en clients : chaque euro de plus sur l’étiquette fait perdre 12 cabas par semaine. À 30 €, plus personne n’achète.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2499,7 +2718,7 @@
             }
           }
         },
-        "notes": "• Lecture à voix haute du courriel (1 min), puis 4 min d’écriture individuelle et 1 min de mise en commun au pupitre.\n• Question 1 : faire dire qu’un prix trop haut fait fuir les clients ; le bénéfice monte puis redescend.\n• Question 2 : faire émerger l’idée de pente, montée ou descente ; c’est la dérivée.\n• Question 3 : laisser ouvert ; c’est l’acte 4.\n• Papier : trois lignes d’écriture dans le livret.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -2525,15 +2744,15 @@
                 "image": "/assets/cours/b2-07/v1/velo-sur-la-colline.webp",
                 "imageAlt": "Une colline vue de côté et trois fois le même enfant à vélo : il monte en pédalant fort, flèche verte +, roule à plat au sommet, trait bleu 0, puis descend, flèche rouge −. Sous chaque roue, un petit segment suit la pente.",
                 "paragraphs": [
-                  "Le vélo monte la colline, roule à plat tout en haut, puis redescend.",
-                  "En maths, on écrit : f′(a) est la pente de la courbe de f au point d’abscisse a, celle de sa tangente : elle dit de combien f monte, juste là."
+                  "Le vélo monte la colline, roule à plat tout en haut, puis redescend."
                 ],
                 "items": [
                   "Le segment sous la roue → la tangente au point d’abscisse a",
                   "La montée, flèche verte + → f′(a) > 0",
                   "Le plat du sommet, trait bleu 0 → f′(a) = 0",
                   "La descente, flèche rouge − → f′(a) < 0"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f′(a) est la pente de la courbe de f au point d’abscisse a, celle de sa tangente : elle dit de combien f monte, juste là."
               }
             },
             "metadonnees": {
@@ -2545,7 +2764,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Que vaut la pente tout en haut ? » 0 : la route est plate.",
+        "notes": "• « Tangente » vient du latin tangere, toucher : c’est la droite qui touche la courbe.\n• Le panneau routier « 10 % » est déjà une pente : 10 m de dénivelé pour 100 m d’avancée, soit 0,1. Les jambes du cycliste sentent la pente, pas l’altitude.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2554,43 +2773,202 @@
         "reflexion": null
       },
       {
-        "id": "B2-07-A2-04-ENFANT-RECETTE",
+        "id": "B2-07-A2-04-COURBE-PENTES",
         "type": "fp-story",
-        "titre": "La recette des puissances",
-        "duree": 1,
+        "titre": "La pente, point par point",
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
-            "id": "B2-07-A2-04-ENFANT-RECETTE",
+            "id": "B2-07-A2-04-COURBE-PENTES",
             "presentation": {
               "version": 2,
-              "screenId": "B2-07-A2-04-ENFANT-RECETTE",
-              "renderer": "image-left",
+              "screenId": "B2-07-A2-04-COURBE-PENTES",
+              "renderer": "courbe",
               "props": {
-                "title": "La recette des puissances",
-                "image": "/assets/cours/b2-07/v1/exposant-qui-saute.webp",
-                "imageAlt": "Un grand x debout sur un plongeoir : le petit 2 de son exposant saute et atterrit devant lui, on lit 2x. À côté, un caillou marqué 7 sur un sol plat, avec l’étiquette pente 0.",
-                "paragraphs": [
-                  "Le petit 2 en haut du x saute du plongeoir et atterrit devant lui : on lit 2x. Le caillou 7, posé sur un sol plat, ne monte jamais.",
-                  "En maths, on écrit : (x²)′ = 2x ; (x³)′ = 3x² ; (x)′ = 1 ; (k)′ = 0 ; (k × u)′ = k × u′ ; (u + v)′ = u′ + v′."
-                ],
-                "items": [
-                  "Le 2 qui saute devant le x → l’exposant, qui descend en coefficient",
-                  "Le x resté seul sur le plongeoir → l’exposant diminué de un : x¹, soit x",
-                  "Le caillou 7 sur le sol plat → une constante, de dérivée nulle"
+                "title": "La pente, point par point",
+                "figure": {
+                  "formula": "f(x) = −x² + 6x",
+                  "xLabel": "x",
+                  "yLabel": "f(x)",
+                  "xRange": [0, 6],
+                  "yRange": [0, 10],
+                  "points": [
+                    {
+                      "x": 0,
+                      "y": 0
+                    },
+                    {
+                      "x": 0.25,
+                      "y": 1.44
+                    },
+                    {
+                      "x": 0.5,
+                      "y": 2.75
+                    },
+                    {
+                      "x": 0.75,
+                      "y": 3.94
+                    },
+                    {
+                      "x": 1,
+                      "y": 5
+                    },
+                    {
+                      "x": 1.25,
+                      "y": 5.94
+                    },
+                    {
+                      "x": 1.5,
+                      "y": 6.75
+                    },
+                    {
+                      "x": 1.75,
+                      "y": 7.44
+                    },
+                    {
+                      "x": 2,
+                      "y": 8
+                    },
+                    {
+                      "x": 2.25,
+                      "y": 8.44
+                    },
+                    {
+                      "x": 2.5,
+                      "y": 8.75
+                    },
+                    {
+                      "x": 2.75,
+                      "y": 8.94
+                    },
+                    {
+                      "x": 3,
+                      "y": 9
+                    },
+                    {
+                      "x": 3.25,
+                      "y": 8.94
+                    },
+                    {
+                      "x": 3.5,
+                      "y": 8.75
+                    },
+                    {
+                      "x": 3.75,
+                      "y": 8.44
+                    },
+                    {
+                      "x": 4,
+                      "y": 8
+                    },
+                    {
+                      "x": 4.25,
+                      "y": 7.44
+                    },
+                    {
+                      "x": 4.5,
+                      "y": 6.75
+                    },
+                    {
+                      "x": 4.75,
+                      "y": 5.94
+                    },
+                    {
+                      "x": 5,
+                      "y": 5
+                    },
+                    {
+                      "x": 5.25,
+                      "y": 3.94
+                    },
+                    {
+                      "x": 5.5,
+                      "y": 2.75
+                    },
+                    {
+                      "x": 5.75,
+                      "y": 1.44
+                    },
+                    {
+                      "x": 6,
+                      "y": 0
+                    }
+                  ],
+                  "description": "La courbe de f(x) = −x² + 6x : une colline qui part de 0, monte jusqu’à 9 en x = 3, puis redescend à 0 en x = 6."
+                },
+                "steps": [
+                  {
+                    "title": "Une colline",
+                    "text": "f(x) = −x² + 6x monte de x = 0 à x = 3, puis redescend jusqu’à x = 6.\nEn chaque point, on pose une règle qui touche la courbe sans la couper : la tangente.\nSa pente dit de combien la courbe monte, juste là."
+                  },
+                  {
+                    "title": "En x = 1",
+                    "text": "La tangente monte de 4 quand x avance de 1.\nPente 4 : la courbe monte vite.",
+                    "tangent": {
+                      "x": 1,
+                      "y": 5,
+                      "slope": 4,
+                      "label": "pente 4"
+                    }
+                  },
+                  {
+                    "title": "En x = 2",
+                    "text": "Pente 2 : la courbe monte encore, moins vite.",
+                    "tangent": {
+                      "x": 2,
+                      "y": 8,
+                      "slope": 2,
+                      "label": "pente 2"
+                    }
+                  },
+                  {
+                    "title": "En x = 3",
+                    "text": "La tangente est à plat : pente 0.\nC’est le sommet : la courbe ne monte plus et ne descend pas encore.",
+                    "tangent": {
+                      "x": 3,
+                      "y": 9,
+                      "slope": 0,
+                      "label": "pente 0"
+                    }
+                  },
+                  {
+                    "title": "En x = 4",
+                    "text": "Pente −2 : la courbe descend.",
+                    "tangent": {
+                      "x": 4,
+                      "y": 8,
+                      "slope": -2,
+                      "label": "pente −2"
+                    }
+                  },
+                  {
+                    "title": "En x = 5",
+                    "text": "Pente −4 : elle descend de plus en plus vite.",
+                    "tangent": {
+                      "x": 5,
+                      "y": 5,
+                      "slope": -4,
+                      "label": "pente −4"
+                    }
+                  },
+                  {
+                    "title": "La dérivée",
+                    "text": "x : 1, 2, 3, 4, 5\npente : 4, 2, 0, −2, −4\nQuand x avance de 1, la pente baisse de 2 : pente = −2x + 6.\nCette formule s’appelle la dérivée de f : f′(x) = −2x + 6.\nElle dit, sans dessiner, si f monte (f′ > 0), s’arrête (f′ = 0) ou descend (f′ < 0)."
+                  }
                 ]
               }
             },
             "metadonnees": {
               "concepts": ["fonction-derivee"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Que vaut la dérivée de 7 ? » 0, le caillou ne monte pas.",
+        "notes": "• En x = 1, la courbe est à 5 de haut et sa pente vaut 4. Au sommet, elle est à 9 de haut et sa pente vaut 0. Hauteur et pente sont deux nombres différents.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2612,18 +2990,18 @@
               "screenId": "B2-07-A2-05-COURS-DERIVEE",
               "renderer": "lesson",
               "props": {
-                "title": "La dérivée : la pente de la courbe en chaque point",
+                "title": "La dérivée, pente de la courbe",
                 "blocks": [
                   {
                     "kind": "definition",
                     "title": "Nombre dérivé et fonction dérivée",
-                    "text": "Le nombre dérivé f′(a) est la pente de la courbe de f au point d’abscisse a : le coefficient directeur de sa tangente. La fonction dérivée f′ donne cette pente pour chaque x. Elle dira à Hélène si le bénéfice monte ou descend quand le prix bouge.",
-                    "formula": "(k)′ = 0 · (x)′ = 1 · (x²)′ = 2x · (x³)′ = 3x² · (k × u)′ = k × u′ · (u + v)′ = u′ + v′"
+                    "text": "Le nombre dérivé f′(a) est la pente de la tangente à la courbe de f au point d’abscisse a.\nLa fonction dérivée f′ donne cette pente pour chaque x.\nElle sert à savoir où f monte et où elle descend : elle dira à Hélène si le bénéfice monte ou descend quand le prix bouge.",
+                    "formula": "(k)′ = 0\n(x)′ = 1\n(x²)′ = 2x\n(x³)′ = 3x²\n(k × u)′ = k × u′\n(u + v)′ = u′ + v′"
                   },
                   {
                     "kind": "example",
                     "title": "Pour débuter : f(x) = −2x² + 40x + 5",
-                    "text": "L’exemple de l’encadré du devoir maison.",
+                    "text": "Une fonction de degré 2, dérivée terme à terme.",
                     "steps": [
                       "Dériver terme à terme : (−2x²)′ = −2 × 2x = −4x ; (40x)′ = 40 ; (5)′ = 0.",
                       "f′(x) = −4x + 40.",
@@ -2631,8 +3009,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : dériver sans se tromper",
+                    "kind": "piege",
+                    "title": "Dériver sans se tromper",
                     "text": "Pièges : dériver 3x² en 3x en oubliant de faire descendre l’exposant ; garder le nombre seul dans la dérivée ; calculer f(a) quand on demande f′(a).",
                     "steps": [
                       "Écrire la dérivée de chaque terme, l’un après l’autre.",
@@ -2653,7 +3031,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Relier au B2-02 : la pente d’une droite est la même partout ; celle d’une courbe change d’un point à l’autre.\n• Faire dériver à voix haute chaque terme de l’exemple.",
+        "notes": "• La notation f′ et le mot « fonction dérivée » viennent de Lagrange, en 1797. Leibniz écrivait dy/dx : une toute petite montée divisée par une toute petite avancée.\n• Une dérivée a pour unité celle de f par unité de x : B′ se lit en euros de bénéfice par euro de prix, V′ en sacs par mois.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2707,7 +3085,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur l’exposant qui descend (étape 1) et sur la différence entre K(2) et K′(2) (étape 4).\n• Transition : « À vous : exercice 1. »",
+        "notes": "• En gestion, K′ s’appelle le coût marginal : ce que coûte le mètre de plus. K′(2) = 3 l’annonce, et le vrai écart K(3) − K(2) = 38 − 34 = 4 € en est proche.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -2806,7 +3184,7 @@
           ]
         },
         "renvoi": "B2-07-A2-01-DOSSIER",
-        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : pour chaque fonction, écrire la dérivée de chaque terme avant de calculer.\n• Pièges : 3x² dérivé en 3x ; le nombre seul gardé ; f(a) calculé au lieu de f′(a).\n• Papier : exercice 1 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : « Et la dérivée d’une exponentielle ? Un vote pour la deviner. »",
+        "notes": "• La calculatrice dérive en un point (TI : math, puis nDeriv( ; Casio : OPTN, CALC, d/dx). Elle confirme g′(3) = 18, mais ne donne jamais la formule de g′.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2972,7 +3350,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de la dérivée de l’exponentielle : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
+        "notes": "• Avec 2ˣ, la dérivée vaut environ 0,69 fois la valeur ; avec 3ˣ, environ 1,10 fois. Entre les deux, un seul nombre donne exactement 1 fois : e ≈ 2,718. C’est pour cela qu’on l’a choisi.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3050,14 +3428,14 @@
                 "image": "/assets/cours/b2-07/v1/boule-de-neige.webp",
                 "imageAlt": "Une pente enneigée : un enfant pousse une boule de neige qui roule en grossissant, petite, moyenne, puis très grosse. Derrière chaque boule, des traits de vitesse de plus en plus longs.",
                 "paragraphs": [
-                  "La boule de neige roule dans la pente : plus elle est grosse, plus elle ramasse de neige à chaque tour.",
-                  "En maths, on écrit : (e^(kx))′ = k e^(kx), donc (a e^(kx))′ = a k e^(kx) : la vitesse de croissance est k fois la valeur. Comme e^(kx) > 0, le signe de la dérivée est celui de a × k."
+                  "La boule de neige roule dans la pente : plus elle est grosse, plus elle ramasse de neige à chaque tour."
                 ],
                 "items": [
                   "La taille de la boule → la valeur a e^(kx)",
                   "La neige ramassée à chaque tour → la dérivée a k e^(kx)",
                   "Les traits de vitesse, plus longs derrière la plus grosse → la dérivée, proportionnelle à la valeur"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : (e^(kx))′ = k e^(kx), donc (a e^(kx))′ = a k e^(kx) : la vitesse de croissance est k fois la valeur. Comme e^(kx) > 0, le signe de la dérivée est celui de a × k."
               }
             },
             "metadonnees": {
@@ -3069,7 +3447,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Quel est le signe de la dérivée de 50e^(−0,2x) ? » Négatif : 50 × (−0,2) < 0.",
+        "notes": "• Une exponentielle grandit d’autant plus vite qu’elle est grosse : c’est l’« effet boule de neige » d’une dette dont on ne paie pas les intérêts.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3091,13 +3469,13 @@
               "screenId": "B2-07-A2-10-COURS-DERIVEE-EXP",
               "renderer": "lesson",
               "props": {
-                "title": "Dériver a e^(kx) : la recette de l’exponentielle",
+                "title": "Dériver a e^(kx)",
                 "blocks": [
                   {
                     "kind": "property",
                     "title": "La dérivée de e^(kx)",
-                    "text": "Dériver e^(kx), c’est multiplier par k : l’exponentielle reste la même. Comme e^(kx) est toujours positif, le signe de la dérivée de a e^(kx) est celui de a × k : on retrouve le sens de variation du B2-06.",
-                    "formula": "(eˣ)′ = eˣ · (e^(kx))′ = k e^(kx) · (a e^(kx))′ = a k e^(kx)"
+                    "text": "Dériver e^(kx), c’est multiplier par k : l’exponentielle reste la même.\nComme e^(kx) est toujours positif, le signe de la dérivée de a e^(kx) est celui de a × k : on retrouve le sens de variation du B2-06.",
+                    "formula": "(eˣ)′ = eˣ\n(e^(kx))′ = k e^(kx)\n(a e^(kx))′ = a k e^(kx)"
                   },
                   {
                     "kind": "example",
@@ -3110,8 +3488,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges de l’exponentielle",
+                    "kind": "piege",
+                    "title": "Les pièges de l’exponentielle",
                     "text": "Pièges : oublier de multiplier par k ; dériver e^(kx) comme une puissance de x ; perdre le signe moins de k.",
                     "steps": [
                       "Repérer a et k.",
@@ -3119,7 +3497,69 @@
                       "Conclure sur le signe avec celui de a × k."
                     ]
                   }
-                ]
+                ],
+                "figure": {
+                  "formula": "f(x) = 1 000e^(0,02x)",
+                  "xLabel": "x",
+                  "yLabel": "f(x)",
+                  "xRange": [0, 50],
+                  "yRange": [0, 3000],
+                  "points": [
+                    {
+                      "x": 0,
+                      "y": 1000
+                    },
+                    {
+                      "x": 5,
+                      "y": 1105.17
+                    },
+                    {
+                      "x": 10,
+                      "y": 1221.4
+                    },
+                    {
+                      "x": 15,
+                      "y": 1349.86
+                    },
+                    {
+                      "x": 20,
+                      "y": 1491.82
+                    },
+                    {
+                      "x": 25,
+                      "y": 1648.72
+                    },
+                    {
+                      "x": 30,
+                      "y": 1822.12
+                    },
+                    {
+                      "x": 35,
+                      "y": 2013.75
+                    },
+                    {
+                      "x": 40,
+                      "y": 2225.54
+                    },
+                    {
+                      "x": 45,
+                      "y": 2459.6
+                    },
+                    {
+                      "x": 50,
+                      "y": 2718.28
+                    }
+                  ],
+                  "tangents": [
+                    {
+                      "x": 0,
+                      "y": 1000,
+                      "slope": 20,
+                      "label": "pente 20 en x = 0"
+                    }
+                  ],
+                  "description": "La courbe de f(x) = 1 000e^(0,02x) part de 1 000 en x = 0 et monte de plus en plus vite ; sa tangente en x = 0 a pour pente 20."
+                }
               }
             },
             "metadonnees": {
@@ -3131,7 +3571,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Relier au B2-06 : « k > 0 croissante, k < 0 décroissante » se démontre maintenant par le signe de la dérivée.",
+        "notes": "",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3229,7 +3669,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire a et k de chaque modèle, puis a × k, avant la calculatrice.\n• Pièges : la dérivée sans k ; le signe de k perdu ; la valeur prise pour la pente.\n• Papier : exercice 2 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : jalon 1, puis pause de 15 minutes.",
+        "notes": "• V′(5) ≈ 32,40, c’est 6 % de V(5) ≈ 539,94 : la vitesse reste toujours égale à 6 % des ventes du moment.\n• Le revers : V double en ln 2 ÷ 0,06 ≈ 11,6 mois, un peu moins d’un an.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3352,33 +3792,6 @@
         ]
       },
       {
-        "id": "B2-07-A2-12-JALON",
-        "type": "fp-pulse",
-        "titre": "Jalon 1 : la dérivée",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "sondage": {
-            "id": "b2-07-a2-jalon",
-            "invite": "Je sais dire que f′(a) est une pente et calculer la dérivée d’un polynôme et de a e^(kx).",
-            "metadonnees": {
-              "concepts": ["fonction-derivee"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre l’écran de la recette des puissances après la pause.\n• Pause de 15 minutes, hors durée programmée.",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null,
-        "reflexion": null
-      },
-      {
         "id": "B2-07-A3-01-VOTE-SIGNE",
         "type": "fp-vote",
         "titre": "Vote : que dit le signe de la pente ?",
@@ -3414,7 +3827,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de la notion 2 : votes non notés.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
+        "notes": "• Passer le prix de 15 € à 16 € fait monter le bénéfice de 1 260 € à 1 344 €, soit + 84 €. La pente B′(15) = 96 annonçait la bonne direction, pas le montant exact.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3492,14 +3905,14 @@
                 "image": "/assets/cours/b2-07/v1/panneaux-de-la-route.webp",
                 "imageAlt": "Une route de montagne qui monte puis descend. Avant la montée, un panneau vert avec une flèche montante et le signe + ; avant la descente, un panneau rouge avec une flèche descendante et le signe −. Une petite voiture jaune suit la route.",
                 "paragraphs": [
-                  "Au bord de la route, un panneau annonce une montée ou une descente. Il ne dit pas à quelle altitude roule la voiture.",
-                  "En maths, on écrit : f′ > 0 sur un intervalle ⇒ f croissante sur cet intervalle ; f′ < 0 ⇒ f décroissante. Le signe de f′ donne le sens ; le signe de f n’en dit rien."
+                  "Au bord de la route, un panneau annonce une montée ou une descente. Il ne dit pas à quelle altitude roule la voiture."
                 ],
                 "items": [
                   "Le panneau vert + → f′ > 0 : f croissante",
                   "Le panneau rouge − → f′ < 0 : f décroissante",
                   "L’altitude de la voiture → la valeur f(x), que le signe de f′ ne donne pas"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f′ > 0 sur un intervalle ⇒ f croissante sur cet intervalle ; f′ < 0 ⇒ f décroissante. Le signe de f′ donne le sens ; le signe de f n’en dit rien."
               }
             },
             "metadonnees": {
@@ -3511,7 +3924,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Une voiture peut-elle descendre en restant à 1 000 m d’altitude ? » Oui : descendre ne veut pas dire être en bas.",
+        "notes": "• Un chiffre d’affaires en baisse peut rester le plus gros du secteur : la tendance n’est pas le niveau.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3537,15 +3950,15 @@
                 "image": "/assets/cours/b2-07/v1/carte-du-trajet.webp",
                 "imageAlt": "Une carte de balade dessinée par un enfant : le sentier part du départ, monte jusqu’à un sommet marqué d’un drapeau, puis descend vers l’arrivée. Au-dessus, de grandes flèches montante puis descendante ; sous chaque point clé, une étiquette d’altitude à remplir.",
                 "paragraphs": [
-                  "Avant la balade, on dessine la carte : où le sentier monte, où il descend, et l’altitude des points clés.",
-                  "En maths, on écrit : le tableau de variation résume f en trois lignes : une ligne x, une ligne du signe de f′, une ligne de flèches ↗ ↘ avec les valeurs de f aux bornes et là où le sens change."
+                  "Avant la balade, on dessine la carte : où le sentier monte, où il descend, et l’altitude des points clés."
                 ],
                 "items": [
                   "Les panneaux départ et arrivée → les bornes de l’intervalle, sur la ligne x",
                   "La flèche verte, puis la flèche rouge → la ligne des variations, ↗ puis ↘",
                   "Le drapeau du sommet → la valeur de x où f′ change de signe",
                   "Les étiquettes « Altitude : ___ » → les valeurs de f à écrire au bout des flèches"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : le tableau de variation résume f en trois lignes : une ligne x, une ligne du signe de f′, une ligne de flèches ↗ ↘ avec les valeurs de f aux bornes et là où le sens change."
               }
             },
             "metadonnees": {
@@ -3557,7 +3970,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Quelles altitudes écrit-on sur la carte ? » Celles du départ, du sommet et de l’arrivée.",
+        "notes": "",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3585,7 +3998,7 @@
                     "kind": "property",
                     "title": "Signe de la dérivée et sens de variation",
                     "text": "Si f′(x) > 0 sur un intervalle, f est croissante sur cet intervalle ; si f′(x) < 0, f est décroissante. Le tableau de variation range ces informations : x, signe de f′, flèches et valeurs de f.",
-                    "formula": "f′ > 0 ⇒ f ↗ · f′ < 0 ⇒ f ↘"
+                    "formula": "f′ > 0 ⇒ f ↗\nf′ < 0 ⇒ f ↘"
                   },
                   {
                     "kind": "method",
@@ -3600,7 +4013,7 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : f′(x) = −4x + 40 sur [0 ; 15]",
-                    "text": "La dérivée de l’encadré du devoir maison.",
+                    "text": "Le signe d’une dérivée affine donne le sens de variation de f.",
                     "steps": [
                       "−4x + 40 ≥ 0 ⇔ −4x ≥ −40 ⇔ x ≤ 10 : on divise par −4, le sens change.",
                       "f′ ≥ 0 sur [0 ; 10], f′ ≤ 0 sur [10 ; 15].",
@@ -3608,8 +4021,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : ne pas confondre les signes",
+                    "kind": "piege",
+                    "title": "Ne pas confondre les signes",
                     "text": "Pièges : lire le sens de f dans le signe de f ; garder le sens de l’inégalité en divisant par un nombre négatif ; oublier les valeurs de f dans le tableau."
                   }
                 ]
@@ -3624,7 +4037,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Relier au B2-06 : diviser par un nombre négatif change le sens, comme avec ln q quand q < 1.",
+        "notes": "• Contrôle immédiat du sens : x = 0 dans −4x + 40 ≥ 0 donne 40 ≥ 0, vrai. La solution doit donc contenir 0 : x ≤ 10 le contient, x ≥ 10 non.\n• Diviser par un négatif renverse l’ordre : 2 < 3, mais −2 > −3.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3641,7 +4054,7 @@
         "donnees": {
           "exemple": {
             "id": "b2-07-a3-exemple-variations",
-            "enonce": "f(x) = 2x³ − 21x² + 60x sur [0 ; 7], comme à l’exercice ★ du devoir maison.",
+            "enonce": "f(x) = 2x³ − 21x² + 60x sur [0 ; 7].",
             "etapes": [
               {
                 "id": "derivee",
@@ -3678,7 +4091,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur le tableau de signes (étape 2) et sur les valeurs écrites sous les flèches (étape 4).\n• Transition : « À vous, sur le bénéfice du cabas : exercice 3. »",
+        "notes": "• Pour vérifier le signe, on teste une valeur par zone : f′(0) = 60 > 0, f′(3) = −12 < 0, f′(6) = 24 > 0. C’est bien + puis − puis +.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3773,7 +4186,7 @@
           ]
         },
         "renvoi": "B2-07-A2-01-DOSSIER",
-        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : résoudre B′(x) ≥ 0 sur papier, en surveillant le signe de −24.\n• Pièges : le sens gardé en divisant par −24 ; le signe de B pris pour son sens ; B′ calculé au lieu de B.\n• Papier : exercice 3 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : jalon 2, puis pause de 15 minutes.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3884,33 +4297,6 @@
         ]
       },
       {
-        "id": "B2-07-A3-07-JALON",
-        "type": "fp-pulse",
-        "titre": "Jalon 2 : signe et variations",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "sondage": {
-            "id": "b2-07-a3-jalon",
-            "invite": "Je sais étudier le signe de f′(x) et dresser le tableau de variation de f.",
-            "metadonnees": {
-              "concepts": ["variations-d-une-fonction"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre l’exemple f′(x) = −4x + 40 de la trace écrite après la pause.\n• Pause de 15 minutes, hors durée programmée.",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null,
-        "reflexion": null
-      },
-      {
         "id": "B2-07-A4-01-REFLEXION-CAPACITE",
         "type": "fp-story",
         "titre": "Réfléchir : le sommet est-il atteignable ?",
@@ -3943,7 +4329,7 @@
           }
         },
         "renvoi": "B2-07-A2-01-DOSSIER",
-        "notes": "• Temps « réfléchir » de la notion 3 : 3 min d’écriture individuelle, puis lire trois réponses au pupitre.\n• Ne rien trancher : la trace écrite suivante répond.\n• Relance : « Si on ne peut pas aller jusqu’au sommet, où est le point le plus haut qu’on peut atteindre ? »\n• Papier : cadre de réponse du livret.",
+        "notes": "• À 19 €, 132 clients voudraient un cabas et l’atelier n’en coud que 120. Douze repartent déçus, et les 120 autres auraient accepté de payer un peu plus.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3976,14 +4362,14 @@
                 "image": "/assets/cours/b2-07/v1/sommet-de-la-colline.webp",
                 "imageAlt": "L’enfant à vélo s’arrête au sommet arrondi d’une colline, un drapeau planté, étiquette sommet. Plus loin, une autre route monte, fait un petit replat, puis continue de monter ; sur le replat, un panneau barré pas un sommet.",
                 "paragraphs": [
-                  "Le vélo arrive en haut de la colline : il a fini de monter et va redescendre. Plus loin, la route fait un replat, puis remonte.",
-                  "En maths, on écrit : si f′ s’annule en a en passant de + à −, f(a) est un maximum ; de − à + : un minimum ; sans changement de signe, pas d’extremum."
+                  "Le vélo arrive en haut de la colline : il a fini de monter et va redescendre. Plus loin, la route fait un replat, puis remonte."
                 ],
                 "items": [
                   "Le drapeau « sommet » → un maximum : f′ passe de + à −",
                   "Le replat barré « pas un sommet » → f′ = 0 sans changement de signe : pas d’extremum",
                   "La hauteur du drapeau → la valeur du maximum, f(a)"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : si f′ s’annule en a en passant de + à −, f(a) est un maximum ; de − à + : un minimum ; sans changement de signe, pas d’extremum."
               }
             },
             "metadonnees": {
@@ -3995,7 +4381,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « f′ vaut 0 sur le replat : est-ce un sommet ? » Non, f′ ne change pas de signe.",
+        "notes": "• Dès les années 1630, Fermat trouve les maximums en cherchant où une petite variation de x ne change presque plus la valeur. C’est l’idée de f′ = 0, une génération avant Newton et Leibniz.\n• Le contre-exemple à retenir : x³ a une dérivée nulle en 0 (3 × 0² = 0), et pourtant elle monte toujours.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4021,14 +4407,14 @@
                 "image": "/assets/cours/b2-07/v1/barriere-sur-le-chemin.webp",
                 "imageAlt": "Une colline avec un drapeau au sommet. Sur le chemin qui monte, une barrière blanche et rouge ferme le passage avant le sommet. L’enfant, arrêté contre la barrière, lève les bras près de l’étiquette ici.",
                 "paragraphs": [
-                  "Une barrière ferme le chemin avant le sommet : le point le plus haut qu’on peut atteindre est contre la barrière, « ici ».",
-                  "En maths, on écrit : sur un intervalle, on compare les valeurs de f aux bornes et aux extremums. Sous contrainte, l’optimum peut être une borne."
+                  "Une barrière ferme le chemin avant le sommet : le point le plus haut qu’on peut atteindre est contre la barrière, « ici »."
                 ],
                 "items": [
                   "La barrière → une borne de l’intervalle, fixée par une contrainte",
                   "Le drapeau hors d’atteinte → l’extremum situé hors de l’intervalle permis",
                   "« Ici », contre la barrière → l’optimum sous contrainte, atteint à la borne"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : sur un intervalle, on compare les valeurs de f aux bornes et aux extremums. Sous contrainte, l’optimum peut être une borne."
               }
             },
             "metadonnees": {
@@ -4040,7 +4426,7 @@
             }
           }
         },
-        "notes": "• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : « Où est le point le plus haut qu’il peut atteindre ? » Contre la barrière, au bord.",
+        "notes": "",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4062,13 +4448,13 @@
               "screenId": "B2-07-A4-04-COURS-OPTIMUM",
               "renderer": "lesson",
               "props": {
-                "title": "Extremum et optimum : le sommet ou le bord",
+                "title": "Le sommet ou le bord",
                 "blocks": [
                   {
                     "kind": "definition",
                     "title": "Extremum et changement de signe",
-                    "text": "Si f′ s’annule en a en passant de + à −, f admet un maximum local en a ; de − à + , un minimum local. Le maximum sur un intervalle est la plus grande des valeurs de f aux bornes et aux maximums locaux.",
-                    "formula": "f′ : + puis − en a ⇒ maximum f(a) · f′ : − puis + en a ⇒ minimum f(a)"
+                    "text": "Si f′ s’annule en a en passant de + à −, f admet un maximum local en a ; de − à +, un minimum local.\nLe maximum sur un intervalle est la plus grande des valeurs de f aux bornes et aux maximums locaux.",
+                    "formula": "f′ : + puis − en a ⇒ maximum f(a)\nf′ : − puis + en a ⇒ minimum f(a)"
                   },
                   {
                     "kind": "method",
@@ -4091,11 +4477,158 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : conclure par le x et la valeur",
+                    "kind": "piege",
+                    "title": "Conclure par le x et la valeur",
                     "text": "Pièges : annoncer un extremum dès que f′ s’annule ; oublier les bornes ; garder l’optimum hors des valeurs permises ; donner x à la place de f(x). Phrase attendue : « Le bénéfice est maximal pour x = …, il vaut alors … € »."
                   }
-                ]
+                ],
+                "figure": {
+                  "formula": "f(x) = −2x² + 40x + 5",
+                  "xLabel": "x",
+                  "yLabel": "f(x)",
+                  "xRange": [0, 15],
+                  "yRange": [0, 220],
+                  "points": [
+                    {
+                      "x": 0,
+                      "y": 5
+                    },
+                    {
+                      "x": 0.5,
+                      "y": 24.5
+                    },
+                    {
+                      "x": 1,
+                      "y": 43
+                    },
+                    {
+                      "x": 1.5,
+                      "y": 60.5
+                    },
+                    {
+                      "x": 2,
+                      "y": 77
+                    },
+                    {
+                      "x": 2.5,
+                      "y": 92.5
+                    },
+                    {
+                      "x": 3,
+                      "y": 107
+                    },
+                    {
+                      "x": 3.5,
+                      "y": 120.5
+                    },
+                    {
+                      "x": 4,
+                      "y": 133
+                    },
+                    {
+                      "x": 4.5,
+                      "y": 144.5
+                    },
+                    {
+                      "x": 5,
+                      "y": 155
+                    },
+                    {
+                      "x": 5.5,
+                      "y": 164.5
+                    },
+                    {
+                      "x": 6,
+                      "y": 173
+                    },
+                    {
+                      "x": 6.5,
+                      "y": 180.5
+                    },
+                    {
+                      "x": 7,
+                      "y": 187
+                    },
+                    {
+                      "x": 7.5,
+                      "y": 192.5
+                    },
+                    {
+                      "x": 8,
+                      "y": 197
+                    },
+                    {
+                      "x": 8.5,
+                      "y": 200.5
+                    },
+                    {
+                      "x": 9,
+                      "y": 203
+                    },
+                    {
+                      "x": 9.5,
+                      "y": 204.5
+                    },
+                    {
+                      "x": 10,
+                      "y": 205
+                    },
+                    {
+                      "x": 10.5,
+                      "y": 204.5
+                    },
+                    {
+                      "x": 11,
+                      "y": 203
+                    },
+                    {
+                      "x": 11.5,
+                      "y": 200.5
+                    },
+                    {
+                      "x": 12,
+                      "y": 197
+                    },
+                    {
+                      "x": 12.5,
+                      "y": 192.5
+                    },
+                    {
+                      "x": 13,
+                      "y": 187
+                    },
+                    {
+                      "x": 13.5,
+                      "y": 180.5
+                    },
+                    {
+                      "x": 14,
+                      "y": 173
+                    },
+                    {
+                      "x": 14.5,
+                      "y": 164.5
+                    },
+                    {
+                      "x": 15,
+                      "y": 155
+                    }
+                  ],
+                  "tangents": [
+                    {
+                      "x": 10,
+                      "y": 205,
+                      "slope": 0,
+                      "label": "sommet : f(10) = 205"
+                    }
+                  ],
+                  "zone": {
+                    "from": 12,
+                    "to": 15,
+                    "label": "contrainte x ≥ 12"
+                  },
+                  "description": "La parabole de f(x) = −2x² + 40x + 5 sur [0 ; 15] : son sommet, tangente à plat, est en x = 10 ; la zone permise x ≥ 12 commence après le sommet, où f descend."
+                }
               }
             },
             "metadonnees": {
@@ -4107,7 +4640,7 @@
             }
           }
         },
-        "notes": "• 2 min après l’illustration ; la trace écrite est imprimée dans le livret : on lit et on commente, on ne recopie pas.\n• Faire répéter les quatre étapes de l’encadré du devoir maison.",
+        "notes": "",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4161,7 +4694,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur la borne qui bat le sommet (étape 3).\n• Transition : « À vous, sur le prix du cabas : exercice 4. »",
+        "notes": "• Un maximum local, c’est la meilleure boutique du quartier, pas forcément de la ville : on regarde toujours les bornes.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4254,7 +4787,7 @@
           ]
         },
         "renvoi": "B2-07-A2-01-DOSSIER",
-        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire le tableau de variation de B sur [12 ; 28], puis la contrainte de capacité en inéquation.\n• Pièges : donner 19 au lieu de B(19) ; garder 19 € sous contrainte ; prendre l’autre borne.\n• Papier : exercice 4 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : « Vérifions au tableur : exercice 5. »",
+        "notes": "• Contrôle sans dérivée : B s’annule à 8 €, où la marge est nulle, et à 30 €, où il n’y a plus de clients. Le sommet est au milieu : (8 + 30) ÷ 2 = 19.\n• Le chiffre d’affaires x(360 − 12x) culmine à 15 € (2 700 €), le bénéfice à 19 €. Viser les ventes ou viser le bénéfice ne donne pas le même prix.\n• La capacité coûte 1 452 − 1 440 = 12 € par semaine, environ 624 € par an : le chiffre à comparer au coût d’une couturière de plus.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4462,7 +4995,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 5 min · correction 2 min\n• Réflexion : écrire sur papier les formules de B2 et de C2.\n• Erreurs à chercher : =-12*A2+456 pour B′ ; la constante −2 880 gardée en colonne C ; la formule de B recopiée en C.\n• Papier : formules écrites sur la copie, puis les valeurs à la calculatrice.\n• Projeter la feuille d’un poste volontaire : B′ passe de 48 à 0 puis à −48, le sommet est sur la ligne de 19 €.\n• Transition : « Une exponentielle à optimiser : exercice 6. »",
+        "notes": "• Piège d’Excel au bureau : =-2^2 donne 4, parce que le moins s’applique avant le carré. =-A2^2 rend donc +A2² ; on écrit -12*A2^2 ou -(A2^2).",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [],
@@ -4784,7 +5317,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 2 min · travail 6 min · correction 2 min\n• Réflexion : écrire C′(x), puis l’équation C′(x) = 0 avant la calculatrice.\n• Pièges : la dérivée sans k ; le signe de k perdu ; diviser sans ln ; le sens gardé en divisant par −0,1.\n• Papier : exercice 6 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : jalon 3.",
+        "notes": "• C’est le schéma de la formule de Wilson en gestion des stocks (Harris, 1913) : un coût qui monte, un coût qui baisse, et l’optimum là où leurs pentes se compensent.\n• En pratique, on révise toutes les 14 semaines : C(14) ≈ 1 193,19 €, à peine 5 centimes de plus que le minimum. Près d’un optimum la courbe est plate, et arrondir ne coûte presque rien.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4911,33 +5444,6 @@
         ]
       },
       {
-        "id": "B2-07-A4-09-JALON",
-        "type": "fp-pulse",
-        "titre": "Jalon 3 : l’optimum",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "sondage": {
-            "id": "b2-07-a4-jalon",
-            "invite": "Je sais trouver un maximum ou un minimum sur un intervalle, et sous une contrainte.",
-            "metadonnees": {
-              "concepts": ["optimisation"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        },
-        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre l’exemple guidé sommet ou bord.",
-        "diffusion": "seance",
-        "seuil": null,
-        "corriges": [],
-        "questions": [],
-        "corrigeEcran": null,
-        "reflexion": null
-      },
-      {
         "id": "B2-07-A5-01-RAPPEL",
         "type": "fp-spaced",
         "titre": "Rappel : de mémoire, sans vos notes",
@@ -4965,7 +5471,7 @@
             }
           }
         },
-        "notes": "• 5 min individuelles, puis projeter la carte de maîtrise.\n• Tous reçoivent les deux questions obligatoires (dérivée de e^(kx), extremum et changement de signe), en plus de leurs points faibles.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -5290,7 +5796,7 @@
               "renderer": "grid",
               "props": {
                 "title": "Fiche mémo : dérivée et optimisation",
-                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "subtitle": "Chaque carte part d’une question et donne la méthode et son piège.",
                 "items": [
                   {
                     "title": "Nombre dérivé",
@@ -5328,7 +5834,7 @@
                     "back": "Comparer les valeurs aux bornes et aux extremums. Sous contrainte, l’optimum peut être une borne."
                   },
                   {
-                    "title": "Rédiger au CCF",
+                    "title": "Rédiger la réponse",
                     "description": "Quelles quatre étapes ?",
                     "back": "1. Calculer f′(x).\n2. Résoudre f′(x) = 0.\n3. Étudier le signe de f′(x).\n4. Dresser le tableau de variation et conclure par le x et la valeur."
                   },
@@ -5336,12 +5842,6 @@
                     "title": "Tableur",
                     "description": "Comment écrire un carré ?",
                     "back": "Avec ^ : =3*A2^2-5*A2+7 calcule 3x² − 5x + 7 pour x en A2, puis se recopie vers le bas. La colonne de la dérivée change de signe au sommet."
-                  },
-                  {
-                    "title": "Référentiel du BTS CG",
-                    "description": "Le programme de mathématiques et l’épreuve E3.",
-                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
-                    "external": true
                   }
                 ],
                 "imprimable": true
@@ -5360,7 +5860,7 @@
             }
           }
         },
-        "notes": "• 90 s de lecture ; la fiche s’imprime pour le classeur de CCF.",
+        "notes": "",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -5374,7 +5874,7 @@
     "id": "b2-07-derivee-optimisation",
     "titre": "Dérivée et optimisation",
     "niveau": "B2",
-    "duree": 135,
+    "duree": 132,
     "concepts": [
       "fonction-derivee",
       "variations-d-une-fonction",
@@ -5436,15 +5936,15 @@
                 "image": "/assets/cours/b2-07/v1/plante-qui-multiplie.webp",
                 "imageAlt": "Quatre pots alignés, semaine 0 à semaine 3 : la même plante devient chaque semaine une fois et demie plus haute, si bien que les écarts de hauteur grandissent. Entre deux pots, une flèche marquée × 1,5.",
                 "paragraphs": [
-                  "Chaque semaine, la plante devient une fois et demie plus haute que la semaine d’avant : plus elle est grande, plus elle gagne de centimètres.",
-                  "En maths, on écrit : uₙ = u₀ × qⁿ au B2-04, f(x) = a e^(kx) au B2-06. À chaque pas, on multiplie par le même nombre ; on n’ajoute pas la même quantité. Pour e^0,4, on calcule l’exposant d’abord, puis la touche eˣ."
+                  "Chaque semaine, la plante devient une fois et demie plus haute que la semaine d’avant : plus elle est grande, plus elle gagne de centimètres."
                 ],
                 "items": [
                   "La plante du pot « semaine 0 » → la valeur de départ u₀, ou a",
                   "Le numéro de la semaine → le rang n, ou x",
                   "La flèche × 1,5 → la raison q, ou e^k",
                   "La hauteur atteinte → uₙ, ou f(x)"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : uₙ = u₀ × qⁿ au B2-04, f(x) = a e^(kx) au B2-06. À chaque pas, on multiplie par le même nombre ; on n’ajoute pas la même quantité. Pour e^0,4, on calcule l’exposant d’abord, puis la touche eˣ."
               }
             },
             "metadonnees": {
@@ -5475,14 +5975,14 @@
                 "image": "/assets/cours/b2-07/v1/deux-ballons.webp",
                 "imageAlt": "Deux ballons de même taille au départ, marqués a. À gauche, un enfant gonfle le sien, qui grossit, k > 0. À droite, l’autre ballon se dégonfle, k < 0.",
                 "paragraphs": [
-                  "Deux ballons partent de la même taille : l’un se gonfle à la pompe, l’autre se dégonfle.",
-                  "En maths, on écrit : f(x) = a e^(kx) et f(0) = a, car e⁰ = 1. Coefficient e^k, taux e^k − 1 : pour 1 000e^(0,02x), + 2,02 % par unité, pas 2 %."
+                  "Deux ballons partent de la même taille : l’un se gonfle à la pompe, l’autre se dégonfle."
                 ],
                 "items": [
                   "La taille commune au départ, marquée a → a = f(0)",
                   "Le ballon qu’on gonfle, k > 0 → f croissante",
                   "Le ballon qui se dégonfle, k < 0 → f décroissante"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f(x) = a e^(kx).\na est la valeur de départ : f(0) = a × e⁰ = a × 1 = a.\nk règle le sens : k > 0, f croît ; k < 0, f décroît.\ne^k est le coefficient multiplicateur d’une unité à la suivante.\nPour 1 000e^(0,02x) : a = 1 000 et e^0,02 ≈ 1,0202, soit + 2,02 % par unité, pas + 2 %."
               }
             },
             "metadonnees": {
@@ -5513,15 +6013,15 @@
                 "image": "/assets/cours/b2-07/v1/bouton-retour.webp",
                 "imageAlt": "Une machine en bois : la carte 1,609 entre, la carte 5 ressort par la flèche eˣ. Dessous, une flèche repart de 5 vers 1,609 en passant par un gros bouton ln, qu’un enfant appuie.",
                 "paragraphs": [
-                  "La machine transforme 1,609 en 5 ; son bouton retour fait le chemin inverse et rend 1,609.",
-                  "En maths, on écrit : eˣ = y ⇔ x = ln y, pour y > 0. ln défait l’exponentielle comme ÷ défait × : ln 5 ≈ 1,609, touche ln, pas log."
+                  "La machine transforme 1,609 en 5 ; son bouton retour fait le chemin inverse et rend 1,609."
                 ],
                 "items": [
                   "La flèche eˣ de la machine → la fonction exponentielle",
                   "Le bouton ln → la fonction logarithme népérien",
                   "La carte 1,609 qui entre → l’exposant x",
                   "La carte 5 qui ressort → y = eˣ"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : eˣ = y ⇔ x = ln y, pour y > 0. ln défait l’exponentielle comme ÷ défait × : ln 5 ≈ 1,609, touche ln, pas log."
               }
             },
             "metadonnees": {
@@ -5552,14 +6052,14 @@
                 "image": "/assets/cours/b2-07/v1/plante-et-fenetre.webp",
                 "imageAlt": "Une plante grimpante monte vers le rebord d’une fenêtre, marqué d’un trait rouge 10. Le long de la tige, des traits numérotés de 0 à 6 marquent les semaines ; l’enfant montre le trait 6, la semaine où la tige atteint le rebord.",
                 "paragraphs": [
-                  "La plante monte vers le rebord de la fenêtre. Plutôt que de mesurer chaque semaine, on calcule d’un coup la semaine où elle l’atteint.",
-                  "En maths, on écrit : 1,5ⁿ ≥ 10 ⇔ n ≥ ln 10 ÷ ln 1,5 ≈ 5,68, donc n = 6 : on garde l’entier juste au-dessus. Si q < 1, ln q < 0 et diviser par ln q change le sens de l’inégalité."
+                  "La plante monte vers le rebord de la fenêtre. Plutôt que de mesurer chaque semaine, on calcule d’un coup la semaine où elle l’atteint."
                 ],
                 "items": [
                   "Le rebord de la fenêtre, trait 10 → le seuil",
                   "La hauteur de la plante → qⁿ, ici 1,5ⁿ",
                   "Le trait 6, que montre le doigt → le plus petit entier n tel que qⁿ ≥ seuil"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : 1,5ⁿ ≥ 10 ⇔ n ≥ ln 10 ÷ ln 1,5 ≈ 5,68, donc n = 6 : on garde l’entier juste au-dessus. Si q < 1, ln q < 0 et diviser par ln q change le sens de l’inégalité."
               }
             },
             "metadonnees": {
@@ -5598,14 +6098,14 @@
                 "image": "/assets/cours/b2-07/v1/verre-cuillere.webp",
                 "imageAlt": "Un enfant verse de l’eau dans un grand verre à moitié plein avec une cuillère, et compte sur ses doigts : trois doigts levés. Une flèche circulaire autour de la cuillère, et l’étiquette n = 3.",
                 "paragraphs": [
-                  "On verse de l’eau dans le verre, encore et encore, en comptant les tours sur ses doigts : trois doigts levés, n = 3.",
-                  "En maths, on écrit : à chaque tour, n ← n + 1 puis u ← u × q. Une boucle refait les mêmes instructions ; le compteur dit combien de fois."
+                  "On verse de l’eau dans le verre, encore et encore, en comptant les tours sur ses doigts : trois doigts levés, n = 3."
                 ],
                 "items": [
                   "La flèche qui tourne autour de la cuillère → la boucle, qui refait les mêmes instructions",
                   "Les doigts levés, n = 3 → le compteur n, le rang atteint",
                   "L’eau dans le verre → la valeur u, mise à jour à chaque tour"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : à chaque tour, n ← n + 1 puis u ← u × q. Une boucle refait les mêmes instructions ; le compteur dit combien de fois."
               }
             },
             "metadonnees": {
@@ -5636,56 +6136,18 @@
                 "image": "/assets/cours/b2-07/v1/pas-encore-plein.webp",
                 "imageAlt": "L’enfant devant le grand verre marqué d’un trait rouge plein. Il pense « pas encore… » et continue de verser. À côté, l’eau atteint le trait : il pose la cuillère, « fini ! ».",
                 "paragraphs": [
-                  "Tant que l’eau n’atteint pas le trait rouge « plein », on verse encore. Dès qu’elle l’atteint, on s’arrête.",
-                  "En maths, on écrit : objectif u ≥ 1 000, boucle « Tant que u < 1 000 » ; pour descendre sous 500, « Tant que u ≥ 500 ». Après « Tant que », on écrit le contraire de l’objectif ; à la fin, Afficher n."
+                  "Tant que l’eau n’atteint pas le trait rouge « plein », on verse encore. Dès qu’elle l’atteint, on s’arrête."
                 ],
                 "items": [
                   "Le trait rouge « plein » → le seuil, ici 1 000",
                   "La pensée « pas encore… » → la condition u < 1 000, vraie tant qu’on n’a pas fini",
                   "« Fini ! », la cuillère posée → la sortie de la boucle, puis Afficher n"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : objectif u ≥ 1 000, boucle « Tant que u < 1 000 » ; pour descendre sous 500, « Tant que u ≥ 500 ».\nAprès « Tant que », on écrit le contraire de l’objectif ; à la fin, Afficher n.\nLa plante de la fenêtre : u ← 1 ; n ← 0 ; Tant que u < 10 : n ← n + 1, u ← u × 1,5 ; Afficher n, soit 6.\nC’est le rang que donne ln : ln 10 ÷ ln 1,5 ≈ 5,68, arrondi au-dessus."
               }
             },
             "metadonnees": {
               "concepts": ["algorithme-de-seuil"],
-              "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
-              "modalite": "solo",
-              "regime": "ouvert"
-            }
-          }
-        }
-      },
-      {
-        "id": "B2-07-A1-09-ENFANT-DEUX-CHEMINS",
-        "type": "fp-story",
-        "titre": "Deux chemins, le même rang",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {
-          "recit": {
-            "id": "B2-07-A1-09-ENFANT-DEUX-CHEMINS",
-            "presentation": {
-              "version": 2,
-              "screenId": "B2-07-A1-09-ENFANT-DEUX-CHEMINS",
-              "renderer": "image-left",
-              "props": {
-                "title": "Deux chemins, le même rang",
-                "image": "/assets/cours/b2-07/v1/deux-chemins.webp",
-                "imageAlt": "Une cabane en haut d’une colline. À gauche, des empreintes de pas numérotées de 1 à 6 mènent à la porte. À droite, un enfant fait un grand saut marqué ln et atterrit sur la même marche 6.",
-                "paragraphs": [
-                  "Deux chemins mènent à la même cabane : l’un à petits pas numérotés, l’autre en un seul grand saut.",
-                  "En maths, on écrit : la boucle sur 1,5ⁿ affiche 6 ; ln 10 ÷ ln 1,5 ≈ 5,68, arrondi au-dessus, donne aussi 6. Les deux méthodes trouvent le même premier rang."
-                ],
-                "items": [
-                  "Les pas numérotés de 1 à 6 → la boucle « Tant que », rang après rang",
-                  "Le grand saut marqué ln → le calcul par ln, d’un coup",
-                  "La marche 6 → le premier rang qui dépasse le seuil"
-                ]
-              }
-            },
-            "metadonnees": {
-              "concepts": ["algorithme-de-seuil", "resolution-par-logarithme"],
               "misconceptionsCiblees": [],
               "dureeMinutes": 1,
               "modalite": "solo",
@@ -5781,15 +6243,15 @@
                 "image": "/assets/cours/b2-07/v1/velo-sur-la-colline.webp",
                 "imageAlt": "Une colline vue de côté et trois fois le même enfant à vélo : il monte en pédalant fort, flèche verte +, roule à plat au sommet, trait bleu 0, puis descend, flèche rouge −. Sous chaque roue, un petit segment suit la pente.",
                 "paragraphs": [
-                  "Le vélo monte la colline, roule à plat tout en haut, puis redescend.",
-                  "En maths, on écrit : f′(a) est la pente de la courbe de f au point d’abscisse a, celle de sa tangente : elle dit de combien f monte, juste là."
+                  "Le vélo monte la colline, roule à plat tout en haut, puis redescend."
                 ],
                 "items": [
                   "Le segment sous la roue → la tangente au point d’abscisse a",
                   "La montée, flèche verte + → f′(a) > 0",
                   "Le plat du sommet, trait bleu 0 → f′(a) = 0",
                   "La descente, flèche rouge − → f′(a) < 0"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f′(a) est la pente de la courbe de f au point d’abscisse a, celle de sa tangente : elle dit de combien f monte, juste là."
               }
             },
             "metadonnees": {
@@ -5803,37 +6265,196 @@
         }
       },
       {
-        "id": "B2-07-A2-04-ENFANT-RECETTE",
+        "id": "B2-07-A2-04-COURBE-PENTES",
         "type": "fp-story",
-        "titre": "La recette des puissances",
-        "duree": 1,
+        "titre": "La pente, point par point",
+        "duree": 2,
         "interactif": false,
         "donnees": {
           "recit": {
-            "id": "B2-07-A2-04-ENFANT-RECETTE",
+            "id": "B2-07-A2-04-COURBE-PENTES",
             "presentation": {
               "version": 2,
-              "screenId": "B2-07-A2-04-ENFANT-RECETTE",
-              "renderer": "image-left",
+              "screenId": "B2-07-A2-04-COURBE-PENTES",
+              "renderer": "courbe",
               "props": {
-                "title": "La recette des puissances",
-                "image": "/assets/cours/b2-07/v1/exposant-qui-saute.webp",
-                "imageAlt": "Un grand x debout sur un plongeoir : le petit 2 de son exposant saute et atterrit devant lui, on lit 2x. À côté, un caillou marqué 7 sur un sol plat, avec l’étiquette pente 0.",
-                "paragraphs": [
-                  "Le petit 2 en haut du x saute du plongeoir et atterrit devant lui : on lit 2x. Le caillou 7, posé sur un sol plat, ne monte jamais.",
-                  "En maths, on écrit : (x²)′ = 2x ; (x³)′ = 3x² ; (x)′ = 1 ; (k)′ = 0 ; (k × u)′ = k × u′ ; (u + v)′ = u′ + v′."
-                ],
-                "items": [
-                  "Le 2 qui saute devant le x → l’exposant, qui descend en coefficient",
-                  "Le x resté seul sur le plongeoir → l’exposant diminué de un : x¹, soit x",
-                  "Le caillou 7 sur le sol plat → une constante, de dérivée nulle"
+                "title": "La pente, point par point",
+                "figure": {
+                  "formula": "f(x) = −x² + 6x",
+                  "xLabel": "x",
+                  "yLabel": "f(x)",
+                  "xRange": [0, 6],
+                  "yRange": [0, 10],
+                  "points": [
+                    {
+                      "x": 0,
+                      "y": 0
+                    },
+                    {
+                      "x": 0.25,
+                      "y": 1.44
+                    },
+                    {
+                      "x": 0.5,
+                      "y": 2.75
+                    },
+                    {
+                      "x": 0.75,
+                      "y": 3.94
+                    },
+                    {
+                      "x": 1,
+                      "y": 5
+                    },
+                    {
+                      "x": 1.25,
+                      "y": 5.94
+                    },
+                    {
+                      "x": 1.5,
+                      "y": 6.75
+                    },
+                    {
+                      "x": 1.75,
+                      "y": 7.44
+                    },
+                    {
+                      "x": 2,
+                      "y": 8
+                    },
+                    {
+                      "x": 2.25,
+                      "y": 8.44
+                    },
+                    {
+                      "x": 2.5,
+                      "y": 8.75
+                    },
+                    {
+                      "x": 2.75,
+                      "y": 8.94
+                    },
+                    {
+                      "x": 3,
+                      "y": 9
+                    },
+                    {
+                      "x": 3.25,
+                      "y": 8.94
+                    },
+                    {
+                      "x": 3.5,
+                      "y": 8.75
+                    },
+                    {
+                      "x": 3.75,
+                      "y": 8.44
+                    },
+                    {
+                      "x": 4,
+                      "y": 8
+                    },
+                    {
+                      "x": 4.25,
+                      "y": 7.44
+                    },
+                    {
+                      "x": 4.5,
+                      "y": 6.75
+                    },
+                    {
+                      "x": 4.75,
+                      "y": 5.94
+                    },
+                    {
+                      "x": 5,
+                      "y": 5
+                    },
+                    {
+                      "x": 5.25,
+                      "y": 3.94
+                    },
+                    {
+                      "x": 5.5,
+                      "y": 2.75
+                    },
+                    {
+                      "x": 5.75,
+                      "y": 1.44
+                    },
+                    {
+                      "x": 6,
+                      "y": 0
+                    }
+                  ],
+                  "description": "La courbe de f(x) = −x² + 6x : une colline qui part de 0, monte jusqu’à 9 en x = 3, puis redescend à 0 en x = 6."
+                },
+                "steps": [
+                  {
+                    "title": "Une colline",
+                    "text": "f(x) = −x² + 6x monte de x = 0 à x = 3, puis redescend jusqu’à x = 6.\nEn chaque point, on pose une règle qui touche la courbe sans la couper : la tangente.\nSa pente dit de combien la courbe monte, juste là."
+                  },
+                  {
+                    "title": "En x = 1",
+                    "text": "La tangente monte de 4 quand x avance de 1.\nPente 4 : la courbe monte vite.",
+                    "tangent": {
+                      "x": 1,
+                      "y": 5,
+                      "slope": 4,
+                      "label": "pente 4"
+                    }
+                  },
+                  {
+                    "title": "En x = 2",
+                    "text": "Pente 2 : la courbe monte encore, moins vite.",
+                    "tangent": {
+                      "x": 2,
+                      "y": 8,
+                      "slope": 2,
+                      "label": "pente 2"
+                    }
+                  },
+                  {
+                    "title": "En x = 3",
+                    "text": "La tangente est à plat : pente 0.\nC’est le sommet : la courbe ne monte plus et ne descend pas encore.",
+                    "tangent": {
+                      "x": 3,
+                      "y": 9,
+                      "slope": 0,
+                      "label": "pente 0"
+                    }
+                  },
+                  {
+                    "title": "En x = 4",
+                    "text": "Pente −2 : la courbe descend.",
+                    "tangent": {
+                      "x": 4,
+                      "y": 8,
+                      "slope": -2,
+                      "label": "pente −2"
+                    }
+                  },
+                  {
+                    "title": "En x = 5",
+                    "text": "Pente −4 : elle descend de plus en plus vite.",
+                    "tangent": {
+                      "x": 5,
+                      "y": 5,
+                      "slope": -4,
+                      "label": "pente −4"
+                    }
+                  },
+                  {
+                    "title": "La dérivée",
+                    "text": "x : 1, 2, 3, 4, 5\npente : 4, 2, 0, −2, −4\nQuand x avance de 1, la pente baisse de 2 : pente = −2x + 6.\nCette formule s’appelle la dérivée de f : f′(x) = −2x + 6.\nElle dit, sans dessiner, si f monte (f′ > 0), s’arrête (f′ = 0) ou descend (f′ < 0)."
+                  }
                 ]
               }
             },
             "metadonnees": {
               "concepts": ["fonction-derivee"],
               "misconceptionsCiblees": [],
-              "dureeMinutes": 1,
+              "dureeMinutes": 2,
               "modalite": "solo",
               "regime": "ouvert"
             }
@@ -5854,18 +6475,18 @@
               "screenId": "B2-07-A2-05-COURS-DERIVEE",
               "renderer": "lesson",
               "props": {
-                "title": "La dérivée : la pente de la courbe en chaque point",
+                "title": "La dérivée, pente de la courbe",
                 "blocks": [
                   {
                     "kind": "definition",
                     "title": "Nombre dérivé et fonction dérivée",
-                    "text": "Le nombre dérivé f′(a) est la pente de la courbe de f au point d’abscisse a : le coefficient directeur de sa tangente. La fonction dérivée f′ donne cette pente pour chaque x. Elle dira à Hélène si le bénéfice monte ou descend quand le prix bouge.",
-                    "formula": "(k)′ = 0 · (x)′ = 1 · (x²)′ = 2x · (x³)′ = 3x² · (k × u)′ = k × u′ · (u + v)′ = u′ + v′"
+                    "text": "Le nombre dérivé f′(a) est la pente de la tangente à la courbe de f au point d’abscisse a.\nLa fonction dérivée f′ donne cette pente pour chaque x.\nElle sert à savoir où f monte et où elle descend : elle dira à Hélène si le bénéfice monte ou descend quand le prix bouge.",
+                    "formula": "(k)′ = 0\n(x)′ = 1\n(x²)′ = 2x\n(x³)′ = 3x²\n(k × u)′ = k × u′\n(u + v)′ = u′ + v′"
                   },
                   {
                     "kind": "example",
                     "title": "Pour débuter : f(x) = −2x² + 40x + 5",
-                    "text": "L’exemple de l’encadré du devoir maison.",
+                    "text": "Une fonction de degré 2, dérivée terme à terme.",
                     "steps": [
                       "Dériver terme à terme : (−2x²)′ = −2 × 2x = −4x ; (40x)′ = 40 ; (5)′ = 0.",
                       "f′(x) = −4x + 40.",
@@ -5873,8 +6494,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : dériver sans se tromper",
+                    "kind": "piege",
+                    "title": "Dériver sans se tromper",
                     "text": "Pièges : dériver 3x² en 3x en oubliant de faire descendre l’exposant ; garder le nombre seul dans la dérivée ; calculer f(a) quand on demande f′(a).",
                     "steps": [
                       "Écrire la dérivée de chaque terme, l’un après l’autre.",
@@ -5938,14 +6559,14 @@
                 "image": "/assets/cours/b2-07/v1/boule-de-neige.webp",
                 "imageAlt": "Une pente enneigée : un enfant pousse une boule de neige qui roule en grossissant, petite, moyenne, puis très grosse. Derrière chaque boule, des traits de vitesse de plus en plus longs.",
                 "paragraphs": [
-                  "La boule de neige roule dans la pente : plus elle est grosse, plus elle ramasse de neige à chaque tour.",
-                  "En maths, on écrit : (e^(kx))′ = k e^(kx), donc (a e^(kx))′ = a k e^(kx) : la vitesse de croissance est k fois la valeur. Comme e^(kx) > 0, le signe de la dérivée est celui de a × k."
+                  "La boule de neige roule dans la pente : plus elle est grosse, plus elle ramasse de neige à chaque tour."
                 ],
                 "items": [
                   "La taille de la boule → la valeur a e^(kx)",
                   "La neige ramassée à chaque tour → la dérivée a k e^(kx)",
                   "Les traits de vitesse, plus longs derrière la plus grosse → la dérivée, proportionnelle à la valeur"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : (e^(kx))′ = k e^(kx), donc (a e^(kx))′ = a k e^(kx) : la vitesse de croissance est k fois la valeur. Comme e^(kx) > 0, le signe de la dérivée est celui de a × k."
               }
             },
             "metadonnees": {
@@ -5972,13 +6593,13 @@
               "screenId": "B2-07-A2-10-COURS-DERIVEE-EXP",
               "renderer": "lesson",
               "props": {
-                "title": "Dériver a e^(kx) : la recette de l’exponentielle",
+                "title": "Dériver a e^(kx)",
                 "blocks": [
                   {
                     "kind": "property",
                     "title": "La dérivée de e^(kx)",
-                    "text": "Dériver e^(kx), c’est multiplier par k : l’exponentielle reste la même. Comme e^(kx) est toujours positif, le signe de la dérivée de a e^(kx) est celui de a × k : on retrouve le sens de variation du B2-06.",
-                    "formula": "(eˣ)′ = eˣ · (e^(kx))′ = k e^(kx) · (a e^(kx))′ = a k e^(kx)"
+                    "text": "Dériver e^(kx), c’est multiplier par k : l’exponentielle reste la même.\nComme e^(kx) est toujours positif, le signe de la dérivée de a e^(kx) est celui de a × k : on retrouve le sens de variation du B2-06.",
+                    "formula": "(eˣ)′ = eˣ\n(e^(kx))′ = k e^(kx)\n(a e^(kx))′ = a k e^(kx)"
                   },
                   {
                     "kind": "example",
@@ -5991,8 +6612,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : les pièges de l’exponentielle",
+                    "kind": "piege",
+                    "title": "Les pièges de l’exponentielle",
                     "text": "Pièges : oublier de multiplier par k ; dériver e^(kx) comme une puissance de x ; perdre le signe moins de k.",
                     "steps": [
                       "Repérer a et k.",
@@ -6000,7 +6621,69 @@
                       "Conclure sur le signe avec celui de a × k."
                     ]
                   }
-                ]
+                ],
+                "figure": {
+                  "formula": "f(x) = 1 000e^(0,02x)",
+                  "xLabel": "x",
+                  "yLabel": "f(x)",
+                  "xRange": [0, 50],
+                  "yRange": [0, 3000],
+                  "points": [
+                    {
+                      "x": 0,
+                      "y": 1000
+                    },
+                    {
+                      "x": 5,
+                      "y": 1105.17
+                    },
+                    {
+                      "x": 10,
+                      "y": 1221.4
+                    },
+                    {
+                      "x": 15,
+                      "y": 1349.86
+                    },
+                    {
+                      "x": 20,
+                      "y": 1491.82
+                    },
+                    {
+                      "x": 25,
+                      "y": 1648.72
+                    },
+                    {
+                      "x": 30,
+                      "y": 1822.12
+                    },
+                    {
+                      "x": 35,
+                      "y": 2013.75
+                    },
+                    {
+                      "x": 40,
+                      "y": 2225.54
+                    },
+                    {
+                      "x": 45,
+                      "y": 2459.6
+                    },
+                    {
+                      "x": 50,
+                      "y": 2718.28
+                    }
+                  ],
+                  "tangents": [
+                    {
+                      "x": 0,
+                      "y": 1000,
+                      "slope": 20,
+                      "label": "pente 20 en x = 0"
+                    }
+                  ],
+                  "description": "La courbe de f(x) = 1 000e^(0,02x) part de 1 000 en x = 0 et monte de plus en plus vite ; sa tangente en x = 0 a pour pente 20."
+                }
               }
             },
             "metadonnees": {
@@ -6018,14 +6701,6 @@
         "type": "ecran-verrouille",
         "titre": "Exercice 2 — La vitesse des ventes du B2-06",
         "duree": 10,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
-        "id": "B2-07-A2-12-JALON",
-        "type": "ecran-verrouille",
-        "titre": "Jalon 1 : la dérivée",
-        "duree": 1,
         "interactif": false,
         "donnees": {}
       },
@@ -6055,14 +6730,14 @@
                 "image": "/assets/cours/b2-07/v1/panneaux-de-la-route.webp",
                 "imageAlt": "Une route de montagne qui monte puis descend. Avant la montée, un panneau vert avec une flèche montante et le signe + ; avant la descente, un panneau rouge avec une flèche descendante et le signe −. Une petite voiture jaune suit la route.",
                 "paragraphs": [
-                  "Au bord de la route, un panneau annonce une montée ou une descente. Il ne dit pas à quelle altitude roule la voiture.",
-                  "En maths, on écrit : f′ > 0 sur un intervalle ⇒ f croissante sur cet intervalle ; f′ < 0 ⇒ f décroissante. Le signe de f′ donne le sens ; le signe de f n’en dit rien."
+                  "Au bord de la route, un panneau annonce une montée ou une descente. Il ne dit pas à quelle altitude roule la voiture."
                 ],
                 "items": [
                   "Le panneau vert + → f′ > 0 : f croissante",
                   "Le panneau rouge − → f′ < 0 : f décroissante",
                   "L’altitude de la voiture → la valeur f(x), que le signe de f′ ne donne pas"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : f′ > 0 sur un intervalle ⇒ f croissante sur cet intervalle ; f′ < 0 ⇒ f décroissante. Le signe de f′ donne le sens ; le signe de f n’en dit rien."
               }
             },
             "metadonnees": {
@@ -6093,15 +6768,15 @@
                 "image": "/assets/cours/b2-07/v1/carte-du-trajet.webp",
                 "imageAlt": "Une carte de balade dessinée par un enfant : le sentier part du départ, monte jusqu’à un sommet marqué d’un drapeau, puis descend vers l’arrivée. Au-dessus, de grandes flèches montante puis descendante ; sous chaque point clé, une étiquette d’altitude à remplir.",
                 "paragraphs": [
-                  "Avant la balade, on dessine la carte : où le sentier monte, où il descend, et l’altitude des points clés.",
-                  "En maths, on écrit : le tableau de variation résume f en trois lignes : une ligne x, une ligne du signe de f′, une ligne de flèches ↗ ↘ avec les valeurs de f aux bornes et là où le sens change."
+                  "Avant la balade, on dessine la carte : où le sentier monte, où il descend, et l’altitude des points clés."
                 ],
                 "items": [
                   "Les panneaux départ et arrivée → les bornes de l’intervalle, sur la ligne x",
                   "La flèche verte, puis la flèche rouge → la ligne des variations, ↗ puis ↘",
                   "Le drapeau du sommet → la valeur de x où f′ change de signe",
                   "Les étiquettes « Altitude : ___ » → les valeurs de f à écrire au bout des flèches"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : le tableau de variation résume f en trois lignes : une ligne x, une ligne du signe de f′, une ligne de flèches ↗ ↘ avec les valeurs de f aux bornes et là où le sens change."
               }
             },
             "metadonnees": {
@@ -6134,7 +6809,7 @@
                     "kind": "property",
                     "title": "Signe de la dérivée et sens de variation",
                     "text": "Si f′(x) > 0 sur un intervalle, f est croissante sur cet intervalle ; si f′(x) < 0, f est décroissante. Le tableau de variation range ces informations : x, signe de f′, flèches et valeurs de f.",
-                    "formula": "f′ > 0 ⇒ f ↗ · f′ < 0 ⇒ f ↘"
+                    "formula": "f′ > 0 ⇒ f ↗\nf′ < 0 ⇒ f ↘"
                   },
                   {
                     "kind": "method",
@@ -6149,7 +6824,7 @@
                   {
                     "kind": "example",
                     "title": "Pour débuter : f′(x) = −4x + 40 sur [0 ; 15]",
-                    "text": "La dérivée de l’encadré du devoir maison.",
+                    "text": "Le signe d’une dérivée affine donne le sens de variation de f.",
                     "steps": [
                       "−4x + 40 ≥ 0 ⇔ −4x ≥ −40 ⇔ x ≤ 10 : on divise par −4, le sens change.",
                       "f′ ≥ 0 sur [0 ; 10], f′ ≤ 0 sur [10 ; 15].",
@@ -6157,8 +6832,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : ne pas confondre les signes",
+                    "kind": "piege",
+                    "title": "Ne pas confondre les signes",
                     "text": "Pièges : lire le sens de f dans le signe de f ; garder le sens de l’inégalité en divisant par un nombre négatif ; oublier les valeurs de f dans le tableau."
                   }
                 ]
@@ -6191,14 +6866,6 @@
         "donnees": {}
       },
       {
-        "id": "B2-07-A3-07-JALON",
-        "type": "ecran-verrouille",
-        "titre": "Jalon 2 : signe et variations",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
         "id": "B2-07-A4-01-REFLEXION-CAPACITE",
         "type": "ecran-verrouille",
         "titre": "Réfléchir : le sommet est-il atteignable ?",
@@ -6224,14 +6891,14 @@
                 "image": "/assets/cours/b2-07/v1/sommet-de-la-colline.webp",
                 "imageAlt": "L’enfant à vélo s’arrête au sommet arrondi d’une colline, un drapeau planté, étiquette sommet. Plus loin, une autre route monte, fait un petit replat, puis continue de monter ; sur le replat, un panneau barré pas un sommet.",
                 "paragraphs": [
-                  "Le vélo arrive en haut de la colline : il a fini de monter et va redescendre. Plus loin, la route fait un replat, puis remonte.",
-                  "En maths, on écrit : si f′ s’annule en a en passant de + à −, f(a) est un maximum ; de − à + : un minimum ; sans changement de signe, pas d’extremum."
+                  "Le vélo arrive en haut de la colline : il a fini de monter et va redescendre. Plus loin, la route fait un replat, puis remonte."
                 ],
                 "items": [
                   "Le drapeau « sommet » → un maximum : f′ passe de + à −",
                   "Le replat barré « pas un sommet » → f′ = 0 sans changement de signe : pas d’extremum",
                   "La hauteur du drapeau → la valeur du maximum, f(a)"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : si f′ s’annule en a en passant de + à −, f(a) est un maximum ; de − à + : un minimum ; sans changement de signe, pas d’extremum."
               }
             },
             "metadonnees": {
@@ -6262,14 +6929,14 @@
                 "image": "/assets/cours/b2-07/v1/barriere-sur-le-chemin.webp",
                 "imageAlt": "Une colline avec un drapeau au sommet. Sur le chemin qui monte, une barrière blanche et rouge ferme le passage avant le sommet. L’enfant, arrêté contre la barrière, lève les bras près de l’étiquette ici.",
                 "paragraphs": [
-                  "Une barrière ferme le chemin avant le sommet : le point le plus haut qu’on peut atteindre est contre la barrière, « ici ».",
-                  "En maths, on écrit : sur un intervalle, on compare les valeurs de f aux bornes et aux extremums. Sous contrainte, l’optimum peut être une borne."
+                  "Une barrière ferme le chemin avant le sommet : le point le plus haut qu’on peut atteindre est contre la barrière, « ici »."
                 ],
                 "items": [
                   "La barrière → une borne de l’intervalle, fixée par une contrainte",
                   "Le drapeau hors d’atteinte → l’extremum situé hors de l’intervalle permis",
                   "« Ici », contre la barrière → l’optimum sous contrainte, atteint à la borne"
-                ]
+                ],
+                "conclusion": "En maths, on écrit : sur un intervalle, on compare les valeurs de f aux bornes et aux extremums. Sous contrainte, l’optimum peut être une borne."
               }
             },
             "metadonnees": {
@@ -6296,13 +6963,13 @@
               "screenId": "B2-07-A4-04-COURS-OPTIMUM",
               "renderer": "lesson",
               "props": {
-                "title": "Extremum et optimum : le sommet ou le bord",
+                "title": "Le sommet ou le bord",
                 "blocks": [
                   {
                     "kind": "definition",
                     "title": "Extremum et changement de signe",
-                    "text": "Si f′ s’annule en a en passant de + à −, f admet un maximum local en a ; de − à + , un minimum local. Le maximum sur un intervalle est la plus grande des valeurs de f aux bornes et aux maximums locaux.",
-                    "formula": "f′ : + puis − en a ⇒ maximum f(a) · f′ : − puis + en a ⇒ minimum f(a)"
+                    "text": "Si f′ s’annule en a en passant de + à −, f admet un maximum local en a ; de − à +, un minimum local.\nLe maximum sur un intervalle est la plus grande des valeurs de f aux bornes et aux maximums locaux.",
+                    "formula": "f′ : + puis − en a ⇒ maximum f(a)\nf′ : − puis + en a ⇒ minimum f(a)"
                   },
                   {
                     "kind": "method",
@@ -6325,11 +6992,158 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : conclure par le x et la valeur",
+                    "kind": "piege",
+                    "title": "Conclure par le x et la valeur",
                     "text": "Pièges : annoncer un extremum dès que f′ s’annule ; oublier les bornes ; garder l’optimum hors des valeurs permises ; donner x à la place de f(x). Phrase attendue : « Le bénéfice est maximal pour x = …, il vaut alors … € »."
                   }
-                ]
+                ],
+                "figure": {
+                  "formula": "f(x) = −2x² + 40x + 5",
+                  "xLabel": "x",
+                  "yLabel": "f(x)",
+                  "xRange": [0, 15],
+                  "yRange": [0, 220],
+                  "points": [
+                    {
+                      "x": 0,
+                      "y": 5
+                    },
+                    {
+                      "x": 0.5,
+                      "y": 24.5
+                    },
+                    {
+                      "x": 1,
+                      "y": 43
+                    },
+                    {
+                      "x": 1.5,
+                      "y": 60.5
+                    },
+                    {
+                      "x": 2,
+                      "y": 77
+                    },
+                    {
+                      "x": 2.5,
+                      "y": 92.5
+                    },
+                    {
+                      "x": 3,
+                      "y": 107
+                    },
+                    {
+                      "x": 3.5,
+                      "y": 120.5
+                    },
+                    {
+                      "x": 4,
+                      "y": 133
+                    },
+                    {
+                      "x": 4.5,
+                      "y": 144.5
+                    },
+                    {
+                      "x": 5,
+                      "y": 155
+                    },
+                    {
+                      "x": 5.5,
+                      "y": 164.5
+                    },
+                    {
+                      "x": 6,
+                      "y": 173
+                    },
+                    {
+                      "x": 6.5,
+                      "y": 180.5
+                    },
+                    {
+                      "x": 7,
+                      "y": 187
+                    },
+                    {
+                      "x": 7.5,
+                      "y": 192.5
+                    },
+                    {
+                      "x": 8,
+                      "y": 197
+                    },
+                    {
+                      "x": 8.5,
+                      "y": 200.5
+                    },
+                    {
+                      "x": 9,
+                      "y": 203
+                    },
+                    {
+                      "x": 9.5,
+                      "y": 204.5
+                    },
+                    {
+                      "x": 10,
+                      "y": 205
+                    },
+                    {
+                      "x": 10.5,
+                      "y": 204.5
+                    },
+                    {
+                      "x": 11,
+                      "y": 203
+                    },
+                    {
+                      "x": 11.5,
+                      "y": 200.5
+                    },
+                    {
+                      "x": 12,
+                      "y": 197
+                    },
+                    {
+                      "x": 12.5,
+                      "y": 192.5
+                    },
+                    {
+                      "x": 13,
+                      "y": 187
+                    },
+                    {
+                      "x": 13.5,
+                      "y": 180.5
+                    },
+                    {
+                      "x": 14,
+                      "y": 173
+                    },
+                    {
+                      "x": 14.5,
+                      "y": 164.5
+                    },
+                    {
+                      "x": 15,
+                      "y": 155
+                    }
+                  ],
+                  "tangents": [
+                    {
+                      "x": 10,
+                      "y": 205,
+                      "slope": 0,
+                      "label": "sommet : f(10) = 205"
+                    }
+                  ],
+                  "zone": {
+                    "from": 12,
+                    "to": 15,
+                    "label": "contrainte x ≥ 12"
+                  },
+                  "description": "La parabole de f(x) = −2x² + 40x + 5 sur [0 ; 15] : son sommet, tangente à plat, est en x = 10 ; la zone permise x ≥ 12 commence après le sommet, où f descend."
+                }
               }
             },
             "metadonnees": {
@@ -6375,14 +7189,6 @@
         "donnees": {}
       },
       {
-        "id": "B2-07-A4-09-JALON",
-        "type": "ecran-verrouille",
-        "titre": "Jalon 3 : l’optimum",
-        "duree": 1,
-        "interactif": false,
-        "donnees": {}
-      },
-      {
         "id": "B2-07-A5-01-RAPPEL",
         "type": "ecran-verrouille",
         "titre": "Rappel : de mémoire, sans vos notes",
@@ -6405,7 +7211,7 @@
               "renderer": "grid",
               "props": {
                 "title": "Fiche mémo : dérivée et optimisation",
-                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "subtitle": "Chaque carte part d’une question et donne la méthode et son piège.",
                 "items": [
                   {
                     "title": "Nombre dérivé",
@@ -6443,7 +7249,7 @@
                     "back": "Comparer les valeurs aux bornes et aux extremums. Sous contrainte, l’optimum peut être une borne."
                   },
                   {
-                    "title": "Rédiger au CCF",
+                    "title": "Rédiger la réponse",
                     "description": "Quelles quatre étapes ?",
                     "back": "1. Calculer f′(x).\n2. Résoudre f′(x) = 0.\n3. Étudier le signe de f′(x).\n4. Dresser le tableau de variation et conclure par le x et la valeur."
                   },
@@ -6451,12 +7257,6 @@
                     "title": "Tableur",
                     "description": "Comment écrire un carré ?",
                     "back": "Avec ^ : =3*A2^2-5*A2+7 calcule 3x² − 5x + 7 pour x en A2, puis se recopie vers le bas. La colonne de la dérivée change de signe au sommet."
-                  },
-                  {
-                    "title": "Référentiel du BTS CG",
-                    "description": "Le programme de mathématiques et l’épreuve E3.",
-                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
-                    "external": true
                   }
                 ],
                 "imprimable": true

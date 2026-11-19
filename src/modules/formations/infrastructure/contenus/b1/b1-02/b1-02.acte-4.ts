@@ -161,7 +161,6 @@ export const ACTE_4: moteur.Acte = [
         description: 'La formule à recopier ?',
         back: 'La valeur de base figée par des $. Taux moyen : =PUISSANCE(C;1/n)-1.',
       },
-      moteur.REFERENTIEL_DU_BTS_CG,
     ],
   ),
 ];

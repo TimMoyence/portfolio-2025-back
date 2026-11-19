@@ -115,8 +115,8 @@ de travail, pause de 15 minutes après l’acte 1 et après l’acte 2.
 
 **Réfléchir** (vote non noté de 2 minutes) → **Comprendre** (une à trois pages de 2 minutes) →
 **S’exercer** (exercice noté, corrigé sur place, consigne en étapes numérotées). Un exemple guidé
-`fp-worked` précède l’exercice 2. Chaque exercice annonce
-`• Temps : réflexion N min · travail M min · correction K min`.
+`fp-worked` précède l’exercice 2. La durée de chaque exercice additionne réflexion, travail et correction ; les notes formateur
+ne la répètent pas.
 
 ### 2.3 La page de Word
 

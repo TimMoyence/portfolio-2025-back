@@ -114,7 +114,7 @@ const ACTE_1: moteur.Acte = [
       titre: 'Vote : par quel nombre multiplier ?',
       dureeMinutes: 4,
       concepts: ['coefficient-multiplicateur'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(1),
+      notes: '',
     },
     [
       moteur.vote(
@@ -245,7 +245,6 @@ const ACTE_1: moteur.Acte = [
         'Infographie « Multiplier, pas ajouter ». Deux tickets de cinéma, 10 € et 12 €, reliés par une flèche × 1,2. t = 2 ÷ 10 = 0,2, soit + 20 %. c = 1 + 0,2 = 1,2. Encadré : à − 20 %, c = 0,8 et 10 × 0,8 = 8 €. Moyen mnémotechnique : toujours le départ en bas.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « De 10 € à 12 €, on ajoute 2 € ou on multiplie par 1,2 ? » Seul le coefficient resservira.',
     ],
   ),
@@ -257,7 +256,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['taux-evolution', 'coefficient-multiplicateur'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : toujours le départ en bas.',
         'Lien à la mission : « De 100 € à 112 € : quel coefficient ? »',
       ),
@@ -309,7 +307,6 @@ const ACTE_1: moteur.Acte = [
         'Infographie « Aller : ×, retour : ÷ ». Un casque audio entre deux étiquettes, 30 € HT et 36 € TTC : × 1,20 à l’aller, ÷ 1,20 au retour. Le calcul 36 − 20 % = 28,80 € est barré. Encadré : remise de 10 %, 36 × 0,90 = 32,40 €.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « 36 € moins 20 %, on retrouve 30 € ? » Non : 28,80 €, le retour divise.',
     ],
   ),
@@ -321,7 +318,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['coefficient-multiplicateur', 'pourcentage'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : aller, ×, retour, ÷.',
         'Lien à la mission : la console de Théo, à 180 € TTC.',
       ),
@@ -368,7 +364,7 @@ const ACTE_1: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['coefficient-multiplicateur', 'pourcentage'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -431,7 +427,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['taux-evolution', 'coefficient-multiplicateur', 'pourcentage'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire « départ » et « arrivée » devant chaque prix.',
         'Pièges : écart en euros ; base d’arrivée ; − 20 % sur le TTC.',
         'Papier : exercice 1 du livret.',
@@ -506,7 +501,6 @@ const ACTE_1: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Transition : « Faisons calculer tous les taux par le tableur : exercice 2. »',
       ],
     },
@@ -538,7 +532,6 @@ const ACTE_1: moteur.Acte = [
       dureeMinutes: 7,
       concepts: ['tableur', 'taux-evolution'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 5),
         'Réflexion : écrire sur papier la formule de D2, puis ce qu’elle devient en D3 une fois recopiée.',
         'Erreurs à chercher : base d’arrivée ; écart sans division ; total tapé au clavier ; ARRONDI oublié.',
         'Papier : formules écrites sur la copie, puis les taux à la calculatrice.',
@@ -554,7 +547,7 @@ const ACTE_1: moteur.Acte = [
         ],
       },
     },
-    moteur.CORRECTION_AVANT_LA_PREMIERE_PAUSE,
+    moteur.CORRECTION_DE_DEUX_MINUTES,
     [
       ['B6 et C6', '=SOMME(B2:B5) et =SOMME(C2:C5) : 480 et 516.'],
       [
@@ -575,7 +568,6 @@ const ACTE_1: moteur.Acte = [
         'Je sais passer d’un taux à un coefficient, du HT au TTC, et écrire un taux au tableur.',
     },
     'Si plus de 30 % « Perdu » : reprendre la page A1-06 après la pause.',
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 
@@ -588,7 +580,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 5,
       concepts: ['evolutions-successives'],
       notes: moteur.puces(
-        'Temps « réfléchir » de la notion 2 : 3 min d’écriture individuelle, puis lire trois réponses au pupitre.',
         'Ne rien trancher : la trace écrite suivante répond.',
         'Relance : « Les 10 % de la baisse se calculent sur quel prix ? »',
         'Papier : cadre de réponse du livret.',
@@ -627,7 +618,6 @@ const ACTE_2: moteur.Acte = [
         'Infographie « + 10 %, + 20 % : pas + 30 % ». Un escalier de 100 à 110, puis à 132 : × 1,10, puis × 1,20. Encadré : C = 1,10 × 1,20 = 1,32, soit + 32 %. Le + 30 % est barré. Moyen mnémotechnique : coefficients, jamais taux.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « + 10 % puis + 20 %, pourquoi pas + 30 % ? » La seconde hausse porte sur un prix déjà monté.',
     ],
   ),
@@ -639,7 +629,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['evolutions-successives'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : coefficients, jamais taux.',
       ),
     },
@@ -689,7 +678,6 @@ const ACTE_2: moteur.Acte = [
         'Infographie « Le retour n’a pas le même taux ». Un vélo passe de 200 € à 100 € par − 50 %, soit × 0,5, et revient à 200 € par + 100 %, soit × 2. Le calcul + 50 % → 150 € est barré. Encadré : 1 ÷ 0,5 = 2.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « − 50 %, puis + 50 % : on revient au départ ? » Non : il faut + 100 %.',
     ],
   ),
@@ -701,7 +689,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['evolution-reciproque'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : le retour n’a pas le même taux.',
       ),
     },
@@ -746,7 +733,7 @@ const ACTE_2: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['evolutions-successives', 'evolution-reciproque'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -809,7 +796,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['evolutions-successives'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
         'Réflexion : dire sur quel prix porte chaque évolution.',
         'Pièges : soldes calculés sur le prix de départ ; montant de la baisse saisi au lieu du nouveau prix.',
         'Papier : tableau du livret, rempli à la main.',
@@ -892,7 +878,6 @@ const ACTE_2: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['evolutions-successives', 'evolution-reciproque'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : écrire chaque évolution en coefficient avant de calculer.',
         'Pièges : taux additionnés ; coefficient lu comme un taux ; même taux au retour.',
         'Papier : exercice 4 du livret.',
@@ -964,10 +949,7 @@ const ACTE_2: moteur.Acte = [
     },
     {
       minutes: 2,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE,
-        'Transition : « Faisons le point : enchaîner et revenir. »',
-      ],
+      notes: ['Transition : « Faisons le point : enchaîner et revenir. »'],
     },
     [
       [
@@ -1007,7 +989,7 @@ const ACTE_3: moteur.Acte = [
       titre: 'Vote : que dit un indice ?',
       dureeMinutes: 5,
       concepts: ['indice-base-100', 'taux-moyen'],
-      notes: moteur.notesDuVoteQuiOuvreLaNotion(3),
+      notes: '',
     },
     [
       moteur.vote(
@@ -1043,10 +1025,7 @@ const ACTE_3: moteur.Acte = [
       imageAlt:
         'Infographie « Ni un prix, ni un taux ». Deux barres sur un axe parti de 0 : 2020, 2 €, indice 100 ; 2025, 3 €, indice 150. 3 ÷ 2 × 100 = 150 et 150 − 100 = + 50 %. Les lectures 150 € et + 150 % sont barrées. Encart tableur : 2 en B2, 3 en B3, en C3 la formule =B3/$B$2*100.',
     },
-    [
-      moteur.AVANT_SA_PAGE,
-      'Question : « 150, c’est un prix ? un taux ? » Ni l’un ni l’autre.',
-    ],
+    ['Question : « 150, c’est un prix ? un taux ? » Ni l’un ni l’autre.'],
   ),
   moteur.ecranV2(
     {
@@ -1056,7 +1035,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['indice-base-100', 'tableur'],
       notes: moteur.puces(
-        moteur.PAGE_APRES_SON_ILLUSTRATION,
         'Faire répéter le moyen mnémotechnique : ni un prix, ni un taux.',
       ),
     },
@@ -1107,7 +1085,6 @@ const ACTE_3: moteur.Acte = [
         'Infographie « La même hausse chaque année ». 100 €, 130 €, 169 €, reliés par deux flèches × 1,3. C = 1,69 ; n = 2 ; 1,69 puissance 1/2 = 1,3 ; + 30 % par an. Le calcul 69 ÷ 2 = 34,5 % est barré. Encart tableur : =PUISSANCE(1,69;1/2)-1. Moyen mnémotechnique : n compte les évolutions.',
     },
     [
-      moteur.AVANT_SA_PAGE,
       'Question : « + 69 % en 2 ans, ça fait + 34,5 % par an ? » Non : + 30 % par an.',
     ],
   ),
@@ -1119,7 +1096,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['taux-moyen', 'tableur'],
       notes: moteur.puces(
-        moteur.DEUXIEME_PAGE_APRES_SON_ILLUSTRATION,
         'Question : « De 2021 à 2024, combien d’évolutions ? » Trois, pas quatre.',
         'Faire répéter le moyen mnémotechnique : n compte les évolutions.',
       ),
@@ -1166,7 +1142,7 @@ const ACTE_3: moteur.Acte = [
       brique: 'fp-worked',
       dureeMinutes: 4,
       concepts: ['indice-base-100', 'taux-moyen'],
-      notes: moteur.puces(...moteur.NOTES_DE_L_EXEMPLE_ETAPE_PAR_ETAPE),
+      notes: '',
       proprietes: {
         modalite: 'solo',
         exemple: {
@@ -1227,7 +1203,6 @@ const ACTE_3: moteur.Acte = [
       dureeMinutes: 8,
       concepts: ['tableur', 'indice-base-100', 'taux-moyen'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(2, 6),
         'Réflexion : le tableau est en ligne, comme au sujet : la recopie va vers la droite.',
         'Erreurs à chercher : base non figée ; ARRONDI oublié ; taux global divisé par 3.',
         'Papier : formules écrites sur la copie avec la grille des cellules.',
@@ -1245,10 +1220,6 @@ const ACTE_3: moteur.Acte = [
     },
     {
       minutes: 2,
-      notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
-        'Transition : jalon 3, puis pause de 15 minutes.',
-      ],
     },
     [
       [
@@ -1280,7 +1251,6 @@ const ACTE_3: moteur.Acte = [
       invite:
         'Je sais calculer et lire un indice, et calculer un taux annuel moyen.',
     },
-    moteur.PAUSE_HORS_DUREE,
   ),
 ];
 

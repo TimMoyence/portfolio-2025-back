@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "c79b7be7d8b3d9806c4b48d781da509a9a2333b9eb5216188157141e5ab045af",
+  "empreinte": "ff16382f1daf8a870757608625d6bc215305180c4a4db6f9687a1f1161508e5f",
   "sujet": {
     "id": "b2-02-series-statistiques",
     "titre": "Séries statistiques : résumer, relier, prévoir",
@@ -331,7 +331,7 @@
                   {
                     "kind": "method",
                     "title": "Trouver la médiane sans se tromper",
-                    "text": "Piège : prendre la valeur du milieu de la liste sans l’avoir triée ; ici, on lirait 8, un nombre sans signification. Réflexe CCF : écrire la série triée, dire si l’effectif est pair ou impair, puis donner la médiane avec son unité.",
+                    "text": "Piège : prendre la valeur du milieu de la liste sans l’avoir triée ; ici, on lirait 8, un nombre sans signification. Réflexe : écrire la série triée, dire si l’effectif est pair ou impair, puis donner la médiane avec son unité.",
                     "steps": [
                       "Trier la série dans l’ordre croissant.",
                       "Effectif impair : la médiane est la valeur du milieu.",
@@ -414,8 +414,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : valeur extrême, fonction, unité",
+                    "kind": "piege",
+                    "title": "Valeur extrême, fonction, unité",
                     "text": "Une valeur extrême, comme la facture contestée F105, tire la moyenne et l’écart-type, pas la médiane. Sans pièce prouvant une erreur, on la garde, on la signale et l’on publie la médiane à côté de la moyenne et de l’écart-type. Pièges : donner la variance pour l’écart-type, choisir ECARTYPE pour une population entière.",
                     "steps": [
                       "Toutes les factures de la période : =ECARTYPEP(plage), qui divise par n.",
@@ -795,7 +795,7 @@
                   {
                     "kind": "method",
                     "title": "Placer G sans se tromper",
-                    "text": "Piège : prendre pour G le point de la ligne du milieu du tableau, ou les sommes au lieu des moyennes. G n’est en général aucun des points du nuage. Réflexe CCF : écrire les deux calculs de moyenne, puis placer G sur le graphique avec un symbole distinct.",
+                    "text": "Piège : prendre pour G le point de la ligne du milieu du tableau, ou les sommes au lieu des moyennes. G n’est en général aucun des points du nuage. Réflexe : écrire les deux calculs de moyenne, puis placer G sur le graphique avec un symbole distinct.",
                     "steps": [
                       "x̄ : =MOYENNE(plage des x)",
                       "ȳ : =MOYENNE(plage des y)",
@@ -878,8 +878,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : lire r, et rien de plus",
+                    "kind": "piege",
+                    "title": "Lire r, et rien de plus",
                     "text": "Trois pièges. r n’est pas la pente : il ne dit pas de combien y augmente quand x augmente de 1. Un r négatif proche de −1 justifie aussi un ajustement, par une droite qui descend. Corrélation n’est pas causalité : deux séries peuvent monter ensemble parce qu’une troisième chose, la saison ou le temps, les fait varier toutes les deux.",
                     "steps": [
                       "=COEFFICIENT.CORRELATION(plage des x;plage des y)",
@@ -1353,8 +1353,8 @@
                   },
                   {
                     "kind": "method",
-                    "title": "Obtenir la droite au CCF",
-                    "text": "Piège : inverser les deux plages dans PENTE, ce qui donne une autre droite, ou confondre a et b. Réflexe CCF : écrire l’équation avec ses arrondis, puis la contrôler par G.",
+                    "title": "Obtenir la droite",
+                    "text": "Piège : inverser les deux plages dans PENTE, ce qui donne une autre droite, ou confondre a et b. Réflexe : écrire l’équation avec ses arrondis, puis la contrôler par G.",
                     "steps": [
                       "a : =PENTE(plage des y;plage des x)",
                       "b : =ORDONNEE.ORIGINE(plage des y;plage des x)",
@@ -1437,8 +1437,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Rédiger au CCF",
+                    "kind": "piege",
+                    "title": "Rédiger la réponse",
                     "text": "Pièges : remplacer x par l’année, arrondir le rang d’un seuil à l’entier inférieur, oublier la réserve. Une réponse complète donne l’équation, la valeur de r et sa lecture, la prévision avec son unité, puis la réserve.",
                     "steps": [
                       "« La droite des moindres carrés a pour équation y = …x + … ; r ≈ …, les points sont presque alignés. »",
@@ -1647,7 +1647,7 @@
       {
         "id": "B2-02-A4-01-SITUATION-FIBRE",
         "type": "fp-story",
-        "titre": "Mini-situation CCF : la fibre optique en France",
+        "titre": "Mini-situation : la fibre optique en France",
         "duree": 3,
         "interactif": false,
         "donnees": {
@@ -1658,7 +1658,7 @@
               "screenId": "B2-02-A4-01-SITUATION-FIBRE",
               "renderer": "table",
               "props": {
-                "title": "Mini-situation CCF : la fibre optique en France",
+                "title": "Mini-situation : la fibre optique en France",
                 "subtitle": "Nombre d’abonnements internet en fibre optique jusqu’à l’abonné en France, en fin d’année, en millions. Le rang x vaut 1 pour 2020.",
                 "note": "Source : Arcep, Observatoire des marchés des communications électroniques en France, résultats des quatrièmes trimestres 2020 à 2024. Données publiques réutilisables.",
                 "columns": [
@@ -1968,7 +1968,7 @@
               "renderer": "grid",
               "props": {
                 "title": "Fiche mémo : résumer, relier, prévoir",
-                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "subtitle": "Chaque carte part d’une question et donne la méthode et son piège.",
                 "items": [
                   {
                     "title": "Moyenne",
@@ -2014,12 +2014,6 @@
                     "title": "Seuil",
                     "description": "En quelle année ?",
                     "back": "Résoudre ax + b ≥ seuil, prendre l’entier supérieur, le traduire en année."
-                  },
-                  {
-                    "title": "Référentiel du BTS CG",
-                    "description": "Le programme de mathématiques et l’épreuve E3.",
-                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
-                    "external": true
                   }
                 ],
                 "imprimable": true
@@ -2172,7 +2166,7 @@
             }
           }
         },
-        "notes": "• Rappeler en une phrase B2-01 : Atelier Rivage a décidé, la banque veut maintenant des chiffres.\n• Annoncer le plan : trois notions, chacune en trois temps (réfléchir, comprendre, s’exercer), puis une mini-situation CCF.\n• Annoncer les deux pauses de 15 minutes, après l’acte 1 et après l’acte 3.",
+        "notes": "• Rappeler en une phrase B2-01 : Atelier Rivage a décidé, la banque veut maintenant des chiffres.\n• Annoncer le plan : trois notions, chacune en trois temps (réfléchir, comprendre, s’exercer), puis une mini-situation.\n• Annoncer les deux pauses de 15 minutes, après l’acte 1 et après l’acte 3.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2404,7 +2398,7 @@
           }
         },
         "renvoi": "B2-02-A1-04-FACTURES",
-        "notes": "• Temps « réfléchir » de la notion 1 : 3 min d’écriture individuelle, puis lire trois réponses au pupitre.\n• Ne rien trancher : la trace écrite suivante répond.\n• Relance : « Votre nombre dit-il si les clients paient tous à peu près en même temps ? »\n• Papier : cadre de réponse du livret.",
+        "notes": "• Ne rien trancher : la trace écrite suivante répond.\n• Relance : « Votre nombre dit-il si les clients paient tous à peu près en même temps ? »\n• Papier : cadre de réponse du livret.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -2455,7 +2449,7 @@
                   {
                     "kind": "method",
                     "title": "Trouver la médiane sans se tromper",
-                    "text": "Piège : prendre la valeur du milieu de la liste sans l’avoir triée ; ici, on lirait 8, un nombre sans signification. Réflexe CCF : écrire la série triée, dire si l’effectif est pair ou impair, puis donner la médiane avec son unité.",
+                    "text": "Piège : prendre la valeur du milieu de la liste sans l’avoir triée ; ici, on lirait 8, un nombre sans signification. Réflexe : écrire la série triée, dire si l’effectif est pair ou impair, puis donner la médiane avec son unité.",
                     "steps": [
                       "Trier la série dans l’ordre croissant.",
                       "Effectif impair : la médiane est la valeur du milieu.",
@@ -2552,8 +2546,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : valeur extrême, fonction, unité",
+                    "kind": "piege",
+                    "title": "Valeur extrême, fonction, unité",
                     "text": "Une valeur extrême, comme la facture contestée F105, tire la moyenne et l’écart-type, pas la médiane. Sans pièce prouvant une erreur, on la garde, on la signale et l’on publie la médiane à côté de la moyenne et de l’écart-type. Pièges : donner la variance pour l’écart-type, choisir ECARTYPE pour une population entière.",
                     "steps": [
                       "Toutes les factures de la période : =ECARTYPEP(plage), qui divise par n.",
@@ -2573,7 +2567,7 @@
             }
           }
         },
-        "notes": "• 2 min, puis 1 min sur son illustration, enchaînées sur la page 1 : 6 min pour les deux pages de la trace écrite et leurs illustrations.\n• Question d’ouverture : « Les clients A et B ont la même moyenne. Si vous étiez la banque, lequel préféreriez-vous ? Pourquoi ? »\n• Faire additionner les écarts de A (−2 + 2 − 2 + 2 = 0) : c’est pour cela qu’on les élève au carré.\n• Piège à faire dire : 50 est en jours², ce n’est pas un délai ; l’écart-type, ≈ 7,07 jours, l’est.\n• Relance CCF : « Nos vingt factures, est-ce toutes les factures ou un échantillon ? » Toutes : ECARTYPEP.",
+        "notes": "• 2 min, puis 1 min sur son illustration, enchaînées sur la page 1 : 6 min pour les deux pages de la trace écrite et leurs illustrations.\n• Question d’ouverture : « Les clients A et B ont la même moyenne. Si vous étiez la banque, lequel préféreriez-vous ? Pourquoi ? »\n• Faire additionner les écarts de A (−2 + 2 − 2 + 2 = 0) : c’est pour cela qu’on les élève au carré.\n• Piège à faire dire : 50 est en jours², ce n’est pas un délai ; l’écart-type, ≈ 7,07 jours, l’est.\n• Relance : « Nos vingt factures, est-ce toutes les factures ou un échantillon ? » Toutes : ECARTYPEP.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -2674,7 +2668,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur le tri (étape 2) et sur l’effet de la facture de 90 jours (étape 4).\n• Transition : « À vous, sur les vingt délais : exercice 1. »",
+        "notes": "• S’arrêter sur le tri (étape 2) et sur l’effet de la facture de 90 jours (étape 4).\n• Transition : « À vous, sur les vingt délais : exercice 1. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -2785,7 +2779,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 2 min · travail 8 min · correction 2 min\n• Réflexion : chacun relit la trace écrite et note la méthode de chaque question, sans calculer.\n• Pièges : le milieu de la liste non triée ; une seule des deux valeurs centrales ; ECARTYPE au lieu de ECARTYPEP ; F105 retirée.\n• Papier : exercice 1 du livret.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Transition : jalon 1, puis pause de 15 minutes.",
+        "notes": "• Réflexion : chacun relit la trace écrite et note la méthode de chaque question, sans calculer.\n• Pièges : le milieu de la liste non triée ; une seule des deux valeurs centrales ; ECARTYPE au lieu de ECARTYPEP ; F105 retirée.\n• Papier : exercice 1 du livret.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2929,7 +2923,7 @@
             }
           }
         },
-        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre la trace écrite A1-06 après la pause.\n• Pause de 15 minutes, hors durée programmée.",
+        "notes": "• Si plus de 30 % « Perdu » : reprendre la trace écrite A1-06 après la pause.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3055,7 +3049,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de la notion 2 : vote non noté.\n• Question 1 en vote individuel, puis question 2, sans débat entre les deux.\n• La révélation s’ouvre après la question 2 : les deux corrections se commentent ensemble.\n• Papier : vote à main levée sur chaque question.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3159,7 +3153,7 @@
                   {
                     "kind": "method",
                     "title": "Placer G sans se tromper",
-                    "text": "Piège : prendre pour G le point de la ligne du milieu du tableau, ou les sommes au lieu des moyennes. G n’est en général aucun des points du nuage. Réflexe CCF : écrire les deux calculs de moyenne, puis placer G sur le graphique avec un symbole distinct.",
+                    "text": "Piège : prendre pour G le point de la ligne du milieu du tableau, ou les sommes au lieu des moyennes. G n’est en général aucun des points du nuage. Réflexe : écrire les deux calculs de moyenne, puis placer G sur le graphique avec un symbole distinct.",
                     "steps": [
                       "x̄ : =MOYENNE(plage des x)",
                       "ȳ : =MOYENNE(plage des y)",
@@ -3256,8 +3250,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : lire r, et rien de plus",
+                    "kind": "piege",
+                    "title": "Lire r, et rien de plus",
                     "text": "Trois pièges. r n’est pas la pente : il ne dit pas de combien y augmente quand x augmente de 1. Un r négatif proche de −1 justifie aussi un ajustement, par une droite qui descend. Corrélation n’est pas causalité : deux séries peuvent monter ensemble parce qu’une troisième chose, la saison ou le temps, les fait varier toutes les deux.",
                     "steps": [
                       "=COEFFICIENT.CORRELATION(plage des x;plage des y)",
@@ -3276,7 +3270,7 @@
             }
           }
         },
-        "notes": "• 2 min, puis 1 min sur son illustration, enchaînées sur la page 1 ; le calcul à la main n’est jamais demandé au CCF : il montre ce que la touche r calcule.\n• Question : « Si un point était en haut à gauche de G, quel serait le signe de son produit d’écarts ? » Négatif : il ferait baisser r.\n• Relier au vote A2-02 : voiles et glaces montent ensemble, r élevé, et pourtant aucune cause.\n• Faire dire qu’un r de −0,98 autorise aussi une droite, qui descend.\n• Annoncer l’exercice 3 : on y refait les écarts au point moyen sur Atelier Rivage.",
+        "notes": "• 2 min, puis 1 min sur son illustration, enchaînées sur la page 1 ; le calcul à la main n’est jamais demandé : il montre ce que la touche r calcule.\n• Question : « Si un point était en haut à gauche de G, quel serait le signe de son produit d’écarts ? » Négatif : il ferait baisser r.\n• Relier au vote A2-02 : voiles et glaces montent ensemble, r élevé, et pourtant aucune cause.\n• Faire dire qu’un r de −0,98 autorise aussi une droite, qui descend.\n• Annoncer l’exercice 3 : on y refait les écarts au point moyen sur Atelier Rivage.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -3371,7 +3365,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur le point moyen (étape 2) et sur la prudence (étape 5).\n• Transition : « À vous, sur Atelier Rivage : exercice 2. »",
+        "notes": "• S’arrêter sur le point moyen (étape 2) et sur la prudence (étape 5).\n• Transition : « À vous, sur Atelier Rivage : exercice 2. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -3467,7 +3461,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : relire la trace écrite et repérer la touche de r sur la calculatrice.\n• Pièges : les sommes au lieu des moyennes ; le point du milieu du tableau ; r lu comme la hausse annuelle.\n• Papier : exercice 2 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Vérifions G autrement : les écarts au point moyen. »",
+        "notes": "• Réflexion : relire la trace écrite et repérer la touche de r sur la calculatrice.\n• Pièges : les sommes au lieu des moyennes ; le point du milieu du tableau ; r lu comme la hausse annuelle.\n• Papier : exercice 2 du livret.\n• Transition : « Vérifions G autrement : les écarts au point moyen. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3770,7 +3764,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 2 min · travail 8 min · correction 2 min\n• Réflexion : prévoir le signe des écarts de la première et de la dernière année.\n• Piège : l’écart au rang du milieu du tableau au lieu de x̄.\n• Contrôle à faire dire : les écarts d’une colonne ont une somme nulle.\n• Papier : tableau du livret.\n• Faire lire les signes : négatifs ensemble avant G, positifs ensemble après.\n• Transition : jalon 2.",
+        "notes": "• Réflexion : prévoir le signe des écarts de la première et de la dernière année.\n• Piège : l’écart au rang du milieu du tableau au lieu de x̄.\n• Contrôle à faire dire : les écarts d’une colonne ont une somme nulle.\n• Papier : tableau du livret.\n• Faire lire les signes : négatifs ensemble avant G, positifs ensemble après.\n• Transition : jalon 2.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [],
@@ -4010,7 +4004,7 @@
             }
           }
         },
-        "notes": "• 30 s de vote anonyme.\n• Si plus de 30 % « Perdu » : reprendre la trace écrite A2-03 sur le point moyen.",
+        "notes": "• Si plus de 30 % « Perdu » : reprendre la trace écrite A2-03 sur le point moyen.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4051,7 +4045,7 @@
           }
         },
         "renvoi": "B2-02-A2-01-NUAGE-RIVAGE",
-        "notes": "• Temps « réfléchir » de la notion 3 : 3 min d’écriture, puis lire trois réponses.\n• Papier : cadre de réponse du livret.",
+        "notes": "• Papier : cadre de réponse du livret.",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4101,8 +4095,8 @@
                   },
                   {
                     "kind": "method",
-                    "title": "Obtenir la droite au CCF",
-                    "text": "Piège : inverser les deux plages dans PENTE, ce qui donne une autre droite, ou confondre a et b. Réflexe CCF : écrire l’équation avec ses arrondis, puis la contrôler par G.",
+                    "title": "Obtenir la droite",
+                    "text": "Piège : inverser les deux plages dans PENTE, ce qui donne une autre droite, ou confondre a et b. Réflexe : écrire l’équation avec ses arrondis, puis la contrôler par G.",
                     "steps": [
                       "a : =PENTE(plage des y;plage des x)",
                       "b : =ORDONNEE.ORIGINE(plage des y;plage des x)",
@@ -4122,7 +4116,7 @@
             }
           }
         },
-        "notes": "• 2 min, puis 1 min sur son illustration ; reprendre les sommes de l’exemple de r (5 et 2) : rien à recalculer.\n• Question : « Que veut dire a = 2,5 pour la boutique ? » Attendre « 2,5 milliers d’euros de plus par an, en tendance ».\n• Faire vérifier le passage par G avant d’accepter une équation : c’est le contrôle du CCF.\n• Piège à faire dire : PENTE(plage des x;plage des y) donne une autre droite, celle de x en y.",
+        "notes": "• 2 min, puis 1 min sur son illustration ; reprendre les sommes de l’exemple de r (5 et 2) : rien à recalculer.\n• Question : « Que veut dire a = 2,5 pour la boutique ? » Attendre « 2,5 milliers d’euros de plus par an, en tendance ».\n• Faire vérifier le passage par G avant d’accepter une équation : c’est le contrôle de toute droite d’ajustement.\n• Piège à faire dire : PENTE(plage des x;plage des y) donne une autre droite, celle de x en y.",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -4199,8 +4193,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Rédiger au CCF",
+                    "kind": "piege",
+                    "title": "Rédiger la réponse",
                     "text": "Pièges : remplacer x par l’année, arrondir le rang d’un seuil à l’entier inférieur, oublier la réserve. Une réponse complète donne l’équation, la valeur de r et sa lecture, la prévision avec son unité, puis la réserve.",
                     "steps": [
                       "« La droite des moindres carrés a pour équation y = …x + … ; r ≈ …, les points sont presque alignés. »",
@@ -4315,7 +4309,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Papier : réponses sous chaque étape du livret.\n• S’arrêter sur le contrôle par G (étape 3) et sur l’arrondi du seuil (étape 5).\n• Transition : « À vous, sur Atelier Rivage : exercice 4. »",
+        "notes": "• S’arrêter sur le contrôle par G (étape 3) et sur l’arrondi du seuil (étape 5).\n• Transition : « À vous, sur Atelier Rivage : exercice 4. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4406,7 +4400,7 @@
           ]
         },
         "renvoi": "B2-02-A2-01-NUAGE-RIVAGE",
-        "notes": "• Temps : réflexion 2 min · travail 7 min · correction 2 min\n• Réflexion : écrire le rang de 2028 avant tout calcul.\n• Pièges : séries inversées dans PENTE ; 2028 à la place du rang ; seuil arrondi à l’entier inférieur.\n• Papier : exercice 4 du livret.\n• Corriger question par question, en commençant par la moins réussie.\n• Transition : « Faisons le point : prévoir avec une droite. »",
+        "notes": "• Réflexion : écrire le rang de 2028 avant tout calcul.\n• Pièges : séries inversées dans PENTE ; 2028 à la place du rang ; seuil arrondi à l’entier inférieur.\n• Papier : exercice 4 du livret.\n• Transition : « Faisons le point : prévoir avec une droite. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -4517,7 +4511,7 @@
             }
           }
         },
-        "notes": "• 30 s de vote anonyme.\n• Pause de 15 minutes, hors durée programmée.",
+        "notes": "",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -4528,7 +4522,7 @@
       {
         "id": "B2-02-A4-01-SITUATION-FIBRE",
         "type": "fp-story",
-        "titre": "Mini-situation CCF : la fibre optique en France",
+        "titre": "Mini-situation : la fibre optique en France",
         "duree": 3,
         "interactif": false,
         "donnees": {
@@ -4539,7 +4533,7 @@
               "screenId": "B2-02-A4-01-SITUATION-FIBRE",
               "renderer": "table",
               "props": {
-                "title": "Mini-situation CCF : la fibre optique en France",
+                "title": "Mini-situation : la fibre optique en France",
                 "subtitle": "Nombre d’abonnements internet en fibre optique jusqu’à l’abonné en France, en fin d’année, en millions. Le rang x vaut 1 pour 2020.",
                 "note": "Source : Arcep, Observatoire des marchés des communications électroniques en France, résultats des quatrièmes trimestres 2020 à 2024. Données publiques réutilisables.",
                 "columns": [
@@ -4760,7 +4754,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 3 min · travail 12 min · correction 2 min\n• Réflexion : chacun écrit sur papier les fonctions à utiliser et l’ordre des plages.\n• Erreurs à chercher : plages inversées dans PENTE ; valeurs tapées à la main au lieu de formules.\n• Papier : même question à la calculatrice, formules écrites sur la copie ; en CCF, elle se fait devant l’examinateur.\n• Projeter la feuille d’un poste volontaire et relire chaque formule.\n• Transition : « Avec cette droite, prévoyez : le coffre de la mini-situation. »",
+        "notes": "• Réflexion : chacun écrit sur papier les fonctions à utiliser et l’ordre des plages.\n• Erreurs à chercher : plages inversées dans PENTE ; valeurs tapées à la main au lieu de formules.\n• Papier : même question à la calculatrice, formules écrites sur la copie .\n• Projeter la feuille d’un poste volontaire et relire chaque formule.\n• Transition : « Avec cette droite, prévoyez : le coffre de la mini-situation. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [],
@@ -4906,7 +4900,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 2 min · travail 12 min · correction 2 min\n• Réflexion : écrire les rangs de 2025 et de 2030 avant d’ouvrir le coffre.\n• Indices disponibles après 60 s. À 10 min, projeter l’énigme la moins résolue.\n• Papier : quatre questions rédigées du livret, sans code de coffre.\n• Dévoiler énigme par énigme, en s’attardant sur la moins résolue (pupitre).\n• Finir sur la comparaison au réel : c’est la réserve à écrire au CCF.",
+        "notes": "• Réflexion : écrire les rangs de 2025 et de 2030 avant d’ouvrir le coffre.\n• Indices disponibles après 60 s. À 10 min, projeter l’énigme la moins résolue.\n• Papier : quatre questions rédigées du livret, sans code de coffre.\n• Dévoiler énigme par énigme, en s’attardant sur la moins résolue (pupitre).\n• Finir sur la comparaison au réel : c’est la réserve à écrire dans la réponse.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [],
@@ -5008,7 +5002,7 @@
             }
           }
         },
-        "notes": "• 5 min individuelles, puis projeter la carte de maîtrise.\n• Tous reçoivent les deux questions obligatoires (causalité, rang), en plus de leurs points faibles.",
+        "notes": "• Tous reçoivent les deux questions obligatoires (causalité, rang), en plus de leurs points faibles.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -5405,7 +5399,7 @@
               "renderer": "grid",
               "props": {
                 "title": "Fiche mémo : résumer, relier, prévoir",
-                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "subtitle": "Chaque carte part d’une question et donne la méthode et son piège.",
                 "items": [
                   {
                     "title": "Moyenne",
@@ -5451,12 +5445,6 @@
                     "title": "Seuil",
                     "description": "En quelle année ?",
                     "back": "Résoudre ax + b ≥ seuil, prendre l’entier supérieur, le traduire en année."
-                  },
-                  {
-                    "title": "Référentiel du BTS CG",
-                    "description": "Le programme de mathématiques et l’épreuve E3.",
-                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
-                    "external": true
                   }
                 ],
                 "imprimable": true
@@ -5482,7 +5470,7 @@
             }
           }
         },
-        "notes": "• 90 s de lecture ; la fiche s’imprime pour le classeur de CCF.",
+        "notes": "",
         "diffusion": "catalogue",
         "seuil": null,
         "corriges": [],
@@ -5737,7 +5725,7 @@
                   {
                     "kind": "method",
                     "title": "Trouver la médiane sans se tromper",
-                    "text": "Piège : prendre la valeur du milieu de la liste sans l’avoir triée ; ici, on lirait 8, un nombre sans signification. Réflexe CCF : écrire la série triée, dire si l’effectif est pair ou impair, puis donner la médiane avec son unité.",
+                    "text": "Piège : prendre la valeur du milieu de la liste sans l’avoir triée ; ici, on lirait 8, un nombre sans signification. Réflexe : écrire la série triée, dire si l’effectif est pair ou impair, puis donner la médiane avec son unité.",
                     "steps": [
                       "Trier la série dans l’ordre croissant.",
                       "Effectif impair : la médiane est la valeur du milieu.",
@@ -5820,8 +5808,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : valeur extrême, fonction, unité",
+                    "kind": "piege",
+                    "title": "Valeur extrême, fonction, unité",
                     "text": "Une valeur extrême, comme la facture contestée F105, tire la moyenne et l’écart-type, pas la médiane. Sans pièce prouvant une erreur, on la garde, on la signale et l’on publie la médiane à côté de la moyenne et de l’écart-type. Pièges : donner la variance pour l’écart-type, choisir ECARTYPE pour une population entière.",
                     "steps": [
                       "Toutes les factures de la période : =ECARTYPEP(plage), qui divise par n.",
@@ -6005,7 +5993,7 @@
                   {
                     "kind": "method",
                     "title": "Placer G sans se tromper",
-                    "text": "Piège : prendre pour G le point de la ligne du milieu du tableau, ou les sommes au lieu des moyennes. G n’est en général aucun des points du nuage. Réflexe CCF : écrire les deux calculs de moyenne, puis placer G sur le graphique avec un symbole distinct.",
+                    "text": "Piège : prendre pour G le point de la ligne du milieu du tableau, ou les sommes au lieu des moyennes. G n’est en général aucun des points du nuage. Réflexe : écrire les deux calculs de moyenne, puis placer G sur le graphique avec un symbole distinct.",
                     "steps": [
                       "x̄ : =MOYENNE(plage des x)",
                       "ȳ : =MOYENNE(plage des y)",
@@ -6088,8 +6076,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Au CCF : lire r, et rien de plus",
+                    "kind": "piege",
+                    "title": "Lire r, et rien de plus",
                     "text": "Trois pièges. r n’est pas la pente : il ne dit pas de combien y augmente quand x augmente de 1. Un r négatif proche de −1 justifie aussi un ajustement, par une droite qui descend. Corrélation n’est pas causalité : deux séries peuvent monter ensemble parce qu’une troisième chose, la saison ou le temps, les fait varier toutes les deux.",
                     "steps": [
                       "=COEFFICIENT.CORRELATION(plage des x;plage des y)",
@@ -6212,8 +6200,8 @@
                   },
                   {
                     "kind": "method",
-                    "title": "Obtenir la droite au CCF",
-                    "text": "Piège : inverser les deux plages dans PENTE, ce qui donne une autre droite, ou confondre a et b. Réflexe CCF : écrire l’équation avec ses arrondis, puis la contrôler par G.",
+                    "title": "Obtenir la droite",
+                    "text": "Piège : inverser les deux plages dans PENTE, ce qui donne une autre droite, ou confondre a et b. Réflexe : écrire l’équation avec ses arrondis, puis la contrôler par G.",
                     "steps": [
                       "a : =PENTE(plage des y;plage des x)",
                       "b : =ORDONNEE.ORIGINE(plage des y;plage des x)",
@@ -6296,8 +6284,8 @@
                     ]
                   },
                   {
-                    "kind": "exam",
-                    "title": "Rédiger au CCF",
+                    "kind": "piege",
+                    "title": "Rédiger la réponse",
                     "text": "Pièges : remplacer x par l’année, arrondir le rang d’un seuil à l’entier inférieur, oublier la réserve. Une réponse complète donne l’équation, la valeur de r et sa lecture, la prévision avec son unité, puis la réserve.",
                     "steps": [
                       "« La droite des moindres carrés a pour équation y = …x + … ; r ≈ …, les points sont presque alignés. »",
@@ -6373,7 +6361,7 @@
       {
         "id": "B2-02-A4-01-SITUATION-FIBRE",
         "type": "fp-story",
-        "titre": "Mini-situation CCF : la fibre optique en France",
+        "titre": "Mini-situation : la fibre optique en France",
         "duree": 3,
         "interactif": false,
         "donnees": {
@@ -6384,7 +6372,7 @@
               "screenId": "B2-02-A4-01-SITUATION-FIBRE",
               "renderer": "table",
               "props": {
-                "title": "Mini-situation CCF : la fibre optique en France",
+                "title": "Mini-situation : la fibre optique en France",
                 "subtitle": "Nombre d’abonnements internet en fibre optique jusqu’à l’abonné en France, en fin d’année, en millions. Le rang x vaut 1 pour 2020.",
                 "note": "Source : Arcep, Observatoire des marchés des communications électroniques en France, résultats des quatrièmes trimestres 2020 à 2024. Données publiques réutilisables.",
                 "columns": [
@@ -6483,7 +6471,7 @@
               "renderer": "grid",
               "props": {
                 "title": "Fiche mémo : résumer, relier, prévoir",
-                "subtitle": "À garder pour le CCF : chaque carte part d’une question et donne la méthode et son piège.",
+                "subtitle": "Chaque carte part d’une question et donne la méthode et son piège.",
                 "items": [
                   {
                     "title": "Moyenne",
@@ -6529,12 +6517,6 @@
                     "title": "Seuil",
                     "description": "En quelle année ?",
                     "back": "Résoudre ax + b ≥ seuil, prendre l’entier supérieur, le traduire en année."
-                  },
-                  {
-                    "title": "Référentiel du BTS CG",
-                    "description": "Le programme de mathématiques et l’épreuve E3.",
-                    "href": "https://enqdip.sup.adc.education.fr/bts/referentiel/BTS_ComptabiliteGestion.pdf",
-                    "external": true
                   }
                 ],
                 "imprimable": true

@@ -1,6 +1,6 @@
 {
   "graine": 0,
-  "empreinte": "27e458a600c19420ee7fa09f9ea9bfed5e293e057a6016f63fa6f654bc69b182",
+  "empreinte": "0c75f129b93fb0dac9ed67d1f5a2b558e512896f826cd5aaa0a8482f9eb6eeba",
   "sujet": {
     "id": "b3-02-formules-et-ia-analyste",
     "titre": "Toutes les formules, puis l’IA analyste",
@@ -1766,7 +1766,7 @@
             }
           }
         },
-        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 1 min\n• Réflexion, question 1 sur chaque carte : l’erreur est-elle certaine ?\n• Réflexion, question 2 : la bonne valeur est-elle dans le fichier ?\n• Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.\n• Corriger case par case ; finir par la case vide.\n• Règle 2 du cahier : « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux, je ne supprime rien. »\n• Transition : « Les formules qui corrigent le faux certain : un vote d’abord. »",
+        "notes": "• Réflexion, question 1 sur chaque carte : l’erreur est-elle certaine ?\n• Réflexion, question 2 : la bonne valeur est-elle dans le fichier ?\n• Pièges : corriger seul une date douteuse ; renvoyer à un humain une erreur que le fichier corrige.\n• Corriger case par case ; finir par la case vide.\n• Règle 2 du cahier : « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux, je ne supprime rien. »\n• Transition : « Les formules qui corrigent le faux certain : un vote d’abord. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [],
@@ -1874,7 +1874,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » du nettoyage : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : taper la formule dans le classeur brut, en E783 ; Excel rend FAUX.",
+        "notes": "• Révélation : taper la formule dans le classeur brut, en E783 ; Excel rend FAUX.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2112,7 +2112,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 12 min · correction 2 min\n• Réflexion : faire relire les cinq étapes avant de commencer ; passer dans les rangs dès l’étape 2.\n• Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner la colonne L brute ; poser le contrôle sur des dates converties.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Règle 2 du cahier, dite à la correction : « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux, je ne supprime rien. »\n• Transition : « On repart tous du même fichier nettoyé : un vote. »",
+        "notes": "• Réflexion : faire relire les cinq étapes avant de commencer ; passer dans les rangs dès l’étape 2.\n• Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner la colonne L brute ; poser le contrôle sur des dates converties.\n• Règle 2 du cahier, dite à la correction : « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux, je ne supprime rien. »\n• Transition : « On repart tous du même fichier nettoyé : un vote. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2222,7 +2222,7 @@
           "libelle": "Classeur de reprise nettoyé",
           "reservee": true
         },
-        "notes": "• Ouvrir d’abord le classeur de reprise, tous, y compris ceux qui ont tout réussi : les résultats se compareront sur la même base.\n• Montrer l’onglet Quarantaine : chaque ligne douteuse avec son motif, et les lignes que le contrôle ne voyait pas, produits inconnus et prix hors norme.\n• Temps « réfléchir » de la recherche : vote non noté, 1 min de vote et 1 min de révélation.",
+        "notes": "• Ouvrir d’abord le classeur de reprise, tous, y compris ceux qui ont tout réussi : les résultats se compareront sur la même base.\n• Montrer l’onglet Quarantaine : chaque ligne douteuse avec son motif, et les lignes que le contrôle ne voyait pas, produits inconnus et prix hors norme.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2410,7 +2410,7 @@
           },
           "etayage": 0
         },
-        "notes": "• Chacun répond sous chaque étape, puis la correction se dévoile étape par étape sur ce même écran.\n• Chacun tape les formules dans le classeur de reprise, onglet Commandes : les colonnes N et O servent à l’exercice 3.\n• Montrer les trois couples plage ; critère de la somme, chacun d’une couleur.\n• Transition : « À vous : exercice 3. »",
+        "notes": "• Chacun tape les formules dans le classeur de reprise, onglet Commandes : les colonnes N et O servent à l’exercice 3.\n• Montrer les trois couples plage ; critère de la somme, chacun d’une couleur.\n• Transition : « À vous : exercice 3. »",
         "diffusion": "seance",
         "seuil": null,
         "corriges": [],
@@ -2472,7 +2472,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 10 min · correction 2 min\n• Réflexion : faire nommer, pour chaque question, les colonnes et les critères avant d’écrire.\n• Pièges : fonction DATE écrite dans les guillemets ; table de recherche non figée ; période oubliée.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Règles 1 et 3 du cahier : « Je relie les tables par un identifiant, jamais par un libellé » ; « J’écris la période dans chaque critère, la même pour le chiffre et pour sa comparaison. »\n• Puis pause de 15 minutes ; reprise sur le même classeur.",
+        "notes": "• Réflexion : faire nommer, pour chaque question, les colonnes et les critères avant d’écrire.\n• Pièges : fonction DATE écrite dans les guillemets ; table de recherche non figée ; période oubliée.\n• Règles 1 et 3 du cahier : « Je relie les tables par un identifiant, jamais par un libellé » ; « J’écris la période dans chaque critère, la même pour le chiffre et pour sa comparaison. »\n• Puis pause de 15 minutes ; reprise sur le même classeur.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2566,7 +2566,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » des dates : vote non noté, 1 min de vote et 1 min de révélation.\n• Faire dire ce que promet le contrat de Norvane : une livraison en 5 jours ouvrés.",
+        "notes": "• Faire dire ce que promet le contrat de Norvane : une livraison en 5 jours ouvrés.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2795,7 +2795,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne P.\n• Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; oublier l’agence ou l’année ; MEDIANE sous un filtre.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Règle 4 du cahier : « Pour un délai typique je prends la médiane ; pour un taux, le ratio des sommes. »\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
+        "notes": "• Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne P.\n• Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; oublier l’agence ou l’année ; MEDIANE sous un filtre.\n• Règle 4 du cahier : « Pour un délai typique je prends la médiane ; pour un taux, le ratio des sommes. »\n• Transition : « Et si l’export d’octobre arrive ? Un vote. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -2893,7 +2893,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » du tableau structuré : vote non noté, 1 min de vote et 1 min de révélation.\n• Révélation : coller trois lignes sous les données ; =SOMME(L2:L4039) ne bouge pas.",
+        "notes": "• Révélation : coller trois lignes sous les données ; =SOMME(L2:L4039) ne bouge pas.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3078,7 +3078,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 6 min · correction 2 min\n• Réflexion : faire dire ce que chaque TCD montre en lignes, en colonnes et en valeurs.\n• Pièges : % du total général ou de la colonne ; filtre annee oublié au premier TCD ; resté actif au second ; trimestres groupés sans les années.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Règle 5 du cahier : « J’écris le dénominateur de chaque pourcentage. »\n• Transition : « Un graphique préparé pour le comité. »",
+        "notes": "• Réflexion : faire dire ce que chaque TCD montre en lignes, en colonnes et en valeurs.\n• Pièges : % du total général ou de la colonne ; filtre annee oublié au premier TCD ; resté actif au second ; trimestres groupés sans les années.\n• Règle 5 du cahier : « J’écris le dénominateur de chaque pourcentage. »\n• Transition : « Un graphique préparé pour le comité. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3231,7 +3231,7 @@
           "libelle": "Classeur de reprise avec T_Commandes",
           "reservee": true
         },
-        "notes": "• Ouvrir d’abord le classeur de reprise avec T_Commandes, tous : l’exercice 6 s’y fait.\n• Temps « réfléchir » des graphiques : vote non noté ; révélation : redessiner au tableau les deux barres depuis zéro.",
+        "notes": "• Ouvrir d’abord le classeur de reprise avec T_Commandes, tous : l’exercice 6 s’y fait.\n• À la révélation, redessiner au tableau les deux barres depuis zéro.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3346,7 +3346,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » du tableau de bord : vote non noté, 1 min de vote et 1 min de révélation.\n• Faire dire ce que Nadia fera de chaque option devant le comité.",
+        "notes": "• Faire dire ce que Nadia fera de chaque option devant le comité.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3566,7 +3566,7 @@
             }
           ]
         },
-        "notes": "• Temps : réflexion 1 min · travail 9 min · correction 2 min\n• Réflexion : faire dire chaque indicateur et sa comparaison avant de construire, puis la question à laquelle répond le graphique.\n• Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; l’axe qui ne part pas de zéro.\n• Corriger question par question, en commençant par la moins réussie (score sous chaque correction).\n• Projeter l’histogramme réussi : titre qui conclut, axe depuis zéro.\n• Règle 6 du cahier : « Je montre la méthode de chaque chiffre et le nombre de lignes retenues. »\n• Transition : « Toutes les formules sur une page, à garder. »",
+        "notes": "• Réflexion : faire dire chaque indicateur et sa comparaison avant de construire, puis la question à laquelle répond le graphique.\n• Pièges : neuf mois comparés à douze ; toute la table au lieu de 2026 ; moyenne des taux ; marge divisée par le coût d’achat ; l’axe qui ne part pas de zéro.\n• Projeter l’histogramme réussi : titre qui conclut, axe depuis zéro.\n• Règle 6 du cahier : « Je montre la méthode de chaque chiffre et le nombre de lignes retenues. »\n• Transition : « Toutes les formules sur une page, à garder. »",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [
@@ -3750,7 +3750,7 @@
             ]
           }
         },
-        "notes": "• Temps « réfléchir » de l’IA : vote non noté, 2 min de vote et 1 min de révélation.\n• Révélation : le 10 est la moyenne des délais ; votre médiane de l’exercice 4 vaut moins. Ni la croire, ni la jeter : comparer et lire la méthode.",
+        "notes": "• Révélation : le 10 est la moyenne des délais ; votre médiane de l’exercice 4 vaut moins. Ni la croire, ni la jeter : comparer et lire la méthode.",
         "diffusion": "seance",
         "seuil": 0.7,
         "corriges": [

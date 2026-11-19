@@ -4,7 +4,7 @@ import {
   produitDuChemin,
   type BrancheSaisie,
 } from './ArbrePondere';
-import { parseVisualPresentation } from './VisualPresentation';
+import { parseVisualPresentation } from '../VisualPresentation';
 
 const PLUIE_ET_RETARD: readonly BrancheSaisie[] = [
   {

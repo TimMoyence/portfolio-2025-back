@@ -368,7 +368,7 @@ au plus. Somme : 45 + 36 + 32 + 8 = 121.
 #### A4-02 · `B1-05-A4-02-FICHE-MEMO` — 2 min · v2 `grid` · catalogue
 
 - Titre public : « Fiche mémo : conditions et contrôles »
-- Neuf cartes et le référentiel (`REFERENTIEL_DU_BTS_CG`).
+- Neuf cartes.
 
 ## 4. Mode papier
 

@@ -18,8 +18,6 @@ const BRIQUES_D_EXERCICE_OUVERT: readonly string[] = [
   'fp-escape',
   'fp-challenge',
 ];
-const MOTIF_DES_TEMPS =
-  /^• Temps\s: réflexion (\d+) min · travail (\d+) min(?: · correction (\d+) min)?$/m;
 
 type Temps = 'reflechir' | 'comprendre' | 'exercer';
 
@@ -129,46 +127,20 @@ export function controlerCycle(cours: Cours): readonly Manquement[] {
       ];
 }
 
-function defautDeLAnnonce(ecran: Ecran): readonly string[] {
-  const temps = MOTIF_DES_TEMPS.exec(ecran.notes);
-  if (temps === null) {
-    return [
-      'aucune ligne « • Temps : réflexion N min · travail N min » dans les notes',
-    ];
-  }
-  const [, reflexion, travail, correction = '0'] = temps;
-  return Number(reflexion) + Number(travail) + Number(correction) ===
-    ecran.dureeMinutes
-    ? []
-    : [
-        `réflexion ${reflexion} min, travail ${travail} min et correction ${correction} min ne font pas les ${ecran.dureeMinutes} min de l'écran`,
-      ];
-}
-
-function defautsDesTemps(cours: Cours, ecran: Ecran): readonly string[] {
-  const annonce = defautDeLAnnonce(ecran);
-  const correction =
-    ecran.correctionSurPlace === undefined &&
-    correctionsDe(cours, ecran.id).length === 0
-      ? ['aucune correction, ni sur place ni sur un écran qui le suit']
-      : [];
-  return [...annonce, ...correction];
-}
-
 export function controlerTempsDesExercices(
   cours: Cours,
 ): readonly Manquement[] {
-  return cours.ecrans.filter(estExercice).flatMap((ecran) => {
-    const defauts = defautsDesTemps(cours, ecran);
-    return defauts.length === 0
-      ? []
-      : [
-          {
-            ecran: ecran.id,
-            raison: `l'exercice « ${ecran.id} » n'a pas ses trois temps : ${defauts.join(' ; ')}.`,
-          },
-        ];
-  });
+  return cours.ecrans
+    .filter(
+      (ecran) =>
+        estExercice(ecran) &&
+        ecran.correctionSurPlace === undefined &&
+        correctionsDe(cours, ecran.id).length === 0,
+    )
+    .map((ecran) => ({
+      ecran: ecran.id,
+      raison: `l'exercice « ${ecran.id} » n'a aucune correction, ni sur place ni sur un écran qui le suit.`,
+    }));
 }
 
 export function controlerMiniSituation(cours: Cours): readonly Manquement[] {
@@ -183,6 +155,6 @@ export function controlerMiniSituation(cours: Cours): readonly Manquement[] {
     .filter(estLecon)
     .map((ecran) => ({
       ecran: ecran.id,
-      raison: `la trace écrite « ${ecran.id} » suit la mini-situation CCF : la mini-situation réinvestit, elle n'introduit rien.`,
+      raison: `la trace écrite « ${ecran.id} » suit la mini-situation : la mini-situation réinvestit, elle n'introduit rien.`,
     }));
 }

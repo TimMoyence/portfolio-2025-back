@@ -2,6 +2,18 @@ import { CLASSEURS_B3_01, VALEURS_B3_01 } from './b3-01.donnees';
 import { questionChiffree } from './b3-01.questions';
 import * as moteur from '../../briques';
 
+export const SOCLE_DU_VOTE_DU_DELAI: Omit<
+  Parameters<typeof moteur.voteQuiOuvre>[0],
+  'screenId'
+> = {
+  titre: 'Vote : vendredi, lundi',
+  dureeMinutes: 2,
+  concepts: ['calcul-sur-dates'],
+  notes: moteur.puces(
+    'Faire dire ce que promet le contrat de Norvane : une livraison en 5 jours ouvrés.',
+  ),
+};
+
 export function voteDuMeilleurTrimestre(id: string, enonce: string) {
   return moteur.vote(
     id,
@@ -26,7 +38,6 @@ export const ACTE_2: moteur.Acte = [
       notes: moteur.puces(
         'Ouvrir d’abord le classeur de reprise, tous, y compris ceux qui ont tout réussi : les résultats se compareront sur la même base.',
         'Montrer l’onglet Quarantaine : les lignes à demander, chacune avec son motif. Les dates ISO, que DATEVAL convertit sans ambiguïté, n’y sont plus ; les produits inconnus et les prix hors norme, que le contrôle de l’exercice 4 ne voyait pas, y sont.',
-        'Temps « réfléchir » du niveau 3 : vote non noté, 2 min de vote et 1 min de révélation.',
         'Faire dire les deux familles dans l’ordre : on cherche la catégorie, puis on additionne.',
       ),
     },
@@ -203,7 +214,6 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 10,
       concepts: ['recherche-dans-une-table', 'agregation-conditionnelle'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 9),
         'Réflexion : faire nommer la famille de chaque question avant d’écrire une formule.',
         'Pièges : fonction DATE écrite dans les guillemets (">=DATE(2026;1;1)") ; plage de recherche non figée ; période oubliée.',
       ),
@@ -259,16 +269,7 @@ export const ACTE_2: moteur.Acte = [
     ],
   ),
   moteur.voteQuiOuvre(
-    {
-      screenId: 'B3-01-A2-05-VOTE-DELAI',
-      titre: 'Vote : vendredi, lundi',
-      dureeMinutes: 2,
-      concepts: ['calcul-sur-dates'],
-      notes: moteur.puces(
-        'Temps « réfléchir » de la manipulation du temps : vote non noté, 1 min de vote et 1 min de révélation.',
-        'Faire dire ce que promet le contrat de Norvane : une livraison en 5 jours ouvrés.',
-      ),
-    },
+    { ...SOCLE_DU_VOTE_DU_DELAI, screenId: 'B3-01-A2-05-VOTE-DELAI' },
     [
       moteur.vote(
         'b3-01-a2-delai',
@@ -344,7 +345,6 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 10,
       concepts: ['calcul-sur-dates', 'indicateur-statistique'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 9),
         'Réflexion : faire dire en quelle unité le contrat compte les délais avant d’écrire la colonne.',
         'Pièges : soustraire les dates ; oublier le − 1 ; résumer par la moyenne ; prendre toute la table au lieu de 2026 ; oublier l’agence, ou prendre MEDIANE sous un filtre, qui compte les lignes masquées.',
       ),
@@ -405,7 +405,6 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['tableau-croise-dynamique'],
       notes: moteur.puces(
-        'Temps « réfléchir » du niveau 4 : vote non noté, 1 min de vote et 1 min de révélation.',
         'Faire dire ce qui arrivera au tableau de bord quand l’export d’octobre sera collé sous celui de septembre.',
       ),
     },
@@ -531,7 +530,6 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 13,
       concepts: ['tableau-croise-dynamique'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 12),
         'Réflexion : faire dire, avant de construire, ce que chaque TCD montre en lignes, en colonnes et en valeurs.',
         'Pièges : % du total général ou de la colonne au lieu du % de la ligne ; filtre annee oublié au premier TCD ; resté actif au second, recopié du premier ou de l’exemple ; trimestres groupés sans les années.',
       ),

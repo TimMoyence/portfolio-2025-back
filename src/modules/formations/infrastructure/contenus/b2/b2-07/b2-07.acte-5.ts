@@ -28,7 +28,7 @@ export const ACTE_5: moteur.Acte = [
         'prevision',
       ],
     },
-    'Tous reçoivent les deux questions obligatoires (dérivée de e^(kx), extremum et changement de signe), en plus de leurs points faibles.',
+    '',
     'b2-07-a5-rappel',
     {
       questions: [
@@ -163,7 +163,7 @@ export const ACTE_5: moteur.Acte = [
         back: 'Comparer les valeurs aux bornes et aux extremums. Sous contrainte, l’optimum peut être une borne.',
       },
       {
-        title: 'Rédiger au CCF',
+        title: 'Rédiger la réponse',
         description: 'Quelles quatre étapes ?',
         back: '1. Calculer f′(x).\n2. Résoudre f′(x) = 0.\n3. Étudier le signe de f′(x).\n4. Dresser le tableau de variation et conclure par le x et la valeur.',
       },
@@ -172,7 +172,6 @@ export const ACTE_5: moteur.Acte = [
         description: 'Comment écrire un carré ?',
         back: 'Avec ^ : =3*A2^2-5*A2+7 calcule 3x² − 5x + 7 pour x en A2, puis se recopie vers le bas. La colonne de la dérivée change de signe au sommet.',
       },
-      moteur.REFERENTIEL_DU_BTS_CG,
     ],
   ),
 ];

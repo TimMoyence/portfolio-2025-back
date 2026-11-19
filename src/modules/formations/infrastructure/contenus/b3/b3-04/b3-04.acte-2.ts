@@ -29,7 +29,6 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['regle-de-fusion'],
       notes: moteur.puces(
-        'Temps « réfléchir » du filtre : vote non noté, 1 min de vote et 1 min de révélation.',
         'Révélation : ouvrir le classeur ; des clients de Saint-Malo ou de Vannes relèvent de l’agence de Rennes.',
       ),
     },
@@ -159,7 +158,6 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 13,
       concepts: ['regle-de-fusion'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 12),
         'Réflexion : faire relire les colonnes agence et ville du classeur avant de filtrer.',
         'Pièges : filtrer sur ville ; inverser les deux textes de la règle ; comparer à « Madame » au lieu de « Mme ».',
       ),
@@ -188,7 +186,6 @@ export const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Règle 4, dite à la correction : « On filtre dans Word, sans toucher au classeur. »',
         'Transition : « Avant de fusionner pour de bon : un vote. »',
       ],
@@ -211,7 +208,6 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['fusion-et-pdf'],
       notes: moteur.puces(
-        'Temps « réfléchir » de la fusion : vote non noté, 1 min de vote et 1 min de révélation.',
         'Révélation : une espace oubliée dans la lettre type, c’est cinquante lettres à reprendre une fois imprimées.',
       ),
     },
@@ -367,7 +363,6 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 13,
       concepts: ['fusion-et-pdf'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 12),
         'Réflexion : faire dire qui recevra chaque fichier avant de l’enregistrer.',
         'Pièges : enregistrer la lettre type en PDF ; joindre le PDF des cinquante lettres à un client.',
       ),
@@ -410,7 +405,6 @@ export const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Règles 5 et 6, dites à la correction : « On vérifie l’aperçu avant de fusionner » ; « Un destinataire ne reçoit que sa lettre. »',
         'Transition : « Un défaut à l’aperçu : où le corriger ? Un tri. »',
       ],
@@ -435,7 +429,6 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 12,
       concepts: ['fusion-et-pdf', 'regle-de-fusion'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 11),
         'Réflexion : pour chaque défaut, une question : se voit-il dans une seule lettre ou dans toutes ?',
       ),
       proprietes: {
@@ -528,7 +521,6 @@ export const ACTE_2: moteur.Acte = [
       minutes: 2,
       notes: [
         'Corriger case par case : un défaut d’une seule lettre vient de sa ligne ; un défaut de toutes vient de la lettre type ou de la règle.',
-        moteur.PAUSE_HORS_DUREE,
       ],
     },
     [

@@ -102,7 +102,6 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['nettoyage'],
       notes: moteur.puces(
-        'Temps « réfléchir » du nettoyage : vote non noté, 1 min de vote et 1 min de révélation.',
         'Révélation : taper la formule dans le classeur brut, en E783 ; Excel rend FAUX.',
       ),
     },
@@ -198,7 +197,6 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 13,
       concepts: ['qualite-des-donnees', 'nettoyage'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 12),
         'Réflexion : faire relire les cinq étapes avant de commencer ; passer dans les rangs dès l’étape 2.',
         'Pièges : dédoublonner sur n_commande seule ; compter l’en-tête parmi les lignes ; additionner la colonne L brute ; poser le contrôle sur des dates converties.',
       ),
@@ -239,7 +237,6 @@ export const ACTE_1: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Règle 2 du cahier, dite à la correction : « Je corrige seul ce qui est faux et certain ; je signale ce qui est douteux, je ne supprime rien. »',
         'Transition : « On repart tous du même fichier nettoyé : un vote. »',
       ],
@@ -268,7 +265,6 @@ export const ACTE_1: moteur.Acte = [
       notes: moteur.puces(
         'Ouvrir d’abord le classeur de reprise, tous, y compris ceux qui ont tout réussi : les résultats se compareront sur la même base.',
         'Montrer l’onglet Quarantaine : chaque ligne douteuse avec son motif, et les lignes que le contrôle ne voyait pas, produits inconnus et prix hors norme.',
-        'Temps « réfléchir » de la recherche : vote non noté, 1 min de vote et 1 min de révélation.',
       ),
     },
     [
@@ -344,7 +340,6 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 3,
       concepts: ['recherche-dans-une-table', 'agregation-conditionnelle'],
       notes: moteur.puces(
-        moteur.REPONSES_SOUS_CHAQUE_ETAPE,
         'Chacun tape les formules dans le classeur de reprise, onglet Commandes : les colonnes N et O servent à l’exercice 3.',
       ),
       proprietes: {
@@ -417,7 +412,6 @@ export const ACTE_1: moteur.Acte = [
       dureeMinutes: 11,
       concepts: ['recherche-dans-une-table', 'agregation-conditionnelle'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 10),
         'Réflexion : faire nommer, pour chaque question, les colonnes et les critères avant d’écrire.',
         'Pièges : fonction DATE écrite dans les guillemets ; table de recherche non figée ; période oubliée.',
       ),
@@ -448,7 +442,6 @@ export const ACTE_1: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Règles 1 et 3 du cahier : « Je relie les tables par un identifiant, jamais par un libellé » ; « J’écris la période dans chaque critère, la même pour le chiffre et pour sa comparaison. »',
         'Puis pause de 15 minutes ; reprise sur le même classeur.',
       ],

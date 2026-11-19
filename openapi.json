@@ -13074,6 +13074,228 @@
               "renderer": {
                 "type": "string",
                 "enum": [
+                  "courbe"
+                ]
+              },
+              "props": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "subtitle": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "figure": {
+                    "type": "object",
+                    "properties": {
+                      "formula": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "xLabel": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "yLabel": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "xRange": {
+                        "type": "array",
+                        "items": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "number"
+                            }
+                          ]
+                        },
+                        "minItems": 2,
+                        "maxItems": 2
+                      },
+                      "yRange": {
+                        "type": "array",
+                        "items": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "number"
+                            }
+                          ]
+                        },
+                        "minItems": 2,
+                        "maxItems": 2
+                      },
+                      "points": {
+                        "minItems": 2,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "tangents": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            },
+                            "slope": {
+                              "type": "number"
+                            },
+                            "label": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y",
+                            "slope"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "zone": {
+                        "type": "object",
+                        "properties": {
+                          "from": {
+                            "type": "number"
+                          },
+                          "to": {
+                            "type": "number"
+                          },
+                          "label": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "from",
+                          "to",
+                          "label"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "formula",
+                      "xLabel",
+                      "yLabel",
+                      "xRange",
+                      "yRange",
+                      "points",
+                      "description"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "steps": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "text": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "tangent": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            },
+                            "slope": {
+                              "type": "number"
+                            },
+                            "label": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y",
+                            "slope"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "title",
+                        "text"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "minItems": 1
+                  }
+                },
+                "required": [
+                  "title",
+                  "figure",
+                  "steps"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "version",
+              "screenId",
+              "renderer",
+              "props"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "version": {
+                "type": "number",
+                "enum": [
+                  2
+                ]
+              },
+              "screenId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "renderer": {
+                "type": "string",
+                "enum": [
                   "arbre"
                 ]
               },
@@ -13230,7 +13452,7 @@
                             "property",
                             "method",
                             "example",
-                            "exam"
+                            "piege"
                           ]
                         },
                         "title": {
@@ -13261,6 +13483,135 @@
                       ],
                       "additionalProperties": false
                     }
+                  },
+                  "figure": {
+                    "type": "object",
+                    "properties": {
+                      "formula": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "xLabel": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "yLabel": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "xRange": {
+                        "type": "array",
+                        "items": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "number"
+                            }
+                          ]
+                        },
+                        "minItems": 2,
+                        "maxItems": 2
+                      },
+                      "yRange": {
+                        "type": "array",
+                        "items": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "number"
+                            }
+                          ]
+                        },
+                        "minItems": 2,
+                        "maxItems": 2
+                      },
+                      "points": {
+                        "minItems": 2,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "tangents": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            },
+                            "slope": {
+                              "type": "number"
+                            },
+                            "label": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y",
+                            "slope"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "zone": {
+                        "type": "object",
+                        "properties": {
+                          "from": {
+                            "type": "number"
+                          },
+                          "to": {
+                            "type": "number"
+                          },
+                          "label": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "from",
+                          "to",
+                          "label"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "formula",
+                      "xLabel",
+                      "yLabel",
+                      "xRange",
+                      "yRange",
+                      "points",
+                      "description"
+                    ],
+                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -13753,6 +14104,10 @@
                     },
                     "minItems": 1
                   },
+                  "conclusion": {
+                    "type": "string",
+                    "minLength": 1
+                  },
                   "sourceLink": {
                     "type": "object",
                     "properties": {
@@ -13852,6 +14207,10 @@
                       "minLength": 1
                     },
                     "minItems": 1
+                  },
+                  "conclusion": {
+                    "type": "string",
+                    "minLength": 1
                   },
                   "sourceLink": {
                     "type": "object",

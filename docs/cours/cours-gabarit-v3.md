@@ -60,10 +60,9 @@ Un exercice se découpe en réflexion, travail puis correction, chacun chronomé
 exercice tout `fp-escape`, tout `fp-challenge`, et tout autre écran qui porte une question notée
 (`noteCompte`), hors `fp-recall`, `fp-spaced` et `fp-worked`.
 
-- **L'annonce** tient sur une ligne exacte des notes formateur :
-  `• Temps : réflexion N min · travail M min`, suivie de ` · correction K min` quand la
-  correction se fait sur l'écran de l'exercice. `N + M + K` (K vaut 0 sans correction annoncée)
-  vaut la `dureeMinutes` de l'écran.
+- **La durée** : la `dureeMinutes` de l'écran additionne réflexion, travail et, quand elle se
+  fait sur place, correction. Les notes formateur ne la répètent pas : une note n'apporte que
+  ce que l'écran ne dit pas (un geste d'oral, une relance, une histoire), et peut manquer.
 - **La correction** se fait de l'une de deux façons :
   - **sur place** (`correctionSurPlace`) : sur l'écran même de l'exercice, dévoilée question par
     question ; ses explications suivent les questions du questionnaire dans leur ordre, et le
@@ -72,20 +71,20 @@ exercice tout `fp-escape`, tout `fp-challenge`, et tout autre écran qui porte u
     source) et porte sa propre durée ; il reste verrouillé jusqu'à la révélation de sa source,
     comme dans tout cours servi.
 
-Règle vérifiée (`controlerTempsDesExercices`) : chaque exercice porte l'annonce, sa somme tombe
-juste, et il est corrigé, sur place ou sur un écran qui le suit.
+Règle vérifiée (`controlerTempsDesExercices`) : chaque exercice est corrigé, sur place ou sur un
+écran qui le suit.
 
 ## 4. La trace écrite (rendu `lesson`)
 
 Rendu v2 `lesson` d'un `fp-story` : un titre et **quatre blocs au plus**, chacun d'un type :
 
-| `kind`       | Contenu                                                      |
-| ------------ | ------------------------------------------------------------ |
-| `definition` | La définition, dans les mots du référentiel                  |
-| `property`   | La propriété ou le résultat à retenir, avec sa `formula`     |
-| `method`     | La méthode, en `steps` numérotés                             |
-| `example`    | Un exemple résolu court                                      |
-| `exam`       | « Comment rédiger au CCF » : la phrase attendue sur la copie |
+| `kind`       | Contenu                                                     |
+| ------------ | ----------------------------------------------------------- |
+| `definition` | La définition, dans les mots du référentiel                 |
+| `property`   | La propriété ou le résultat à retenir, avec sa `formula`    |
+| `method`     | La méthode, en `steps` numérotés                            |
+| `example`    | Un exemple résolu court                                     |
+| `piege`      | « Les pièges » : les erreurs à éviter et la phrase à écrire |
 
 Une trace écrite est **publique** au catalogue (diffusion `catalogue`) : elle sert de fiche de
 révision et ne livre aucune réponse d'exercice. La garde de confidentialité le vérifie.
@@ -94,12 +93,12 @@ Le rendu `scatter` (nuage de points, point moyen et droite facultatifs) complèt
 des séries à deux variables. La garde de confidentialité lit ses coordonnées comme les valeurs
 d'un graphique.
 
-## 5. La mini-situation CCF et la fiche mémo
+## 5. La mini-situation et la fiche mémo
 
-Un cours peut porter, avant sa fiche mémo, une mini-situation au format de la CCF de mathématiques
-du BTS CG (deux situations de 55 min, dont 3 points sur 10 réservés au tableur) :
+Un cours peut porter, avant sa fiche mémo, une mini-situation qui réinvestit le cours sur un cas
+complet. Les étudiants ne passent pas le diplôme en CCF : aucun écran ne nomme cette épreuve.
 
-- un énoncé au format officiel, sur données réelles sourcées ;
+- un énoncé sur données réelles sourcées ;
 - une question tableur, jouée en `fp-sheet` et corrigée cellule par cellule ;
 - une suite d'énigmes (`fp-escape`) qui déroule les questions de la situation ;
 - une grille : barème par question, pièges attendus et remédiation dans les notes formateur.
@@ -149,8 +148,7 @@ papier, que la fiche de conception décrit écran par écran.
 Un cours B3 déclare `gabarit: 'b3'`. `verifierStructure` lui applique le budget (§ 1 : 40 écrans
 et 180 minutes au plus, comme le v3, décision de Tim du 2026-10-12 : deux pauses de 15 minutes
 dans la séance de 3 h 30), le cycle
-(§ 2) et les trois temps de chaque exercice (§ 3), mais pas la mini-situation CCF (§ 5) : le
-Bachelor n'a pas d'épreuve CCF à préparer. L'équivalence papier (§ 6) ne le concerne pas non
+(§ 2) et les trois temps de chaque exercice (§ 3), mais pas la mini-situation (§ 5). L'équivalence papier (§ 6) ne le concerne pas non
 plus, les manipulations se faisant dans Excel. La valeur `b3` tient dans la colonne `gabarit`
 (`varchar(20)`) sans migration.
 

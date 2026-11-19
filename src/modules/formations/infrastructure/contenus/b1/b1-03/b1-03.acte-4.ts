@@ -162,7 +162,6 @@ export const ACTE_4: moteur.Acte = [
         description: 'Une valeur extrême ?',
         back: 'Médiane et écart interquartile ; sans valeur extrême, moyenne et écart type.',
       },
-      moteur.REFERENTIEL_DU_BTS_CG,
     ],
   ),
 ];

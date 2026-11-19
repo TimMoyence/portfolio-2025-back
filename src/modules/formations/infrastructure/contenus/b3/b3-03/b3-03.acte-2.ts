@@ -48,7 +48,6 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['mise-en-forme-des-paragraphes'],
       notes: moteur.puces(
-        'Temps « réfléchir » des paragraphes : vote non noté, 1 min de vote et 1 min de révélation.',
         'Révélation : décaler par des espaces, puis changer la police ; l’alignement se perd.',
       ),
     },
@@ -193,7 +192,6 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 7,
       concepts: ['mise-en-forme-des-paragraphes'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 6),
         'Réflexion : faire retrouver dans la note la liste tapée avec des tirets.',
         'Pièges : chercher le tiret seul ; oublier l’espace après le tiret ; décaler la liste par des espaces.',
       ),
@@ -230,7 +228,6 @@ export const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Règle 2, redite : « Jamais de ligne vide ni d’espace pour espacer ou aligner. »',
         'Transition : « Numéroter les pages : un vote. »',
       ],
@@ -253,7 +250,6 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['mise-en-page'],
       notes: moteur.puces(
-        'Temps « réfléchir » de la mise en page : vote non noté, 1 min de vote et 1 min de révélation.',
         'Révélation : ajouter une page au début ; tous les numéros tapés sont faux.',
       ),
     },
@@ -420,7 +416,6 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 12,
       concepts: ['mise-en-page'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 11),
         'Réflexion : faire dire, avant de commencer, ce qui change à chaque page et ce qui reste.',
         'Pièges : en-tête sur la page de titre ; saut de page au lieu de section ; numéro tapé.',
       ),
@@ -463,7 +458,6 @@ export const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Règle 5, dite à la correction : « Ce qui change à chaque page s’insère par un champ : numéro, nombre de pages, date. »',
         'Transition : « Caractère, paragraphe ou section : un tri. »',
       ],
@@ -488,7 +482,6 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 7,
       concepts: ['mise-en-page'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 6),
         'Réflexion : pour chaque réglage, une question : que faut-il sélectionner pour le changer ?',
       ),
       proprietes: {
@@ -593,7 +586,6 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 2,
       concepts: ['export-pdf'],
       notes: moteur.puces(
-        'Temps « réfléchir » du PDF : vote non noté, 1 min de vote et 1 min de révélation.',
         'Révélation : ouvrir les deux PDF côte à côte ; seul l’enregistré a des signets.',
       ),
     },
@@ -673,7 +665,6 @@ export const ACTE_2: moteur.Acte = [
       dureeMinutes: 6,
       concepts: ['export-pdf'],
       notes: moteur.puces(
-        moteur.tempsDeLExercice(1, 5),
         'Réflexion : faire vérifier le volet de navigation avant d’exporter : les signets viennent des titres.',
       ),
       proprietes: {
@@ -706,7 +697,6 @@ export const ACTE_2: moteur.Acte = [
     {
       minutes: 2,
       notes: [
-        moteur.CORRIGER_PAR_LA_MOINS_REUSSIE_SOUS_SON_SCORE,
         'Règle 6, dite à la correction : « Le PDF s’enregistre, il ne s’imprime pas. »',
         'Transition : « La fiche récap des six règles. »',
       ],
@@ -731,10 +721,7 @@ export const ACTE_2: moteur.Acte = [
         'mise-en-page',
         'export-pdf',
       ],
-      notes: moteur.puces(
-        '2 min ; la fiche s’imprime.',
-        moteur.PAUSE_HORS_DUREE,
-      ),
+      notes: moteur.puces('2 min ; la fiche s’imprime.'),
     },
     'grid',
     {

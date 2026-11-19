@@ -111,9 +111,17 @@ const textes = (valeur: unknown): string[] =>
 export function texteDeLImage(
   contenu: ContenuDeCours,
   screenId: string,
-): { readonly paragraphes: string[]; readonly correspondances: string[] } {
-  const { paragraphs, items } = proprietesV2(contenu, screenId);
-  return { paragraphes: textes(paragraphs), correspondances: textes(items) };
+): {
+  readonly paragraphes: string[];
+  readonly correspondances: string[];
+  readonly conclusion: string;
+} {
+  const { paragraphs, items, conclusion } = proprietesV2(contenu, screenId);
+  return {
+    paragraphes: textes(paragraphs),
+    correspondances: textes(items),
+    conclusion: typeof conclusion === 'string' ? conclusion : '',
+  };
 }
 
 type EcranPourComprendre = readonly [
@@ -143,7 +151,10 @@ export function decrireLesEcransPourComprendre(
   it.each(ecransPourComprendre)(
     `${reference} · nomme dans la règle de l’écran %s-ENFANT-%s la notion de la page suivante`,
     (rang, sujet, _page, _fichier, notions) => {
-      const regle = paragraphe(proprietesV2(contenu, enfantDe(rang, sujet)), 1);
+      const { conclusion: regle } = texteDeLImage(
+        contenu,
+        enfantDe(rang, sujet),
+      );
 
       expect(notions.filter((notion) => !regle.includes(notion))).toEqual([]);
     },

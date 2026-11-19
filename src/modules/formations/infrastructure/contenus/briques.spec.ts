@@ -3,7 +3,6 @@ import {
   enPiege,
   pourComprendreDans,
   pulsation,
-  tempsDeLExercice,
 } from './briques';
 
 describe('enPiege', () => {
@@ -41,31 +40,33 @@ const SCENE: Parameters<typeof pourComprendre>[1] = {
 };
 
 describe('pourComprendreDans', () => {
-  it('sert la phrase, la règle, puis chaque correspondance image → cours dans l’ordre', () => {
+  it('RET-05 · sert la phrase, puis chaque correspondance image → cours, puis la règle en conclusion', () => {
     expect(
       pourComprendre(SOCLE_D_IMAGE, SCENE, 'Question : la pente en haut ?'),
     ).toMatchObject({
-      notes:
-        '• 1 min : faire décrire l’image, puis faire dire à quoi correspond chaque élément dans le cours.\n• Question : la pente en haut ?',
+      notes: '• Question : la pente en haut ?',
       proprietes: {
         presentation: {
           renderer: 'image-left',
           props: {
             title: 'La pente sous le vélo',
             image: '/assets/cours/b2-99/v1/velo.webp',
-            paragraphs: [
-              'Le vélo monte, roule à plat, puis redescend.',
-              'En maths, on écrit : f′(a) est la pente de la tangente.',
-            ],
+            paragraphs: ['Le vélo monte, roule à plat, puis redescend.'],
             items: [
               'La montée → f′(a) > 0',
               'Le plat du sommet → f′(a) = 0',
               'La descente → f′(a) < 0',
             ],
+            conclusion:
+              'En maths, on écrit : f′(a) est la pente de la tangente.',
           },
         },
       },
     });
+  });
+
+  it('RET-09 · ne sert aucune note quand l’écran n’a pas de relance', () => {
+    expect(pourComprendre(SOCLE_D_IMAGE, SCENE).notes).toBe('');
   });
 
   it('sert la quatrième correspondance quand l’écran en donne quatre', () => {
@@ -116,34 +117,36 @@ describe('pulsation', () => {
       diffusion: 'seance',
       brique: 'fp-pulse',
       dureeMinutes: 1,
-      notes: '• 30 s de vote anonyme.',
+      notes: '',
       proprietes: { sondage: SONDAGE },
     });
   });
 
-  it('fait suivre la consigne du vote des notes propres au jalon', () => {
+  it('RET-09 · ne sert que les notes écrites pour le jalon', () => {
     const { notes } = pulsation(SOCLE, SONDAGE, 'Reprendre la fiche A1-06.');
 
-    expect(notes).toBe('• 30 s de vote anonyme.\n• Reprendre la fiche A1-06.');
+    expect(notes).toBe('• Reprendre la fiche A1-06.');
   });
 });
 
-describe('tempsDeLExercice', () => {
-  it('annonce la réflexion puis le travail', () => {
-    expect(tempsDeLExercice(2, 6)).toBe(
-      'Temps : réflexion 2 min · travail 6 min',
-    );
+describe('corrigeSurPlace', () => {
+  it('RET-09 · ajoute la durée de la correction sans écrire de note d’office', () => {
+    const corrige = corrigeSurPlace(pulsation(SOCLE, SONDAGE), { minutes: 3 }, [
+      ['A1', 'Lire la ligne 1.'],
+    ]);
+
+    expect([corrige.dureeMinutes, corrige.notes]).toEqual([4, '']);
   });
 
-  it('reste la ligne que la correction sur place prolonge de sa durée', () => {
+  it('fait suivre les notes de l’exercice de celles de sa correction', () => {
     const corrige = corrigeSurPlace(
-      pulsation(SOCLE, SONDAGE, tempsDeLExercice(1, 5)),
+      pulsation(SOCLE, SONDAGE, 'Relancer les binômes.'),
       { minutes: 3, notes: ['Corriger au tableau.'] },
       [['A1', 'Lire la ligne 1.']],
     );
 
-    expect(corrige.notes).toContain(
-      '• Temps : réflexion 1 min · travail 5 min · correction 3 min',
+    expect(corrige.notes).toBe(
+      '• Relancer les binômes.\n• Corriger au tableau.',
     );
   });
 });

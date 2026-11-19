@@ -2,7 +2,7 @@
 
 > Cahier des charges du cours B2-02 au gabarit v3 (`docs/cours/cours-gabarit-v3.md`) : une séance de
 > 3 h 30 dont 30 minutes de pause, trois notions traitées chacune par un cycle réfléchir → comprendre
-> → s'exercer, puis une mini-situation CCF. Il remplace la conception v1 (« Résumer une série sans la
+> → s'exercer, puis une mini-situation. Il remplace la conception v1 (« Résumer une série sans la
 > trahir », 62 écrans, 204 minutes), dont le contenu versionné reste lisible en base pour les séances
 > clôturées. Ce document ne contient aucun code exécutable ; toute divergence d'implémentation est un
 > défaut de l'implémentation. Les tests `b2-02.cours.spec.ts` relisent ce document : § 3.1, titres
@@ -77,7 +77,7 @@ l'acte 3.
 | 1    | Ouverture, puis résumer une série | N1     |      44 |
 | 2    | Relier deux variables             | N2     |      47 |
 | 3    | Prévoir avec une droite           | N3     |      41 |
-| 4    | Mini-situation CCF et clôture     | —      |      48 |
+| 4    | Mini-situation et clôture         | —      |      48 |
 
 Pause 1 (15 min) après le jalon A1-09 ; pause 2 (15 min) après le jalon A3-06. Les pauses ne sont
 pas des écrans : le formateur les annonce, la durée programmée n'en tient pas compte.
@@ -89,13 +89,12 @@ non noté) → **Comprendre** (trace écrite en deux pages v2 `lesson` de 3 minu
 guidé `fp-worked` corrigé étape par étape sur son propre écran) → **S'exercer** (exercices notés,
 corrigés sur place). Chaque page de trace écrite porte trois blocs : une définition en langage
 courant qui dit à quoi sert la notion pour la banque, un exemple pour débuter (rendu `example`,
-calcul entièrement déroulé sur trois à cinq valeurs) et une méthode ou un encadré « Au CCF » qui
+calcul entièrement déroulé sur trois à cinq valeurs) et une méthode ou un encadré « Les pièges » qui
 nomme les pièges. Elle se lit sans orateur ; les notes formateur portent les questions à poser, les
 relances et le lien au dossier.
 
-Chaque exercice annonce ses temps dans les notes formateur, sous la forme
-`• Temps : réflexion N min · travail N min · correction N min`, dont la somme est la durée de
-l'écran. La correction n'a pas d'écran à elle : le formateur la dévoile sur l'écran de l'exercice,
+La durée de chaque exercice additionne réflexion, travail et correction ; les notes formateur
+ne la répètent pas. La correction n'a pas d'écran à elle : le formateur la dévoile sur l'écran de l'exercice,
 une question, une étape ou une piste à la fois (`correctionSurPlace`), et chaque question corrigée
 se ferme aux réponses.
 
@@ -219,7 +218,7 @@ séance de 180 minutes interdisent d'ajouter une minute aux traces écrites.
 
 - Titre public : « Cours : la régularité d’une série, l’écart-type »
 - Page 2 sur 2, trois blocs : étendue, écart interquartile, écart-type et variance ; exemple pour
-  débuter (deux clients de même moyenne 10 jours, écarts-types 2 et ≈ 7,07 jours) ; au CCF (valeur
+  débuter (deux clients de même moyenne 10 jours, écarts-types 2 et ≈ 7,07 jours) ; les pièges (valeur
   extrême gardée et signalée, `ECARTYPEP` pour une population, unité).
 
 #### A1-06 · `B2-02-A1-06-ILLUSTRATION-ECART` — 1 min · v2 `illustration` · catalogue
@@ -288,7 +287,7 @@ séance de 180 minutes interdisent d'ajouter une minute aux traces écrites.
 
 - Titre public : « Cours : le coefficient de corrélation r »
 - Page 2 sur 2, trois blocs : r mesure l'alignement, entre −1 et 1, et son signe ; exemple pour
-  débuter (r de la boutique à la main par les écarts au point moyen, 5 ÷ √28 ≈ 0,945) ; au CCF (r
+  débuter (r de la boutique à la main par les écarts au point moyen, 5 ÷ √28 ≈ 0,945) ; les pièges (r
   n'est pas la pente, r négatif, corrélation n'est pas causalité, phrase de rédaction).
 
 #### A2-03 · `B2-02-A2-03-ILLUSTRATION-CORRELATION` — 1 min · v2 `illustration` · catalogue
@@ -352,7 +351,7 @@ séance de 180 minutes interdisent d'ajouter une minute aux traces écrites.
 - Titre public : « Cours : prévoir avec la droite, et ses limites »
 - Page 2 sur 2, trois blocs : prévoir par le rang, interpoler, extrapoler, et pourquoi 2028 porte une
   réserve ; exemple pour débuter (boutique : 13,5 k€ au rang 5, seuil de 18 atteint au rang 7) ;
-  rédiger au CCF (pièges, phrases modèles, seuil à l'entier supérieur).
+  rédiger la réponse (pièges, phrases modèles, seuil à l'entier supérieur).
 
 #### A3-02 · `B2-02-A3-02-ILLUSTRATION-PREVOIR` — 1 min · v2 `illustration` · catalogue
 
@@ -381,11 +380,11 @@ séance de 180 minutes interdisent d'ajouter une minute aux traces écrites.
 - Titre public : « Jalon 3 : prévoir avec une droite »
 - Puis pause de 15 minutes.
 
-### 3.5 Acte 4 — Mini-situation CCF et clôture (44 min)
+### 3.5 Acte 4 — Mini-situation et clôture (44 min)
 
 #### A4-01 · `B2-02-A4-01-SITUATION-FIBRE` — 3 min · v2 `table` · catalogue
 
-- Titre public : « Mini-situation CCF : la fibre optique en France »
+- Titre public : « Mini-situation : la fibre optique en France »
 - Abonnements à la fibre, fin 2020 à fin 2024 : 10,3 ; 14,5 ; 18,1 ; 21,4 ; 24,4 millions (Arcep).
 
 #### A4-02 · `B2-02-A4-02-TABLEUR-FIBRE` — 17 min · `fp-sheet` · séance
@@ -397,8 +396,7 @@ séance de 180 minutes interdisent d'ajouter une minute aux traces écrites.
   `=COEFFICIENT.CORRELATION(A2:A6;B2:B6)`, E3 `=PENTE(B2:B6;A2:A6)`, E4
   `=ORDONNEE.ORIGINE(B2:B6;A2:A6)`, E5 `=MOYENNE(A2:A6)`, E6 `=MOYENNE(B2:B6)`, E7 contrôle du passage
   par le point moyen. Pièges : pente des séries inversées (`pente-ordonnee-inversees`).
-- Papier : la même question se traite à la calculatrice, formules écrites sur la copie ; en CCF, elle
-  se fait devant l'examinateur (appel).
+- Papier : la même question se traite à la calculatrice, formules écrites sur la copie.
 
 #### A4-03 · `B2-02-A4-03-COFFRE-FIBRE` — 16 min · `fp-escape` · séance
 
