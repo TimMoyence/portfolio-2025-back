@@ -216,7 +216,7 @@ describeDb('Formations repositories (db integration)', () => {
     expect((await compter())['formation_course_contents']).toBe(
       CONTENUS.length,
     );
-  });
+  }, 60_000);
 
   it('rejoue la derniere migration formations apres un retour arriere', async () => {
     await contexte.rejouerMigration();
